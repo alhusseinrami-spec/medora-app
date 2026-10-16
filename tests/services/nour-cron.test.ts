@@ -44,6 +44,7 @@ describe("Nour API", () => {
     const viaHeader = (k: string) => new Request("http://app.test/api/nour/briefing", { headers: { "x-nour-key": k } });
     expect((await briefing(viaHeader("wrong"))).status).toBe(401);
     expect((await briefing(viaHeader(process.env.NOUR_API_KEY!))).status).toBe(200);
+    expect((await briefing(viaHeader(` ${process.env.NOUR_API_KEY!} `))).status).toBe(200);
     delete process.env.NOUR_API_KEY;
     expect((await briefing(nour("briefing"))).status).toBe(503);
   });
