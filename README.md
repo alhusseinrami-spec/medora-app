@@ -48,7 +48,7 @@ cp .env.example .env              # fill in DATABASE_URL and APP_ENCRYPTION_KEY 
 npm install
 npm run db:migrate                # creates the tables
 npm run dev                       # http://localhost:3000, then follow the first-run setup
-npm run worker                    # in a second terminal: delivers reminders, runs nightly clean-up
+npm run worker                    # optional second terminal: delivers reminders every 30 s, runs nightly clean-up
 ```
 
 Without `ANTHROPIC_API_KEY` everything works except the assistant, which says it isn't connected.
@@ -67,16 +67,11 @@ What the browser tests cover: first-run setup and two-step sign-in, creating and
 
 ## Deploy
 
-Any host that runs Node and PostgreSQL works. Recommended: **Render** or **Railway** (web service + background worker + managed Postgres in one place), or Vercel for the web app with Neon for Postgres and a small Render/Railway worker.
+The chosen host is **Vercel** with **Neon** Postgres. Step-by-step instructions, including connecting Nour, are in [DEPLOY.md](DEPLOY.md).
 
-1. Create a managed PostgreSQL database with daily backups.
-2. Web service: build `npm install && npm run build && npm run db:migrate`, start `npm start`. Health check path `/api/health`.
-3. Background worker: same repository, start `npm run worker`. Run exactly one.
-4. Set the environment variables from `.env.example` on both services. Store `APP_ENCRYPTION_KEY` in a password manager too: losing it means everyone re-enrols two-step sign-in.
-5. Serve over HTTPS on your own domain (session cookies are `Secure` in production).
-6. Open the site and create the owner account straight away; the setup screen disappears once one account exists.
+On Vercel there is no always-on worker. The same jobs (`src/lib/jobs.ts`) run from Vercel Cron via `/api/cron/tick`, and also whenever the app is open, because the notification bell polls every 30 s. Self-hosting elsewhere still works: run `npm start` plus exactly one `npm run worker`, and set both database URLs to the same value.
 
-`/api/health` reports the database and whether the worker has checked in during the last 5 minutes. Logs are JSON lines on stdout.
+`/api/health` reports the database and when scheduled jobs last ran. Logs are JSON lines on stdout.
 
 ## Architecture
 

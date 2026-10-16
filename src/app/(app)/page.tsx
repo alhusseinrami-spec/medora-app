@@ -46,7 +46,7 @@ export default async function Dashboard({ searchParams }: PageProps<"/">) {
 
   const attention = [
     ...overdue.map((t) => ({ id: `o${t.id}`, tone: "danger", text: `Overdue: ${t.title}`, sub: `Was due ${fmtDate(t.due!, tz)}`, href: `/tasks?open=${t.id}` })),
-    ...approvals.slice(0, 5).map((a) => ({ id: `a${a.id}`, tone: "teal", text: `Waiting for approval: ${a.title}`, sub: a.requestedBy === "ai" ? "Prepared by the assistant" : "Requested", href: "/approvals" })),
+    ...approvals.slice(0, 5).map((a) => ({ id: `a${a.id}`, tone: "teal", text: `Waiting for approval: ${a.title}`, sub: a.requestedBy === "ai" ? "Prepared by the assistant" : a.requestedBy === "nour" ? "From a call with Nour" : "Requested", href: "/approvals" })),
     ...clashes.map(([a, b]) => ({ id: `c${a.id}${b.id}`, tone: "warn", text: `Overlap: ${a.title} and ${b.title}`, sub: `${fmtTime(b.start, tz)} today`, href: `/calendar?date=${today}` })),
     ...firedReminders.map((r) => ({ id: `r${r.id}`, tone: "warn", text: `Reminder: ${r.title}`, sub: `Due ${fmtTime(r.dueAt, tz)}`, href: "/reminders" })),
   ];

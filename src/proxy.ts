@@ -2,7 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // Optimistic check only: no cookie means straight to sign-in. Every page and route
 // still verifies the session against the database (lib/auth.ts).
-const PUBLIC = ["/login", "/setup", "/api/health"];
+// /api/cron and /api/nour have no session: they check their own secret key instead.
+const PUBLIC = ["/login", "/setup", "/api/health", "/api/cron", "/api/nour"];
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;

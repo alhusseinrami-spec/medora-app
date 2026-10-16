@@ -8,6 +8,7 @@ import { notify } from "./notifications";
 import { createTask, deleteTask, updateTask } from "./tasks";
 import { deleteContact } from "./contacts";
 import { deleteEvent } from "./events";
+import { createReminder } from "./reminders";
 
 type Actor = Pick<User, "id" | "role" | "timeZone" | "name">;
 
@@ -15,6 +16,7 @@ type Actor = Pick<User, "id" | "role" | "timeZone" | "name">;
 // A kind that is not listed here cannot be proposed, so nothing waits on an action that can't run.
 export const APPROVAL_KINDS = {
   "task.create": { label: "Add a task", payload: z.object({ title: z.string().min(1).max(200), notes: z.string().max(5000).default(""), due: z.string().nullable().optional(), priority: z.enum(["P1", "P2", "P3", "P4"]).default("P3") }) },
+  "reminder.create": { label: "Set a reminder", payload: z.object({ title: z.string().min(1).max(200), date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use a date like 2026-10-17."), time: z.string().regex(/^\d{2}:\d{2}$/, "Use a time like 09:00.").default("09:00") }) },
   "task.assign": { label: "Assign a task to someone", payload: z.object({ taskId: z.string(), assigneeId: z.string() }) },
   "task.delete": { label: "Delete a task", payload: z.object({ taskId: z.string() }) },
   "event.delete": { label: "Delete a calendar entry", payload: z.object({ eventId: z.string() }) },
@@ -24,7 +26,7 @@ export const APPROVAL_KINDS = {
 export type ApprovalKind = keyof typeof APPROVAL_KINDS;
 export const isApprovalKind = (k: string): k is ApprovalKind => k in APPROVAL_KINDS;
 
-export async function proposeApproval(a: Actor, p: { kind: string; title: string; detail?: string; payload: unknown; stage?: "SUGGESTION" | "DRAFT"; requestedBy?: "ai" | "user" | "automation" }) {
+export async function proposeApproval(a: Actor, p: { kind: string; title: string; detail?: string; payload: unknown; stage?: "SUGGESTION" | "DRAFT"; requestedBy?: "ai" | "user" | "automation" | "nour" }) {
   if (!isApprovalKind(p.kind)) throw new UserError(`"${p.kind}" is not something the Approval Center can carry out.`);
   const parsed = APPROVAL_KINDS[p.kind].payload.safeParse(p.payload);
   if (!parsed.success) throw new UserError(parsed.error.issues[0]?.message ?? "Invalid approval details.");
@@ -93,6 +95,10 @@ async function execute(kind: ApprovalKind, p: Record<string, unknown>, owner: Us
     case "task.create": {
       const t = await createTask(owner, { title: p.title, notes: p.notes, due: p.due ?? null, priority: p.priority });
       return { result: `Task added: ${t.title}`, link: "/tasks" };
+    }
+    case "reminder.create": {
+      const r = await createReminder(owner, { title: p.title, date: p.date, time: p.time });
+      return { result: `Reminder set: ${r.title}`, link: "/reminders" };
     }
     case "task.assign": {
       const assignee = await db.user.findUnique({ where: { id: String(p.assigneeId) } });

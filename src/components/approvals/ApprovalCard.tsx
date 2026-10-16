@@ -9,9 +9,9 @@ export type ApprovalView = {
   requestedBy: string; owner: string; mine: boolean; created: string; decided: string | null; result: string; resultLink: string; names: Record<string, string>;
 };
 const STAGE: Record<string, [string, string]> = { SUGGESTION: ["Suggestion", "chip"], DRAFT: ["Waiting for approval", "chip-teal"], APPROVED: ["Approved", "chip-warn"], COMPLETED: ["Completed", "chip-ok"], REJECTED: ["Rejected", "chip-danger"] };
-const FIELD: Record<string, string> = { title: "Title", notes: "Notes", due: "Due", priority: "Priority", taskId: "Task", assigneeId: "Assign to", eventId: "Calendar entry", contactId: "Contact", content: "Remember", kind: "Type" };
+const FIELD: Record<string, string> = { title: "Title", notes: "Notes", due: "Due", priority: "Priority", taskId: "Task", assigneeId: "Assign to", eventId: "Calendar entry", contactId: "Contact", content: "Remember", kind: "Type", date: "Date", time: "Time" };
 // Fields the approver may adjust before approving.
-const EDITABLE: Record<string, string[]> = { "task.create": ["title", "due", "priority", "notes"], "memory.save": ["content"] };
+const EDITABLE: Record<string, string[]> = { "task.create": ["title", "due", "priority", "notes"], "memory.save": ["content"], "reminder.create": ["title", "date", "time"] };
 
 export function ApprovalCard({ a }: { a: ApprovalView }) {
   const [edits, setEdits] = useState<Record<string, string>>({});
@@ -33,7 +33,7 @@ export function ApprovalCard({ a }: { a: ApprovalView }) {
         <Icon name="shield" className="text-teal mt-0.5" />
         <div className="flex-1 min-w-[200px]">
           <h2 className="font-semibold">{a.title}</h2>
-          <div className="text-xs text-muted">{a.kindLabel} · {a.requestedBy === "ai" ? "Prepared by the assistant" : a.requestedBy === "automation" ? "From an automation" : "Requested"}{!a.mine && ` for ${a.owner}`} · {a.created}</div>
+          <div className="text-xs text-muted">{a.kindLabel} · {a.requestedBy === "ai" ? "Prepared by the assistant" : a.requestedBy === "automation" ? "From an automation" : a.requestedBy === "nour" ? "From a call with Nour" : "Requested"}{!a.mine && ` for ${a.owner}`} · {a.created}</div>
         </div>
         <span className={`chip ${chip}`}>{label}</span>
       </div>
@@ -52,7 +52,8 @@ export function ApprovalCard({ a }: { a: ApprovalView }) {
             <label key={k} className={k === "notes" || k === "content" ? "sm:col-span-2" : ""}>
               <span className="label">{FIELD[k]}</span>
               {k === "priority" ? <select className="select" value={val(k) || "P3"} onChange={(e) => setEdits({ ...edits, [k]: e.target.value })}>{["P1", "P2", "P3", "P4"].map((p) => <option key={p}>{p}</option>)}</select>
-                : k === "due" ? <input type="date" className="input" value={val(k)} onChange={(e) => setEdits({ ...edits, [k]: e.target.value })} />
+                : k === "due" || k === "date" ? <input type="date" className="input" value={val(k)} onChange={(e) => setEdits({ ...edits, [k]: e.target.value })} />
+                : k === "time" ? <input type="time" className="input" value={val(k)} onChange={(e) => setEdits({ ...edits, [k]: e.target.value })} />
                 : k === "notes" || k === "content" ? <textarea className="textarea" value={val(k)} onChange={(e) => setEdits({ ...edits, [k]: e.target.value })} />
                 : <input className="input" value={val(k)} onChange={(e) => setEdits({ ...edits, [k]: e.target.value })} />}
             </label>
