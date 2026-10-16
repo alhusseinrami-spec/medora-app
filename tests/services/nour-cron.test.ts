@@ -41,6 +41,9 @@ describe("Nour API", () => {
   it("rejects a missing or wrong key, and stays off when no key is configured", async () => {
     await makeUser("OWNER");
     expect((await briefing(nour("briefing", {}, "wrong"))).status).toBe(401);
+    const viaHeader = (k: string) => new Request("http://app.test/api/nour/briefing", { headers: { "x-nour-key": k } });
+    expect((await briefing(viaHeader("wrong"))).status).toBe(401);
+    expect((await briefing(viaHeader(process.env.NOUR_API_KEY!))).status).toBe(200);
     delete process.env.NOUR_API_KEY;
     expect((await briefing(nour("briefing"))).status).toBe(503);
   });
