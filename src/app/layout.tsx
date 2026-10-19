@@ -4,7 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: { default: "Medora Command Center", template: "%s · Medora" },
   description: "Medora Care executive assistant",
-  icons: { icon: "/icon.svg" },
+  icons: { icon: "/icon.svg", apple: "/apple-touch-icon.png" },
+  // Home Screen app on iPhone (needed for Web Push on iOS).
+  appleWebApp: { capable: true, title: "Medora", statusBarStyle: "default" },
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#0b2545" };
 

@@ -18,4 +18,5 @@ export function proxy(req: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ["/((?!_next/|icon.svg|favicon.ico).*)"] };
+// Static app files stay public: the service worker, the Home Screen manifest and icons are fetched without a session.
+export const config = { matcher: ["/((?!_next/|icon.svg|icon-192.png|icon-512.png|apple-touch-icon.png|favicon.ico|sw.js|manifest.webmanifest).*)"] };

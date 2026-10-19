@@ -91,6 +91,7 @@ model User {
   documents     Document[]
   automations   AutomationRule[]
   settings      Setting[]
+  pushSubscriptions PushSubscription[]
 
   @@map("users")
 }
@@ -240,6 +241,21 @@ model Notification {
 
   @@index([userId, readAt])
   @@map("notifications")
+}
+
+// A browser or phone that receives Web Push notifications for a user.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("push_subscriptions")
 }
 
 model Approval {

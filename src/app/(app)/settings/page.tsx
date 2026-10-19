@@ -4,6 +4,7 @@ import { can, ROLE_LABEL } from "@/lib/rbac";
 import { ago, fmtDateTime } from "@/lib/time";
 import { aiConfigured, MODEL } from "@/lib/ai/chat";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { PhoneNotifications } from "@/components/settings/PhoneNotifications";
 import { ChangePassword, DeleteMyData, MemoryList, ProfileForm, Retention, RevokeButton, TeamManager } from "@/components/settings/SettingsForms";
 
 export const metadata = { title: "Settings" };
@@ -40,12 +41,16 @@ export default async function SettingsPage() {
     <>
       <PageHeader title="Settings" sub="Your profile, security, what the assistant remembers, and company controls." />
       <nav className="flex flex-wrap gap-1.5 mb-4 text-sm" aria-label="Settings sections">
-        {["profile", "security", "memory", "connections", ...(users.length ? ["team"] : []), ...(auditRows.length ? ["audit"] : []), "data"].map((s) => <a key={s} href={`#${s}`} className="chip hover:bg-teal-soft capitalize">{s}</a>)}
+        {["profile", "phone", "security", "memory", "connections", ...(users.length ? ["team"] : []), ...(auditRows.length ? ["audit"] : []), "data"].map((s) => <a key={s} href={`#${s}`} className="chip hover:bg-teal-soft capitalize">{s}</a>)}
       </nav>
       <div className="space-y-4 max-w-4xl">
         <Section id="profile" title="Profile">
           <ProfileForm name={user.name} timeZone={user.timeZone} zones={zones} />
           <p className="text-sm text-muted mt-3">{user.email} · {ROLE_LABEL[user.role]}</p>
+        </Section>
+
+        <Section id="phone" title="Phone notifications" sub="Get reminders on this phone or computer even when Medora is closed. Turn it on separately on each device.">
+          <PhoneNotifications />
         </Section>
 
         <Section id="security" title="Security" sub="Passwords are stored as Argon2id hashes. Sessions last 7 days from your last visit.">

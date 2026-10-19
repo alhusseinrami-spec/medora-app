@@ -46,9 +46,19 @@ Check `https://<your-site>/api/health`. It should say `"db": "up"`.
 
 Nour can't approve anything, send email, delete records or see accounting data through this connection.
 
+## 6. Phone notifications
+
+Reminders, and items Nour queues for approval, can arrive on your phone even when Medora is closed.
+
+1. **Every-5-minute check:** on GitHub, open the repository's **Settings → Secrets and variables → Actions → New repository secret**. Name it `CRON_SECRET` and paste the same value as `CRON_SECRET` in Vercel. The **Reminders tick** workflow then calls the app every 5 minutes (GitHub sometimes starts it a few minutes late).
+2. **On iPhone (iOS 16.4 or later):** open the site in Safari, tap **Share → Add to Home Screen**, then open Medora from the Home Screen icon. Go to **Settings → Phone notifications → Enable**, allow notifications, and tap **Send test**.
+3. **On Android or a computer:** open **Settings → Phone notifications → Enable** in Chrome, Edge or Firefox.
+
+Turn it on separately on each device. The push keys are created automatically and stored encrypted in the database, so there is nothing else to set up.
+
 ## Good to know
 
-- **Reminders on the free plan:** Vercel Hobby runs cron jobs once a day. Reminders are also delivered every 30 seconds whenever the app is open in a browser. For on-time reminders while the app is closed, upgrade to Vercel Pro and change the schedule in `vercel.json` to `* * * * *`.
+- **Reminders on the free plan:** Vercel Hobby runs cron jobs once a day. The GitHub **Reminders tick** workflow (step 6) runs them every 5 minutes instead, and they are also delivered every 30 seconds whenever the app is open in a browser.
 - **Backups:** Neon keeps point-in-time history (24 hours on the free plan, longer on paid plans). Use **Settings → Export** in the app for your own copy.
 - **Own domain:** Vercel **Settings → Domains**. Update `APP_URL` afterwards and redeploy.
 - **Rotating a key:** change the value in Vercel and redeploy. For `NOUR_API_KEY`, update the ElevenLabs secret too.

@@ -1,0 +1,35 @@
+# Runs Medora's scheduled jobs every 5 minutes so reminders reach phones on time.
+# Vercel's own cron (vercel.json) only runs once a day on this plan.
+# Needs the repo secret CRON_SECRET, set to the same value as CRON_SECRET in Vercel.
+# GitHub runs schedules from the default branch only, and may start them a few minutes late.
+name: Reminders tick
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: reminders-tick
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Call /api/cron/tick
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::The CRON_SECRET repository secret is not set."
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error --max-time 60 \
+            --retry 2 --retry-delay 10 --retry-all-errors \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            https://medora-app-gamma.vercel.app/api/cron/tick
+          echo
