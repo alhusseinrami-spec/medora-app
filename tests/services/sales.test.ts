@@ -1,0 +1,146 @@
+import { beforeEach, describe, expect, it } from "vitest";
+import { db } from "@/lib/db";
+import { distanceM, nearestRoute } from "@/lib/geo";
+import {
+  cancelOrder, checkIn, checkInNearest, createClient, createOrder, listClients, listOrders, relocateClient,
+  reviewOrder, saveProduct, setFollowUp, todayFor, updateClient, visitsBoard,
+} from "@/lib/services/sales";
+import { makeUser, reset } from "./helpers";
+
+beforeEach(reset);
+
+// Saida, and a point about 50 m north of it, and one about 2 km away.
+const CLINIC = { lat: 33.5606, lng: 35.3714 };
+const NEAR = { lat: 33.56105, lng: 35.3714, accuracy: 12 };
+const FAR = { lat: 33.578, lng: 35.3714, accuracy: 12 };
+
+describe("geo", () => {
+  it("measures metres and orders a route nearest-first", () => {
+    expect(Math.round(distanceM(CLINIC, NEAR))).toBe(50);
+    const stops = [{ id: "far", lat: 33.9, lng: 35.5 }, { id: "none", lat: null, lng: null }, { id: "near", lat: 33.57, lng: 35.37 }];
+    expect(nearestRoute(CLINIC, stops).map((s) => s.id)).toEqual(["near", "far", "none"]);
+  });
+});
+
+describe("clients and visits", () => {
+  it("adds a client where the rep stands and verifies check-ins by distance", async () => {
+    const rep = await makeUser("STAFF", "Rep");
+    const c = await createClient(rep, { name: "Dr Maroun", placeType: "Clinic", location: { ...CLINIC, accuracy: 8 } });
+    expect(c).toMatchObject({ stage: "LEAD", category: "CUSTOMER", lat: CLINIC.lat, ownerId: rep.id });
+
+    const near = await checkIn(rep, c.id, NEAR);
+    expect(near.visit.verified).toBe(true);
+    expect(Math.round(near.visit.distanceM!)).toBe(50);
+    expect((await checkIn(rep, c.id, NEAR)).duplicate).toBe(true);
+
+    await db.visit.deleteMany();
+    const far = await checkIn(rep, c.id, FAR);
+    expect(far.visit.verified).toBe(false);
+    await db.visit.deleteMany();
+    expect((await checkIn(rep, c.id, { ...NEAR, accuracy: 400 })).visit.verified).toBe(false); // fix too vague
+  });
+
+  it("gives a client with no pin the first check-in's location, unverified", async () => {
+    const rep = await makeUser("STAFF");
+    const c = await createClient(rep, { name: "Al Hekmeh hospital" });
+    const r = await checkIn(rep, c.id, NEAR);
+    expect(r.visit.verified).toBe(false);
+    expect((await db.contact.findUniqueOrThrow({ where: { id: c.id } })).lat).toBe(NEAR.lat);
+  });
+
+  it("keeps reps to their own clients and stops them moving a saved pin", async () => {
+    const a = await makeUser("STAFF"), b = await makeUser("STAFF"), mgr = await makeUser("MANAGER");
+    const c = await createClient(a, { name: "Dr Kamil", location: { ...CLINIC, accuracy: 5 } });
+    expect(await listClients(b)).toHaveLength(0);
+    expect(await listClients(mgr)).toHaveLength(1);
+    await expect(checkIn(b, c.id, NEAR)).rejects.toThrow(/isn't yours/);
+    await expect(relocateClient(a, c.id, NEAR)).rejects.toThrow(/manager/);
+    await relocateClient(mgr, c.id, NEAR);
+    await updateClient(a, c.id, { stage: "PROSPECT" });
+    expect((await listClients(a, { stage: "PROSPECT" })).map((x) => x.id)).toEqual([c.id]);
+    const viewer = await makeUser("ACCOUNTANT");
+    await expect(createClient(viewer, { name: "x" })).rejects.toThrow(/doesn't use/);
+  });
+
+  it("logs a visit at the nearest client, and builds the manager's board", async () => {
+    const rep = await makeUser("STAFF", "Rami"), mgr = await makeUser("MANAGER");
+    await createClient(rep, { name: "Far away", location: { lat: 34.4, lng: 35.8, accuracy: 5 } });
+    const c = await createClient(rep, { name: "Dr Dbouk", location: { ...CLINIC, accuracy: 5 } });
+    const r = await checkInNearest(rep, NEAR);
+    expect(r.found && r.client.id).toBe(c.id);
+    expect((await checkInNearest(rep, { lat: 33.0, lng: 35.2, accuracy: 5 })).found).toBe(false);
+
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Beirut" }).format(new Date());
+    const board = await visitsBoard(mgr, today);
+    const row = board.find((x) => x.rep.id === rep.id)!;
+    expect(row).toMatchObject({ verified: 1 });
+    expect(row.visits[0].contact.name).toBe("Dr Dbouk");
+    await expect(visitsBoard(rep, today)).rejects.toThrow(/managers/);
+    expect((await todayFor(rep)).verifiedToday).toBe(1);
+  });
+
+  it("sets a follow-up that lands in the rep's reminders and on today's route", async () => {
+    const rep = await makeUser("STAFF");
+    const c = await createClient(rep, { name: "Dt Yassmina", stage: "CUSTOMER" });
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Beirut" }).format(new Date());
+    await setFollowUp(rep, c.id, today, "00:01");
+    expect(await db.reminder.findFirst({ where: { userId: rep.id } })).toMatchObject({ title: "Follow up: Dt Yassmina" });
+    const t = await todayFor(rep);
+    expect(t.route.map((x) => x.id)).toEqual([c.id]);
+    expect(t.route[0].due).toBe(true);
+  });
+});
+
+describe("orders and proformas", () => {
+  async function setup() {
+    const owner = await makeUser("OWNER", "Owner"), acc = await makeUser("ACCOUNTANT", "Accounting"), rep = await makeUser("STAFF", "Rep");
+    const gloves = await saveProduct(acc, { sku: "GLV-M", name: "Nitrile gloves M", unit: "box", price: 6.5 });
+    const client = await createClient(rep, { name: "Dr Chaito", location: { ...CLINIC, accuracy: 5 } });
+    return { owner, acc, rep, gloves, client };
+  }
+
+  it("notifies accounting, who edits quantities and prices and approves; the rep is told", async () => {
+    const { owner, acc, rep, gloves, client } = await setup();
+    const o = await createOrder(rep, { contactId: client.id, lines: [{ productId: gloves.id, quantity: 10 }, { description: "Sharps container 5L", quantity: 2, unitPrice: 4 }] });
+    expect(Number(o.total)).toBe(73);
+    expect(await db.notification.count({ where: { userId: acc.id, kind: "order" } })).toBe(1);
+    expect(await db.notification.count({ where: { userId: owner.id, kind: "order" } })).toBe(1);
+    expect((await db.contact.findUniqueOrThrow({ where: { id: client.id } })).stage).toBe("CUSTOMER");
+
+    const lines = await db.salesOrderLine.findMany({ where: { orderId: o.id }, orderBy: { position: "asc" } });
+    await expect(reviewOrder(rep, o.id, { decision: "APPROVE" })).rejects.toThrow(/accounting/);
+    const done = await reviewOrder(acc, o.id, { decision: "APPROVE", note: "Gloves at the tender price", lines: [{ id: lines[0].id, quantity: 20, unitPrice: 6 }, { id: lines[1].id, quantity: 0, unitPrice: 4 }] });
+    expect(done).toMatchObject({ status: "APPROVED", edited: true, reviewedById: acc.id });
+    expect(Number(done.total)).toBe(120);
+    const kept = await db.salesOrderLine.findMany({ where: { orderId: o.id } });
+    expect(kept).toHaveLength(1);
+    expect(kept[0]).toMatchObject({ quantity: 20, requestedQty: 10 });
+    expect(await db.notification.findFirst({ where: { userId: rep.id } })).toMatchObject({ title: `Order #${o.number} approved with changes` });
+    await expect(reviewOrder(acc, o.id, { decision: "REJECT", note: "x" })).rejects.toThrow(/already approved/);
+    expect(await db.auditLog.count({ where: { entityId: o.id } })).toBe(2);
+  });
+
+  it("handles proforma requests, rejections with a reason, and cancelling", async () => {
+    const { acc, rep, gloves, client } = await setup();
+    const p = await createOrder(rep, { contactId: client.id, kind: "PROFORMA", lines: [{ productId: gloves.id, quantity: 100 }] });
+    expect((await db.contact.findUniqueOrThrow({ where: { id: client.id } })).stage).toBe("PROSPECT");
+    await expect(reviewOrder(acc, p.id, { decision: "REJECT" })).rejects.toThrow(/Say why/);
+    await reviewOrder(acc, p.id, { decision: "REJECT", note: "Out of stock until November" });
+    expect(await db.notification.findFirst({ where: { userId: rep.id } })).toMatchObject({ title: `Proforma request #${p.number} rejected` });
+
+    const o = await createOrder(rep, { contactId: client.id, lines: [{ productId: gloves.id, quantity: 1 }] });
+    const other = await makeUser("STAFF");
+    expect(await listOrders(other)).toHaveLength(0);
+    await expect(cancelOrder(other, o.id)).rejects.toThrow(/isn't visible/);
+    await cancelOrder(rep, o.id);
+    await expect(reviewOrder(acc, o.id, { decision: "APPROVE" })).rejects.toThrow(/already cancelled/);
+    expect((await listOrders(acc, { status: ["SUBMITTED"] })).length).toBe(0);
+  });
+
+  it("refuses empty and invalid orders", async () => {
+    const { rep, client, gloves } = await setup();
+    await expect(createOrder(rep, { contactId: client.id, lines: [] })).rejects.toThrow(/at least one/);
+    await expect(createOrder(rep, { contactId: client.id, lines: [{ productId: gloves.id, quantity: 1.5 }] })).rejects.toThrow(/whole numbers/);
+    await expect(createOrder(rep, { contactId: client.id, lines: [{ description: "", quantity: 1 }] })).rejects.toThrow(/Describe/);
+  });
+});

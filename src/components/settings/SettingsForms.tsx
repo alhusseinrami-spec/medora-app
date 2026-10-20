@@ -73,7 +73,7 @@ type U = { id: string; name: string; email: string; role: string; disabled: bool
 export function TeamManager({ users, me, isOwner }: { users: U[]; me: string; isOwner: boolean }) {
   const [f, setF] = useState({ name: "", email: "", role: "STAFF", password: "" });
   const { r, pending, run } = useAct();
-  const roles = isOwner ? ["ADMIN", "MANAGER", "STAFF", "VIEWER"] : ["MANAGER", "STAFF", "VIEWER"];
+  const roles = isOwner ? ["ADMIN", "MANAGER", "ACCOUNTANT", "STAFF", "VIEWER"] : ["MANAGER", "ACCOUNTANT", "STAFF", "VIEWER"];
   return (
     <>
       <div className="overflow-x-auto border border-line rounded-xl mb-4">

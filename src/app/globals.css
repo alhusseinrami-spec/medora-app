@@ -97,6 +97,7 @@ body { font-family: var(--font-sans); font-size: 15px; line-height: 1.5; -webkit
   .chip-danger { background: var(--danger-soft); color: var(--danger); }
   .chip-warn { background: var(--warn-soft); color: var(--warn); }
   .chip-ok { background: var(--ok-soft); color: var(--ok); }
+  .chip-blue { background: color-mix(in srgb, #2563eb 14%, var(--surface)); color: color-mix(in srgb, #2563eb 80%, var(--text)); }
   .row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--border); }
   .row:first-child { border-top: 0; }
   .empty { padding: 18px 16px; color: var(--muted); font-size: 14px; }

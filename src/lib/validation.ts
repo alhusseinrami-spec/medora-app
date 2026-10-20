@@ -72,3 +72,63 @@ export type ReminderInput = z.infer<typeof ReminderInput>;
 export function firstError(e: z.ZodError): string {
   return e.issues[0]?.message ?? "Some fields are not valid.";
 }
+
+// ---- Field sales ----
+
+const lat = z.number().min(-90).max(90);
+const lng = z.number().min(-180).max(180);
+export const GpsFix = z.object({ lat, lng, accuracy: z.number().min(0).max(100000) });
+export type GpsFix = z.infer<typeof GpsFix>;
+
+const clientFields = {
+  name: text(200).min(1, "Add the client's name."),
+  placeType: text(60),
+  phone: text(50),
+  whatsapp: text(50),
+  email: contactFields.email,
+  address: text(300),
+  notes: text(5000),
+  stage: z.enum(["LEAD", "PROSPECT", "CUSTOMER", "CHURNED"]),
+};
+export const ClientInput = z.object({
+  ...clientFields,
+  placeType: clientFields.placeType.default(""), phone: clientFields.phone.default(""), whatsapp: clientFields.whatsapp.default(""),
+  email: clientFields.email.default(""), address: clientFields.address.default(""), notes: clientFields.notes.default(""),
+  stage: clientFields.stage.default("LEAD"),
+  // Where the rep is standing when they add the client. Optional so a client can be added from the office.
+  location: GpsFix.nullable().optional(),
+});
+export const ClientPatch = z.object(clientFields).partial();
+
+export const OrderInput = z.object({
+  contactId: z.string().min(1),
+  kind: z.enum(["ORDER", "PROFORMA"]).default("ORDER"),
+  notes: text(2000).default(""),
+  visitId: z.string().nullable().optional(),
+  lines: z.array(z.object({
+    productId: z.string().nullable().optional(),
+    description: text(200).default(""),
+    quantity: z.number().int("Quantities are whole numbers.").min(1, "Quantities start at 1.").max(1_000_000),
+    // Price the rep proposes; left out means the catalogue price.
+    unitPrice: z.number().min(0).max(10_000_000).nullable().optional(),
+  })).min(1, "Add at least one item.").max(100),
+});
+export type OrderInput = z.infer<typeof OrderInput>;
+
+export const OrderReview = z.object({
+  decision: z.enum(["APPROVE", "REJECT", "SAVE"]),
+  note: text(2000).default(""),
+  lines: z.array(z.object({
+    id: z.string().min(1),
+    quantity: z.number().int("Quantities are whole numbers.").min(0).max(1_000_000), // 0 removes the line
+    unitPrice: z.number().min(0).max(10_000_000),
+  })).max(100).default([]),
+});
+
+export const ProductInput = z.object({
+  sku: text(60).min(1, "Add a product code."),
+  name: text(200).min(1, "Add a product name."),
+  unit: text(30).default("unit"),
+  price: z.number().min(0, "Prices can't be negative.").max(10_000_000),
+  active: z.boolean().default(true),
+});
