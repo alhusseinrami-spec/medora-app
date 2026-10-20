@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { base32Decode, base32Encode, hotp, otpauthUrl, totp, verifyTotp } from "@/lib/totp";
-import { decrypt, encrypt, safeEqual, sha256 } from "@/lib/crypto";
+import { decrypt, encrypt, KeyMismatchError, safeEqual, sha256 } from "@/lib/crypto";
 import { can, mfaRequired } from "@/lib/rbac";
 
 // RFC 6238 appendix B, SHA-1 secret "12345678901234567890".
@@ -39,6 +39,18 @@ describe("encryption at rest", () => {
     const parts = encrypt("secret").split(".");
     parts[3] = Buffer.from("tampered").toString("base64url");
     expect(() => decrypt(parts.join("."))).toThrow();
+  });
+  it("ignores stray spaces around the key, still reads secrets from before, and names a changed key", () => {
+    const original = process.env.APP_ENCRYPTION_KEY!;
+    try {
+      process.env.APP_ENCRYPTION_KEY = ` ${original}\n`;
+      const padded = encrypt("secret");
+      expect(decrypt(padded)).toBe("secret");
+      process.env.APP_ENCRYPTION_KEY = original;
+      expect(decrypt(padded)).toBe("secret"); // same trimmed key
+      process.env.APP_ENCRYPTION_KEY = "a-completely-different-key-0123456789abcdef";
+      expect(() => decrypt(padded)).toThrow(KeyMismatchError);
+    } finally { process.env.APP_ENCRYPTION_KEY = original; }
   });
   it("hashes and compares in constant time", () => {
     expect(sha256("x")).toHaveLength(64);
