@@ -4,12 +4,24 @@ import QRCode from "qrcode";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/audit";
 import { clientInfo, createSession, endSession, getAuth, hashPassword, isLockedOut, passwordProblem, verifyPassword } from "@/lib/auth";
-import { decrypt, encrypt } from "@/lib/crypto";
+import { decrypt, encrypt, KeyMismatchError } from "@/lib/crypto";
+import { log } from "@/lib/log";
 import { newTotpSecret, otpauthUrl, verifyTotp } from "@/lib/totp";
 
 // `values` refills fields after a failed attempt (React resets forms once an action finishes).
 export type FormState = { error?: string; ok?: string; values?: Record<string, string> } | undefined;
 const str = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
+
+// Shown instead of a crash when APP_ENCRYPTION_KEY was changed after two-step sign-in was set up.
+const KEY_CHANGED = "Your code can't be checked because the server's encryption key (APP_ENCRYPTION_KEY) changed after you set up two-step sign-in. Put the old value back in the hosting settings, or reset two-step sign-in for this account.";
+function readSecret(enc: string, userId: string): string | null {
+  try { return decrypt(enc); }
+  catch (e) {
+    if (!(e instanceof KeyMismatchError)) throw e;
+    log.error("auth.mfa_key_mismatch", { userId });
+    return null;
+  }
+}
 
 // First run only: creates the owner account. Disabled as soon as any user exists.
 export async function setupOwner(_: FormState, f: FormData): Promise<FormState> {
@@ -48,7 +60,9 @@ export async function verifyMfa(_: FormState, f: FormData): Promise<FormState> {
   if (!user.mfaEnabled || !user.mfaSecretEnc) redirect("/");
   const email = `mfa:${user.email}`;
   if (await isLockedOut(email)) return { error: "Too many wrong codes. Try again in 15 minutes." };
-  const ok = verifyTotp(decrypt(user.mfaSecretEnc), str(f, "code"));
+  const secret = readSecret(user.mfaSecretEnc, user.id);
+  if (!secret) return { error: KEY_CHANGED };
+  const ok = verifyTotp(secret, str(f, "code"));
   await db.loginAttempt.create({ data: { email, ip: (await clientInfo()).ip, ok } });
   if (!ok) return { error: "That code isn't right. Use the current code from your authenticator app." };
   await db.session.update({ where: { id: session.id }, data: { mfaPassed: true } });
@@ -62,7 +76,8 @@ export async function mfaEnrolment() {
   if (!auth) redirect("/login");
   const { user } = auth;
   if (user.mfaEnabled) return null;
-  let secret = user.mfaSecretEnc ? decrypt(user.mfaSecretEnc) : null;
+  // A secret that no longer decrypts was never confirmed, so a fresh one replaces it.
+  let secret = user.mfaSecretEnc ? readSecret(user.mfaSecretEnc, user.id) : null;
   if (!secret) {
     secret = newTotpSecret();
     await db.user.update({ where: { id: user.id }, data: { mfaSecretEnc: encrypt(secret) } });
@@ -76,7 +91,9 @@ export async function confirmMfa(_: FormState, f: FormData): Promise<FormState> 
   if (!auth) redirect("/login");
   const { user, session } = auth;
   if (!user.mfaSecretEnc) return { error: "Reload the page to get a new code." };
-  if (!verifyTotp(decrypt(user.mfaSecretEnc), str(f, "code"))) return { error: "That code isn't right. Check the time on your phone and try the newest code." };
+  const pending = readSecret(user.mfaSecretEnc, user.id);
+  if (!pending) return { error: "Reload the page to get a new code." };
+  if (!verifyTotp(pending, str(f, "code"))) return { error: "That code isn't right. Check the time on your phone and try the newest code." };
   await db.user.update({ where: { id: user.id }, data: { mfaEnabled: true } });
   await db.session.update({ where: { id: session.id }, data: { mfaPassed: true } });
   await audit({ actorId: user.id, action: "auth.mfa_enabled", entity: "user", entityId: user.id });

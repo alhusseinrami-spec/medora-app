@@ -161,7 +161,7 @@ export async function createUserAction(raw: { name: string; email: string; role:
   const { user } = await requireAuth({ permission: "users.manage" });
   const email = String(raw.email ?? "").trim().toLowerCase(), name = String(raw.name ?? "").trim();
   if (!name || !/^\S+@\S+\.\S+$/.test(email)) return { error: "Add a name and a valid email." };
-  if (!["ADMIN", "MANAGER", "STAFF", "VIEWER"].includes(raw.role)) return { error: "Pick a role." };
+  if (!["ADMIN", "MANAGER", "ACCOUNTANT", "STAFF", "VIEWER"].includes(raw.role)) return { error: "Pick a role." };
   if (raw.role === "ADMIN" && user.role !== "OWNER") return { error: "Only the owner can create admins." };
   const bad = passwordProblem(raw.password);
   if (bad) return { error: `Temporary password: ${bad}` };
@@ -179,7 +179,7 @@ export async function updateUserAction(id: string, raw: { role?: Role; disabled?
   if (target.role === "OWNER" || id === user.id) return { error: "The owner account and your own account can't be changed here." };
   if ((raw.role === "ADMIN" || target.role === "ADMIN") && user.role !== "OWNER") return { error: "Only the owner can change admins." };
   const data: Prisma.UserUpdateInput = {};
-  if (raw.role) { if (!["ADMIN", "MANAGER", "STAFF", "VIEWER"].includes(raw.role)) return { error: "Pick a role." }; data.role = raw.role; }
+  if (raw.role) { if (!["ADMIN", "MANAGER", "ACCOUNTANT", "STAFF", "VIEWER"].includes(raw.role)) return { error: "Pick a role." }; data.role = raw.role; }
   if (raw.disabled !== undefined) data.disabledAt = raw.disabled ? new Date() : null;
   if (raw.password) { const bad = passwordProblem(raw.password); if (bad) return { error: bad }; data.passwordHash = await hashPassword(raw.password); data.mfaEnabled = false; data.mfaSecretEnc = null; }
   await db.user.update({ where: { id }, data });

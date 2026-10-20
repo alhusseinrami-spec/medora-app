@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { NAV } from "./nav";
 import { CommandPalette } from "./CommandPalette";
@@ -10,14 +10,16 @@ import { ChatPanel } from "@/components/chat/ChatPanel";
 import { ThemeToggle } from "./ThemeToggle";
 import { logout } from "@/app/(auth)/actions";
 
-type Props = { user: { name: string; role: string; email: string }; approvals: number; aiReady: boolean; children: React.ReactNode };
+type Props = { user: { name: string; role: string; email: string }; approvals: number; orders: number; perms: string[]; aiReady: boolean; children: React.ReactNode };
 
 const store = {
   get: (k: string) => { try { return localStorage.getItem(k); } catch { return null; } },
   set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch {} },
 };
 
-export function AppShell({ user, approvals, aiReady, children }: Props) {
+export function AppShell({ user, approvals, orders, perms, aiReady, children }: Props) {
+  const permKey = perms.join(",");
+  const nav = useMemo(() => NAV.filter((n) => !n.perm || permKey.split(",").includes(n.perm)), [permKey]);
   const path = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
@@ -43,11 +45,11 @@ export function AppShell({ user, approvals, aiReady, children }: Props) {
     if (e.key === "?") { setHelp(true); return; }
     if (e.key === "g") { gPressed.current = Date.now(); return; }
     if (Date.now() - gPressed.current < 1200) {
-      const hit = NAV.find((n) => n.key === `g ${e.key}`);
+      const hit = nav.find((n) => n.key === `g ${e.key}`);
       if (hit) { e.preventDefault(); router.push(hit.href); }
       gPressed.current = 0;
     }
-  }, [router]);
+  }, [router, nav]);
   useEffect(() => { window.addEventListener("keydown", onKey); return () => window.removeEventListener("keydown", onKey); }, [onKey]);
 
   const active = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
@@ -59,13 +61,14 @@ export function AppShell({ user, approvals, aiReady, children }: Props) {
         {(!collapsed || mobile) && <span className="font-bold text-white leading-tight">Medora<br /><span className="text-xs font-medium text-white/60">Command Center</span></span>}
       </div>
       <ul className="flex-1 px-2 py-2 space-y-0.5">
-        {NAV.map((n) => (
+        {nav.map((n) => (
           <li key={n.href}>
             <Link href={n.href} title={collapsed && !mobile ? n.label : undefined} aria-current={active(n.href) ? "page" : undefined}
               className={`flex items-center gap-3 rounded-lg px-3 h-10 text-[14px] font-medium transition-colors ${active(n.href) ? "bg-white/12 text-white" : "text-white/70 hover:bg-white/8 hover:text-white"} ${collapsed && !mobile ? "justify-center px-0" : ""}`}>
               <Icon name={n.icon} />
               {(!collapsed || mobile) && <span className="flex-1">{n.label}</span>}
               {n.href === "/approvals" && approvals > 0 && (!collapsed || mobile) && <span className="chip !bg-teal !text-white" aria-label={`${approvals} waiting`}>{approvals}</span>}
+              {n.href === "/sales/orders" && orders > 0 && (!collapsed || mobile) && <span className="chip !bg-teal !text-white" aria-label={`${orders} waiting`}>{orders}</span>}
             </Link>
           </li>
         ))}
@@ -140,7 +143,7 @@ export function AppShell({ user, approvals, aiReady, children }: Props) {
             <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
               <dt><kbd>Ctrl K</kbd> or <kbd>/</kbd></dt><dd>Search and commands</dd>
               <dt><kbd>Ctrl J</kbd></dt><dd>Open or close the assistant</dd>
-              {NAV.map((n) => <Fragment key={n.href}><dt><kbd>{n.key}</kbd></dt><dd>Go to {n.label}</dd></Fragment>)}
+              {nav.map((n) => <Fragment key={n.href}><dt><kbd>{n.key}</kbd></dt><dd>Go to {n.label}</dd></Fragment>)}
               <dt><kbd>?</kbd></dt><dd>This list</dd>
             </dl>
           </div>

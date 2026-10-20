@@ -20,6 +20,22 @@ Nothing in this app is simulated. Services that arrive in later phases (Gmail, G
 | Settings | Profile and time zone, password, signed-in devices, the assistant's memory, connections, team and roles, audit log, data export, retention period, delete my data |
 | Everywhere | Light and dark themes, phone and desktop layouts, keyboard shortcuts (press ?) |
 
+## Field sales
+
+Sales reps open **/field** on their phone (add it to the home screen). It has four tabs: **Today** (verified visits, approved sales this month, Log visit, today's route with Optimize order), **Map** (every client as a coloured pin by stage, tap for Check in or Open), **Pipeline** (Lead, Prospect, Customer, Churned, overdue follow-ups first) and **Orders**.
+
+| Step | What happens |
+|---|---|
+| Add a client | The + button saves the client with the phone's GPS position. Clients are ordinary contacts with a stage, so they also appear under Contacts |
+| Check in | Records time and GPS. **Verified** only when the phone was within 150 m of the client's saved pin with a fix better than 100 m. Reps can't move a saved pin; managers can |
+| Take order / Request proforma | Picks products from the catalogue (price fills in) or free-text items. Every Owner and Accountant gets a notification |
+| Accounting reviews | **Orders** in the Command Center: change quantities and prices (0 removes a line), save, approve or reject with a note. The rep is notified and sees what was changed |
+| Follow-ups | Tomorrow, next week or any date; the reminder lands in the rep's bell and the client goes on Today's route |
+
+Approved orders and proforma requests are then sent on to the accounting system: set `ACCOUNTING_WEBHOOK_URL` and `ACCOUNTING_WEBHOOK_SECRET` and each one is POSTed as JSON (client, rep, approved lines next to what the rep asked for, total), signed with `X-Medora-Signature: sha256=<HMAC of the body>` and carrying `Idempotency-Key: <order id>`. Failed sends retry with growing gaps for about a day, then accounting is notified and can press Send now. Until the URL is set, approved orders wait and go out once it is. The order page shows where each one stands.
+
+Managers see **Field visits**: each rep's day with verified and unverified check-ins and orders. Accounting manages **Products and prices**. New role **Accountant** (two-step sign-in required) reviews orders; reps use the **Staff** role. The map uses OpenStreetMap tiles, the only outside resource the app loads.
+
 ## How the assistant is kept safe
 
 - It can only call the tools in `src/lib/ai/tools.ts`. None of them sends anything outside the app, pays, changes financial data or commits to a purchase.
@@ -35,8 +51,9 @@ Nothing in this app is simulated. Services that arrive in later phases (Gmail, G
 |---|---|
 | Owner | Everything, including approving any item and deleting any record |
 | Admin | Manage users, view the audit log, company settings (not approvals) |
-| Manager | See team tasks, assign work, decide approvals |
-| Staff | Their own workspace |
+| Manager | See team tasks, assign work, decide approvals, see every rep's field visits |
+| Staff | Their own workspace, and the field sales app for their own clients |
+| Accountant | Review, edit, approve or reject orders and proformas; manage products and prices |
 | Viewer | Sign in and look, no changes |
 
 ## Run it locally

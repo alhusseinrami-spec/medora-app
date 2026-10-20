@@ -19,4 +19,5 @@ async function main() {
 }
 
 for (const sig of ["SIGINT", "SIGTERM"]) process.on(sig, () => { stopping = true; log.info("worker.stopping"); });
-if (process.argv[1]?.includes("worker")) main();
+// Only when run directly: test runners' own "worker" processes must not start this loop.
+if (/worker[\/\\]index\.[cm]?[tj]s$/.test(process.argv[1] ?? "")) main();

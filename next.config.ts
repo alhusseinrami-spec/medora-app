@@ -4,16 +4,17 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  { key: "Permissions-Policy", value: "camera=(), geolocation=(), microphone=(self)" },
+  { key: "Permissions-Policy", value: "camera=(), geolocation=(self), microphone=(self)" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" },
   {
     key: "Content-Security-Policy",
-    // Everything loads from this app only. Inline scripts are Next's own bootstrap and the theme script.
+    // Everything loads from this app only, except OpenStreetMap tiles. Inline scripts are Next's own bootstrap and the theme script.
     value: [
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""}`,
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob:",
+      // Map tiles for the field sales map.
+      "img-src 'self' data: blob: https://tile.openstreetmap.org",
       "font-src 'self'",
       "connect-src 'self'",
       "frame-ancestors 'none'",

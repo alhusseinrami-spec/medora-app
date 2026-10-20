@@ -1,9 +1,10 @@
 // Scheduled jobs, shared by the Vercel Cron route (/api/cron/tick) and the standalone worker (`npm run worker`).
-// Due reminders become notifications; once a day, data past the retention period is removed.
+// Due reminders become notifications; approved orders go to the accounting system; once a day, data past the retention period is removed.
 import { db } from "./db";
 import { log } from "./log";
 import { audit } from "./audit";
 import { fireDueReminders } from "./services/reminders";
+import { pushApprovedOrders } from "./services/accountingSync";
 
 const PRUNE_EVERY_MS = 24 * 3600_000;
 
@@ -39,6 +40,8 @@ export async function pruneByRetention(now = new Date()) {
 // reminders are claimed row by row, and pruning only deletes what is already past retention.
 export async function runJobs(now = new Date()) {
   const fired = await fireDueReminders(now);
+  // A failing accounting system must not stop reminders or clean-up.
+  const synced = await pushApprovedOrders(now).catch((e) => { log.error("accounting.sync_pass_failed", { error: String(e) }); return { sent: 0, failed: 0 }; });
   // Heartbeat so /api/health can show scheduled jobs are running (kept out of the audit log to avoid noise).
   await setSystem("worker.heartbeat", now.toISOString());
   const last = await getSystem("worker.lastPrune");
@@ -48,5 +51,5 @@ export async function runJobs(now = new Date()) {
     await pruneByRetention(now);
     pruned = true;
   }
-  return { fired, pruned };
+  return { fired, pruned, synced };
 }

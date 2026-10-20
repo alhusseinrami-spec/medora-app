@@ -3,7 +3,7 @@ import { db } from "@/lib/db";
 import { createTask } from "@/lib/services/tasks";
 import { approveApproval, approvalCounts, proposeApproval, rejectApproval } from "@/lib/services/approvals";
 import { runChat } from "@/lib/ai/chat";
-import { pruneByRetention } from "../../worker/index";
+import { pruneByRetention } from "@/lib/jobs";
 import { makeUser, reset } from "./helpers";
 
 beforeEach(reset);
