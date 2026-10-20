@@ -7,6 +7,8 @@ import { fmtDateTime, TZ_DEFAULT } from "@/lib/time";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ORDER_STATUS } from "@/components/field/orderStatus";
 import { OrderReview } from "@/components/sales/OrderReview";
+import { SyncStatus } from "@/components/sales/SyncStatus";
+import { accountingConnected } from "@/lib/services/accountingSync";
 
 export const metadata = { title: "Review order" };
 
@@ -28,6 +30,11 @@ export default async function OrderReviewPage({ params }: PageProps<"/sales/orde
         <div className="card p-3"><div className="text-muted text-xs">Taken during a visit</div><div className="font-medium">{o.visit ? `${fmtDateTime(o.visit.at, tz)}${o.visit.verified ? " · verified" : " · not verified"}` : "No, sent without a check-in"}</div></div>
         <div className="card p-3"><div className="text-muted text-xs">Rep&apos;s notes</div><div>{o.notes || "None"}</div></div>
       </div>
+      {o.status === "APPROVED" && o.syncStatus && (
+        <div className="mb-4">
+          <SyncStatus id={o.id} status={o.syncStatus} connected={accountingConnected()} syncedAt={o.syncedAt ? fmtDateTime(o.syncedAt, tz) : null} error={o.syncError} attempts={o.syncAttempts} />
+        </div>
+      )}
       <OrderReview
         id={o.id} open={o.status === "SUBMITTED"} note={o.reviewNote}
         reviewed={o.reviewedBy && o.reviewedAt ? `${o.reviewedBy.name}, ${fmtDateTime(o.reviewedAt, tz)}` : null}

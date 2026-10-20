@@ -32,6 +32,8 @@ Sales reps open **/field** on their phone (add it to the home screen). It has fo
 | Accounting reviews | **Orders** in the Command Center: change quantities and prices (0 removes a line), save, approve or reject with a note. The rep is notified and sees what was changed |
 | Follow-ups | Tomorrow, next week or any date; the reminder lands in the rep's bell and the client goes on Today's route |
 
+Approved orders and proforma requests are then sent on to the accounting system: set `ACCOUNTING_WEBHOOK_URL` and `ACCOUNTING_WEBHOOK_SECRET` and each one is POSTed as JSON (client, rep, approved lines next to what the rep asked for, total), signed with `X-Medora-Signature: sha256=<HMAC of the body>` and carrying `Idempotency-Key: <order id>`. Failed sends retry with growing gaps for about a day, then accounting is notified and can press Send now. Until the URL is set, approved orders wait and go out once it is. The order page shows where each one stands.
+
 Managers see **Field visits**: each rep's day with verified and unverified check-ins and orders. Accounting manages **Products and prices**. New role **Accountant** (two-step sign-in required) reviews orders; reps use the **Staff** role. The map uses OpenStreetMap tiles, the only outside resource the app loads.
 
 ## How the assistant is kept safe

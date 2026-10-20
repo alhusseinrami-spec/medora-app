@@ -313,7 +313,9 @@ export async function reviewOrder(a: Actor, id: string, raw: unknown) {
   const updated = await db.$transaction(async (tx) => {
     const n = await tx.salesOrder.updateMany({
       where: { id, status: "SUBMITTED" },
-      data: { status, total, edited: o.edited || edited, reviewNote: r.note || o.reviewNote, ...(status !== "SUBMITTED" ? { reviewedById: a.id, reviewedAt: new Date() } : {}) },
+      data: { status, total, edited: o.edited || edited, reviewNote: r.note || o.reviewNote, ...(status !== "SUBMITTED" ? { reviewedById: a.id, reviewedAt: new Date() } : {}),
+        // Approved orders and proformas queue for the accounting system (lib/services/accountingSync.ts).
+        ...(status === "APPROVED" ? { syncStatus: "pending", nextSyncAt: new Date(), syncAttempts: 0, syncError: "" } : {}) },
     });
     if (n.count === 0) throw new UserError("Someone else just reviewed this. Reload to see their decision.");
     for (const l of after) {

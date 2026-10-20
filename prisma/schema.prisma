@@ -439,11 +439,18 @@ model SalesOrder {
   reviewedAt   DateTime?
   reviewNote   String      @default("")
   lines        SalesOrderLine[]
+  // Hand-off of approved orders to the external accounting system: "" (not queued), pending, sent, failed.
+  syncStatus   String      @default("")
+  syncAttempts Int         @default(0)
+  nextSyncAt   DateTime?
+  syncedAt     DateTime?
+  syncError    String      @default("")
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
   @@index([status, createdAt])
   @@index([repId, createdAt])
+  @@index([syncStatus, nextSyncAt])
   @@map("sales_orders")
 }
 

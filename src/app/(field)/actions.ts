@@ -5,6 +5,7 @@ import { log } from "@/lib/log";
 import { fmtDistance } from "@/lib/geo";
 import type { Permission } from "@/lib/rbac";
 import { UserError } from "@/lib/services/errors";
+import { retrySync } from "@/lib/services/accountingSync";
 import {
   cancelOrder, checkIn, checkInNearest, createClient, createOrder, relocateClient, reviewOrder, saveProduct, setFollowUp, updateClient,
 } from "@/lib/services/sales";
@@ -66,3 +67,4 @@ export const reviewOrderAction = async (id: string, raw: unknown) => act("sales.
   return { ok: o.status === "APPROVED" ? "Approved. The rep has been told." : o.status === "REJECTED" ? "Rejected. The rep has been told." : "Changes saved" };
 });
 export const saveProductAction = async (raw: unknown, id?: string) => act("sales.review", ["/sales"], async (u) => { const p = await saveProduct(u, raw, id); return { id: p.id, ok: "Saved" }; });
+export const retrySyncAction = async (id: string) => act("sales.review", ["/sales"], async (u) => { await retrySync(u, id); return { ok: "Queued. It will be sent within a minute." }; });
