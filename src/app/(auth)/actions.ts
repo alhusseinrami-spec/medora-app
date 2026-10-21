@@ -4,7 +4,7 @@ import QRCode from "qrcode";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/audit";
 import { clientInfo, createSession, endSession, getAuth, hashPassword, isLockedOut, passwordProblem, verifyPassword } from "@/lib/auth";
-import { decrypt, encrypt, KeyMismatchError } from "@/lib/crypto";
+import { decrypt, encrypt, encryptionKeyProblem, KeyMismatchError } from "@/lib/crypto";
 import { log } from "@/lib/log";
 import { newTotpSecret, otpauthUrl, verifyTotp } from "@/lib/totp";
 
@@ -14,6 +14,7 @@ const str = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 
 // Shown instead of a crash when APP_ENCRYPTION_KEY was changed after two-step sign-in was set up.
 const KEY_CHANGED = "Your code can't be checked because the server's encryption key (APP_ENCRYPTION_KEY) changed after you set up two-step sign-in. Put the old value back in the hosting settings, or reset two-step sign-in for this account.";
+const keyMissing = (problem: string) => `Two-step sign-in can't work right now: ${problem} Add it in Vercel under Settings → Environment Variables (for Production and Preview), then redeploy.`;
 function readSecret(enc: string, userId: string): string | null {
   try { return decrypt(enc); }
   catch (e) {
@@ -60,6 +61,8 @@ export async function verifyMfa(_: FormState, f: FormData): Promise<FormState> {
   if (!user.mfaEnabled || !user.mfaSecretEnc) redirect("/");
   const email = `mfa:${user.email}`;
   if (await isLockedOut(email)) return { error: "Too many wrong codes. Try again in 15 minutes." };
+  const problem = encryptionKeyProblem();
+  if (problem) { log.error("auth.encryption_key", { problem }); return { error: keyMissing(problem) }; }
   const secret = readSecret(user.mfaSecretEnc, user.id);
   if (!secret) return { error: KEY_CHANGED };
   const ok = verifyTotp(secret, str(f, "code"));
