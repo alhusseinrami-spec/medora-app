@@ -3,9 +3,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { importProductsAction } from "@/app/(field)/actions";
-import { FIELDS, findHeader, guessMapping, readFile, toRows, type Cell, type Mapping } from "./importSheet";
+import { FIELDS, findHeader, guessMapping, readFile, stockLooksUnused, toRows, type Cell, type Mapping } from "./importSheet";
 
-type Sheet = { file: string; rows: Cell[][]; header: number; mapping: Mapping };
+type Sheet = { file: string; rows: Cell[][]; header: number; mapping: Mapping; zeroStock: boolean };
 
 // Load the item list exported from the accounting system. Codes already here are updated, new ones added.
 export function ProductImport() {
@@ -25,7 +25,10 @@ export function ProductImport() {
       const rows = await readFile(f);
       if (rows.length < 2) return setRes({ error: "That file has no item rows." });
       const header = findHeader(rows);
-      setSheet({ file: f.name, rows, header, mapping: guessMapping(rows[header]) });
+      const mapping = guessMapping(rows[header]);
+      const zeroStock = stockLooksUnused(rows, header, mapping.stock);
+      if (zeroStock) mapping.stock = null;
+      setSheet({ file: f.name, rows, header, mapping, zeroStock });
     } catch (err) {
       setRes({ error: err instanceof Error && /xls|save it/.test(err.message) ? err.message : "Couldn't read that file. Use the .xlsx or .csv export from your accounting system." });
     }
@@ -33,6 +36,7 @@ export function ProductImport() {
 
   const missing = sheet ? FIELDS.filter((f) => f.required && sheet.mapping[f.key] == null) : [];
   const items = sheet ? sheet.rows.length - sheet.header - 1 : 0;
+  const unpriced = sheet && sheet.mapping.price != null ? sheet.rows.slice(sheet.header + 1).filter((r) => String(r[sheet.mapping.price!] ?? "").trim() === "").length : 0;
 
   async function run() {
     if (!sheet) return;
@@ -54,7 +58,7 @@ export function ProductImport() {
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="font-semibold">Import items from your accounting system</h2>
-          <p className="text-sm text-ink-2">Export the item or price list as Excel (.xlsx) or CSV. It needs a code, name and price for each item; unit, stock and low-stock level are used if present. Codes already here are updated, new codes are added.</p>
+          <p className="text-sm text-ink-2">Export the item or price list as Excel (.xlsx) or CSV. It needs a code and name for each item; price, unit, stock and low-stock level are used if present. Codes already here are updated, new codes are added.</p>
         </div>
         <button className="btn btn-ghost btn-sm" onClick={() => { setOpen(false); setSheet(null); setRes(null); }} aria-label="Close"><Icon name="close" /></button>
       </div>
@@ -84,6 +88,8 @@ export function ProductImport() {
             </table>
             {items > preview.length && <p className="text-xs text-muted mt-1">First {preview.length} of {items} rows shown.</p>}
           </div>
+          {sheet.zeroStock && <p className="text-sm text-ink-2">Every item in this file has a stock of 0, so the stock column looks unused and isn&apos;t imported. Otherwise every product would show as out of stock. Choose the stock column above if the zeros are real.</p>}
+          {unpriced > 0 && <p className="text-sm text-ink-2">{unpriced} of {items} items have no price. They are still added, and reps see &ldquo;Price from accounting&rdquo;; you set the price when you review the order.</p>}
           <label className="text-sm flex items-center gap-2"><input type="checkbox" checked={hideMissing} onChange={(e) => setHideMissing(e.target.checked)} />Hide products that aren&apos;t in this file, so reps only see the current list</label>
           {missing.length > 0 && <p className="err">Choose the column for {missing.map((f) => f.label.toLowerCase()).join(" and ")}.</p>}
           <button className="btn btn-primary" disabled={busy || missing.length > 0} onClick={run}>{busy ? "Importing…" : `Import ${items} item${items === 1 ? "" : "s"}`}</button>

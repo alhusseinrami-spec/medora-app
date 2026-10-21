@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { saveProductAction } from "@/app/(field)/actions";
-import { isLowStock, stockLabel } from "@/components/field/gps";
+import { isLowStock, priceInput, stockLabel, usd } from "@/components/field/gps";
 import { ProductImport } from "./ProductImport";
 
 type P = { id: string; sku: string; name: string; unit: string; price: number; active: boolean; stock: number | null; minStock: number | null };
@@ -52,9 +52,9 @@ export function ProductsEditor({ initial }: { initial: P[] }) {
                   <td className="p-3 font-mono text-xs">{p.sku}</td>
                   <td className="p-3">{p.name}{!p.active && <span className="chip ml-2">Hidden</span>}</td>
                   <td className="p-3">{p.unit}</td>
-                  <td className="p-3 text-right">${p.price.toFixed(2)}</td>
+                  <td className="p-3 text-right">{p.price ? usd(p.price) : <span className="text-muted">No price</span>}</td>
                   <td className={`p-3 text-right whitespace-nowrap ${isLowStock(p) ? "text-danger font-semibold" : ""}`}>{p.stock == null ? <span className="text-muted">–</span> : stockLabel(p)?.replace(" in stock", "")}{p.minStock != null && <span className="block text-xs text-muted font-normal">low at {p.minStock}</span>}</td>
-                  <td className="p-3 text-right"><button className="btn btn-sm" onClick={() => { setEdit(p.id); setD({ sku: p.sku, name: p.name, unit: p.unit, price: p.price.toFixed(2), stock: p.stock == null ? "" : String(p.stock), minStock: p.minStock == null ? "" : String(p.minStock), active: p.active }); setRes(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Edit</button></td>
+                  <td className="p-3 text-right"><button className="btn btn-sm" onClick={() => { setEdit(p.id); setD({ sku: p.sku, name: p.name, unit: p.unit, price: p.price ? priceInput(p.price) : "", stock: p.stock == null ? "" : String(p.stock), minStock: p.minStock == null ? "" : String(p.minStock), active: p.active }); setRes(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Edit</button></td>
                 </tr>
               ))}
             </tbody>
