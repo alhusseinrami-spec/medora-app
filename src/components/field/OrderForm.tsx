@@ -6,7 +6,7 @@ import { createOrderAction } from "@/app/(field)/actions";
 import { usd } from "./gps";
 import { ProductPicker, type Product } from "./ProductPicker";
 
-type Line = { key: string; productId: string | null; description: string; unit: string; quantity: number; unitPrice: number; listPrice: number | null };
+type Line = { key: string; productId: string | null; description: string; unit: string; quantity: number; unitPrice: number; listPrice: number | null; stock: number | null };
 
 let seq = 0;
 
@@ -27,10 +27,10 @@ export function OrderForm({ clientId, clientName, visitId, initialKind, products
     setLines((ls) => {
       const i = ls.findIndex((l) => l.productId === p.id);
       if (i >= 0) return ls.map((l, j) => (j === i ? { ...l, quantity: l.quantity + 1 } : l));
-      return [...ls, { key: `l${++seq}`, productId: p.id, description: p.name, unit: p.unit, quantity: 1, unitPrice: p.price, listPrice: p.price }];
+      return [...ls, { key: `l${++seq}`, productId: p.id, description: p.name, unit: p.unit, quantity: 1, unitPrice: p.price, listPrice: p.price, stock: p.stock }];
     });
   };
-  const addFree = (description: string) => setLines((ls) => [...ls, { key: `l${++seq}`, productId: null, description, unit: "unit", quantity: 1, unitPrice: 0, listPrice: null }]);
+  const addFree = (description: string) => setLines((ls) => [...ls, { key: `l${++seq}`, productId: null, description, unit: "unit", quantity: 1, unitPrice: 0, listPrice: null, stock: null }]);
   const patch = (key: string, p: Partial<Line>) => setLines((ls) => ls.map((l) => (l.key === key ? { ...l, ...p } : l)));
   const remove = (key: string) => setLines((ls) => ls.filter((l) => l.key !== key));
 
@@ -68,6 +68,7 @@ export function OrderForm({ clientId, clientName, visitId, initialKind, products
                 {l.productId ? <div className="font-medium">{l.description}</div>
                   : <input className="input !min-h-[34px]" value={l.description} onChange={(e) => patch(l.key, { description: e.target.value })} aria-label="Item description" placeholder="Item description" />}
                 <div className="text-xs text-muted mt-0.5">{usd(l.quantity * l.unitPrice)}{l.listPrice != null && l.unitPrice !== l.listPrice ? ` · list ${usd(l.listPrice)}` : ""}</div>
+                {l.stock != null && l.quantity > l.stock && <div className="text-xs text-danger font-semibold mt-0.5">{l.stock <= 0 ? "Out of stock" : `Only ${l.stock.toLocaleString("en-US")} in stock`}</div>}
               </div>
               <button className="btn btn-ghost btn-sm" onClick={() => remove(l.key)} aria-label={`Remove ${l.description || "item"}`}><Icon name="trash" size={16} /></button>
               <div className="w-full flex items-center gap-2 mt-2">

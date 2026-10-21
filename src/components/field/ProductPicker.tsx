@@ -2,9 +2,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "@/components/ui/Icon";
-import { usd } from "./gps";
+import { isLowStock, stockLabel, usd } from "./gps";
 
-export type Product = { id: string; sku: string; name: string; unit: string; price: number };
+export type Product = { id: string; sku: string; name: string; unit: string; price: number; stock: number | null; minStock: number | null };
 
 // Full-screen list of the catalogue: scroll it, or type part of a name or code to narrow it down.
 // Tapping a product adds one; tapping again adds another. Items not in the list can be typed by hand.
@@ -57,6 +57,11 @@ export function ProductPicker({ products, counts, onPick, onFree, onClose }: {
                 <span className="flex-1 min-w-0">
                   <span className="block font-medium">{p.name}</span>
                   <span className="text-xs text-muted">{p.sku} · {usd(p.price)} / {p.unit}</span>
+                  {p.stock != null && (
+                    <span className={`block text-xs ${isLowStock(p) ? "text-danger font-semibold" : "text-muted"}`}>
+                      {isLowStock(p) && p.stock > 0 ? `Low stock · ${p.stock.toLocaleString("en-US")} left` : stockLabel(p)}
+                    </span>
+                  )}
                 </span>
                 {n > 0 ? <span className="chip chip-teal !text-sm" aria-label={`${n} added`}>× {n}</span> : <Icon name="plus" size={20} className="text-teal" />}
               </button>

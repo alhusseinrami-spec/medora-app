@@ -4,7 +4,7 @@ import { audit } from "../audit";
 import { can } from "../rbac";
 import { distanceM, MAX_ACCURACY_M, VERIFY_RADIUS_M } from "../geo";
 import { addDaysKey, dayKey, startOfDayUtc, TZ_DEFAULT, zonedToUtc } from "../time";
-import { ClientInput, ClientPatch, GpsFix, OrderInput, OrderReview, ProductInput } from "../validation";
+import { ClientInput, ClientPatch, GpsFix, OrderInput, OrderReview, ProductImport, ProductInput } from "../validation";
 import { UserError } from "./errors";
 import { notify } from "./notifications";
 
@@ -205,7 +205,7 @@ export async function todayFor(a: Actor) {
 // ---- Products ----
 
 export function listProducts(activeOnly = true) {
-  return db.product.findMany({ where: activeOnly ? { active: true } : {}, orderBy: { name: "asc" }, take: 2000 });
+  return db.product.findMany({ where: activeOnly ? { active: true } : {}, orderBy: { name: "asc" }, take: 10_000 });
 }
 
 export async function saveProduct(a: Actor, raw: unknown, id?: string) {
@@ -217,6 +217,72 @@ export async function saveProduct(a: Actor, raw: unknown, id?: string) {
   const r = id ? await db.product.update({ where: { id }, data }) : await db.product.create({ data });
   await audit({ actorId: a.id, action: id ? "product.update" : "product.create", entity: "product", entityId: r.id, meta: { sku: r.sku, price: p.price } });
   return r;
+}
+
+// Accounting exports write numbers every which way: "$1,250.50", "1.250,50", "6,5", "12 pcs".
+export function readNumber(v: string | number | null | undefined): number | null {
+  if (typeof v === "number") return Number.isFinite(v) ? v : null;
+  let s = (v ?? "").replace(/[^\d.,-]/g, "");
+  if (!/\d/.test(s)) return null;
+  const comma = s.lastIndexOf(","), dot = s.lastIndexOf(".");
+  if (comma > -1 && dot > -1) s = comma > dot ? s.replace(/\./g, "").replace(",", ".") : s.replace(/,/g, "");
+  else if (comma > -1) s = /^-?\d{1,3}(,\d{3})+$/.test(s) ? s.replace(/,/g, "") : s.replace(",", ".");
+  else if ((s.match(/\./g) ?? []).length > 1) s = s.replace(/\./g, "");
+  const n = Number(s);
+  return Number.isFinite(n) ? n : null;
+}
+
+const cellText = (v: string | number | null | undefined) => (v == null ? "" : String(v)).trim();
+
+// Adds new codes and updates existing ones. Rows that can't be read are skipped and reported, never half-saved.
+export async function importProducts(a: Actor, raw: unknown) {
+  requireReview(a);
+  const { rows, hideMissing } = parse(ProductImport, raw, "import");
+  const bySku = new Map<string, Prisma.ProductCreateInput>();
+  const skipped: { row: number; sku: string; reason: string }[] = [];
+  rows.forEach((r, i) => {
+    const sku = cellText(r.sku), name = cellText(r.name), price = readNumber(r.price);
+    if (!sku && !name) return; // blank line
+    const stock = readNumber(r.stock), minStock = readNumber(r.minStock);
+    const p = ProductInput.safeParse({
+      sku, name, unit: cellText(r.unit), price: price ?? NaN,
+      stock: stock == null ? null : Math.round(stock), minStock: minStock == null ? null : Math.round(minStock),
+    });
+    if (!p.success) {
+      skipped.push({ row: i + 1, sku, reason: price == null && sku && name ? "No price" : p.error.issues[0]?.message ?? "Can't read this row" });
+      return;
+    }
+    bySku.set(p.data.sku, { ...p.data, price: new Prisma.Decimal(p.data.price) });
+  });
+  if (bySku.size === 0) throw new UserError(skipped.length ? `None of the rows could be read. Row ${skipped[0].row}: ${skipped[0].reason}.` : "The file has no item rows.");
+
+  const items = [...bySku.values()];
+  const existing = new Map((await db.product.findMany({ where: { sku: { in: [...bySku.keys()] } }, select: { sku: true, unit: true } })).map((p) => [p.sku, p.unit]));
+  // A file without a unit column keeps the units already saved.
+  for (const x of items) if (!x.unit) x.unit = existing.get(x.sku) ?? "unit";
+  // One statement per 1,000 rows keeps a 10,000-item price list well inside a serverless time limit.
+  // A blank stock cell keeps the figure already saved rather than wiping it.
+  await db.$transaction(async (tx) => {
+    for (let i = 0; i < items.length; i += 1000) {
+      const chunk = items.slice(i, i + 1000);
+      await tx.$executeRaw`
+        INSERT INTO "products" ("id", "sku", "name", "unit", "price", "active", "stock", "minStock", "createdAt", "updatedAt")
+        SELECT 'imp' || md5(random()::text || r.sku), r.sku, r.name, r.unit, r.price, true, r.stock, r.min, now(), now()
+        FROM unnest(${chunk.map((x) => x.sku)}::text[], ${chunk.map((x) => x.name)}::text[], ${chunk.map((x) => x.unit ?? "unit")}::text[],
+                    ${chunk.map((x) => String(x.price))}::numeric[], ${chunk.map((x) => x.stock ?? null)}::int[], ${chunk.map((x) => x.minStock ?? null)}::int[])
+          AS r(sku, name, unit, price, stock, min)
+        ON CONFLICT ("sku") DO UPDATE SET
+          "name" = EXCLUDED."name", "unit" = EXCLUDED."unit", "price" = EXCLUDED."price", "active" = true,
+          "stock" = COALESCE(EXCLUDED."stock", "products"."stock"), "minStock" = COALESCE(EXCLUDED."minStock", "products"."minStock"),
+          "updatedAt" = now()`;
+    }
+  }, { timeout: 60_000 });
+  const hidden = hideMissing
+    ? (await db.product.updateMany({ where: { sku: { notIn: [...bySku.keys()] }, active: true }, data: { active: false } })).count
+    : 0;
+  const result = { added: items.length - existing.size, updated: existing.size, hidden, skipped };
+  await audit({ actorId: a.id, action: "product.import", entity: "product", meta: { added: result.added, updated: result.updated, hidden, skipped: skipped.length } });
+  return result;
 }
 
 // ---- Orders and proformas ----

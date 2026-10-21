@@ -34,7 +34,7 @@ Sales reps open **/field** on their phone (add it to the home screen). It has fo
 
 Approved orders and proforma requests are then sent on to the accounting system: set `ACCOUNTING_WEBHOOK_URL` and `ACCOUNTING_WEBHOOK_SECRET` and each one is POSTed as JSON (client, rep, approved lines next to what the rep asked for, total), signed with `X-Medora-Signature: sha256=<HMAC of the body>` and carrying `Idempotency-Key: <order id>`. Failed sends retry with growing gaps for about a day, then accounting is notified and can press Send now. Until the URL is set, approved orders wait and go out once it is. The order page shows where each one stands.
 
-Managers see **Field visits**: each rep's day with verified and unverified check-ins and orders. Accounting manages **Products and prices**. New role **Accountant** (two-step sign-in required) reviews orders; reps use the **Staff** role. The map uses OpenStreetMap tiles, the only outside resource the app loads.
+Managers see **Field visits**: each rep's day with verified and unverified check-ins and orders. Accounting manages **Products and prices**, either one by one or by importing the item list exported from the accounting system (Excel .xlsx or CSV; columns such as Item Code, Description, Selling Price, Qty On Hand and Reorder Level are matched automatically and can be changed before importing). Products with a stock figure at or below their low-stock level, or out of stock, show in red in the rep's product list. New role **Accountant** (two-step sign-in required) reviews orders; reps use the **Staff** role. The map uses OpenStreetMap tiles, the only outside resource the app loads.
 
 ## How the assistant is kept safe
 
