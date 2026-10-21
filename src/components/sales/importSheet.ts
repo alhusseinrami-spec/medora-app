@@ -7,20 +7,22 @@ export type Mapping = Record<Field, number | null>;
 export const FIELDS: { key: Field; label: string; required?: boolean }[] = [
   { key: "sku", label: "Code", required: true },
   { key: "name", label: "Name", required: true },
-  { key: "price", label: "Price", required: true },
+  { key: "price", label: "Price" },
   { key: "unit", label: "Unit" },
   { key: "stock", label: "Stock" },
   { key: "minStock", label: "Low-stock level" },
 ];
 
-// Checked in this order, so "min stock" isn't taken for stock, "unit price" for unit, or "item code" for name.
-const HINTS: [Field, RegExp][] = [
-  ["minStock", /\b(min|minimum|reorder|re order|alert|low stock|safety)\b|حد/],
-  ["price", /\b(price|prix|pu|rate|tarif|selling|sale|cost)\b|سعر/],
-  ["sku", /\b(code|sku|ref|reference|référence|item no|item number|part|article|barcode)\b|رمز|كود/],
-  ["stock", /\b(stock|qty|quantity|quantité|on hand|available|balance|inventory)\b|كمية|مخزون/],
-  ["unit", /\b(unit|uom|unité|pack)\b|وحدة/],
-  ["name", /\b(name|description|desc|item|product|designation|désignation|libellé|libelle)\b|اسم|صنف/],
+// For each field, the patterns are tried best first across every column, and a column is never used twice.
+// The skip pattern keeps "Cost price" or "Minimum selling price" from being read as the selling price,
+// and "Minimum stock" or "Reorder quantity" from being read as the stock on hand.
+const HINTS: { field: Field; best: RegExp[]; skip?: RegExp }[] = [
+  { field: "sku", best: [/^(code|sku|ref|reference|référence|item code|product code|item no|item number|code article)$/, /\b(code|sku|ref|reference|référence|item no|item number|part|article)\b|رمز|كود/] },
+  { field: "price", best: [/^(selling price|sale price|sales price|retail price|unit price|price|prix|prix de vente|pu)$/, /\b(selling|sale|sales|retail)\b.*\b(price|prix)\b|سعر البيع/, /\b(price|prix|pu|rate|tarif)\b|سعر/], skip: /\b(cost|purchase|buying|min|minimum|wholesale|achat)\b/ },
+  { field: "minStock", best: [/\b(min|minimum|safety|low)\b.*\b(stock|qty|quantity|level)\b|\breorder (level|point)\b|\balert\b|حد/], skip: /\b(price|prix)\b/ },
+  { field: "stock", best: [/^(stock|qty|quantity|quantité|on hand|qty on hand|quantity on hand|available|balance|in stock)$/, /\b(stock|qty|quantity|quantité|on hand|available|balance|inventory)\b|كمية|مخزون/], skip: /\b(min|minimum|reorder|safety|order|ordered|sold)\b/ },
+  { field: "unit", best: [/^(unit|uom|unité|unit of measure)$/, /\b(unit|uom|unité)\b|وحدة/], skip: /\b(price|prix|cost)\b/ },
+  { field: "name", best: [/^(name|item name|product name|product|item|description|designation|désignation|libellé|libelle)$/, /\b(name|description|desc|item|product|designation|désignation|libellé|libelle)\b|اسم|صنف/], skip: /\b(arabic|french|short|supplier|brand|category)\b/ },
 ];
 
 const norm = (v: Cell) => String(v ?? "").toLowerCase().replace(/[_.\-/#:]+/g, " ").replace(/\s+/g, " ").trim();
@@ -28,9 +30,12 @@ const norm = (v: Cell) => String(v ?? "").toLowerCase().replace(/[_.\-/#:]+/g, "
 export function guessMapping(header: Cell[]): Mapping {
   const m: Mapping = { sku: null, name: null, unit: null, price: null, stock: null, minStock: null };
   const used = new Set<number>();
-  for (const [field, re] of HINTS) {
-    const i = header.findIndex((h, j) => !used.has(j) && re.test(norm(h)));
-    if (i >= 0) { m[field] = i; used.add(i); }
+  const cols = header.map(norm);
+  for (const { field, best, skip } of HINTS) {
+    for (const re of best) {
+      const i = cols.findIndex((h, j) => !used.has(j) && re.test(h) && !skip?.test(h));
+      if (i >= 0) { m[field] = i; used.add(i); break; }
+    }
   }
   return m;
 }
@@ -46,8 +51,9 @@ export function findHeader(rows: Cell[][]): number {
 
 export function parseCsv(text: string): Cell[][] {
   text = text.replace(/^﻿/, "");
-  const first = text.split(/\r?\n/, 1)[0];
-  const delim = [";", "\t", ","].map((d) => [d, first.split(d).length] as const).sort((a, b) => b[1] - a[1])[0][0];
+  // Judge the separator on the first lines together: a title line above the header has none.
+  const top = text.split(/\r?\n/, 10).join("\n");
+  const delim = [",", ";", "\t"].map((d) => [d, top.split(d).length] as const).sort((a, b) => b[1] - a[1])[0][0];
   const rows: Cell[][] = [];
   let row: Cell[] = [], cell = "", quoted = false;
   for (let i = 0; i < text.length; i++) {
@@ -82,4 +88,11 @@ export async function readFile(file: File): Promise<Cell[][]> {
 export function toRows(rows: Cell[][], header: number, m: Mapping) {
   const pick = (r: Cell[], f: Field) => (m[f] == null ? null : r[m[f]!] ?? null);
   return rows.slice(header + 1).map((r) => ({ sku: pick(r, "sku"), name: pick(r, "name"), unit: pick(r, "unit"), price: pick(r, "price"), stock: pick(r, "stock"), minStock: pick(r, "minStock") }));
+}
+
+// A stock column where every item reads 0 is almost always a system that doesn't track stock;
+// importing it would mark the whole catalogue "Out of stock".
+export function stockLooksUnused(rows: Cell[][], header: number, col: number | null) {
+  if (col == null) return false;
+  return rows.slice(header + 1).every((r) => { const v = String(r[col] ?? "").trim(); return v === "" || Number(v) === 0; });
 }

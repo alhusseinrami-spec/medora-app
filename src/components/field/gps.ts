@@ -31,7 +31,9 @@ export const PLACE_TYPES = ["Clinic", "Hospital", "Laboratory", "Pharmacy", "Den
 export const waLink = (n: string) => `https://wa.me/${n.replace(/[^\d]/g, "").replace(/^0+/, "")}`;
 export const telLink = (n: string) => `tel:${n.replace(/[^\d+]/g, "")}`;
 export const directionsLink = (lat: number, lng: number) => `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-export const usd = (n: number) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+// Unit prices can have up to 4 decimals (0.3375 a piece); totals are already rounded to cents.
+export const usd = (n: number) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 4 })}`;
+export const priceInput = (n: number) => n.toFixed(4).replace(/0{1,2}$/, "");
 
 // Out of stock, or at or below the low-stock level accounting set for the item.
 export const isLowStock = (p: { stock: number | null; minStock: number | null }) => p.stock != null && (p.stock <= 0 || (p.minStock != null && p.stock <= p.minStock));

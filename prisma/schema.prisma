@@ -410,7 +410,7 @@ model Product {
   sku       String   @unique
   name      String
   unit      String   @default("unit")
-  price     Decimal  @db.Decimal(12, 2)
+  price     Decimal  @db.Decimal(14, 4)
   active    Boolean  @default(true)
   stock     Int?     // on hand; null when accounting hasn't given a figure
   minStock  Int?     // at or below this the picker shows the item in red
@@ -464,10 +464,10 @@ model SalesOrderLine {
   product        Product?   @relation(fields: [productId], references: [id], onDelete: SetNull)
   description    String
   quantity       Int
-  unitPrice      Decimal    @db.Decimal(12, 2)
+  unitPrice      Decimal    @db.Decimal(14, 4)
   // What the rep asked for, kept when accounting changes the line.
   requestedQty   Int
-  requestedPrice Decimal    @db.Decimal(12, 2)
+  requestedPrice Decimal    @db.Decimal(14, 4)
   position       Int        @default(0)
 
   @@map("sales_order_lines")

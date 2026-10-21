@@ -241,7 +241,9 @@ export async function importProducts(a: Actor, raw: unknown) {
   const bySku = new Map<string, Prisma.ProductCreateInput>();
   const skipped: { row: number; sku: string; reason: string }[] = [];
   rows.forEach((r, i) => {
-    const sku = cellText(r.sku), name = cellText(r.name), price = readNumber(r.price);
+    const sku = cellText(r.sku), name = cellText(r.name);
+    // No price yet is fine: the rep sees "Price from accounting" and accounting prices it on review.
+    const price = cellText(r.price) === "" ? 0 : readNumber(r.price);
     if (!sku && !name) return; // blank line
     const stock = readNumber(r.stock), minStock = readNumber(r.minStock);
     const p = ProductInput.safeParse({
@@ -249,7 +251,7 @@ export async function importProducts(a: Actor, raw: unknown) {
       stock: stock == null ? null : Math.round(stock), minStock: minStock == null ? null : Math.round(minStock),
     });
     if (!p.success) {
-      skipped.push({ row: i + 1, sku, reason: price == null && sku && name ? "No price" : p.error.issues[0]?.message ?? "Can't read this row" });
+      skipped.push({ row: i + 1, sku, reason: price == null && sku && name ? "Price can't be read" : p.error.issues[0]?.message ?? "Can't read this row" });
       return;
     }
     bySku.set(p.data.sku, { ...p.data, price: new Prisma.Decimal(p.data.price) });
@@ -288,6 +290,7 @@ export async function importProducts(a: Actor, raw: unknown) {
 // ---- Orders and proformas ----
 
 const money = (n: number) => Math.round(n * 100) / 100;
+const unitMoney = (n: number) => Math.round(n * 10_000) / 10_000; // unit prices keep 4 decimals, like 0.3375 a piece
 const lineTotal = (l: { quantity: number; unitPrice: Prisma.Decimal | number }) => l.quantity * Number(l.unitPrice);
 export const KIND_LABEL = { ORDER: "Order", PROFORMA: "Proforma request" } as const;
 
@@ -308,7 +311,7 @@ export async function createOrder(a: Actor, raw: unknown) {
     if (l.productId && !p) throw new UserError("One of the products is no longer in the catalogue. Refresh and try again.");
     const description = p ? p.name : l.description.trim();
     if (!description) throw new UserError("Describe each item or pick it from the catalogue.");
-    const price = money(l.unitPrice ?? (p ? Number(p.price) : 0));
+    const price = unitMoney(l.unitPrice ?? (p ? Number(p.price) : 0));
     return { productId: p?.id ?? null, description, quantity: l.quantity, unitPrice: price, requestedQty: l.quantity, requestedPrice: price, position: idx };
   });
   const total = money(lines.reduce((s, l) => s + l.quantity * l.unitPrice, 0));
@@ -366,7 +369,7 @@ export async function reviewOrder(a: Actor, id: string, raw: unknown) {
   const changes = r.lines.filter((l) => current.has(l.id));
   const after = o.lines.map((l) => {
     const c = changes.find((x) => x.id === l.id);
-    return c ? { ...l, quantity: c.quantity, unitPrice: new Prisma.Decimal(money(c.unitPrice)) } : l;
+    return c ? { ...l, quantity: c.quantity, unitPrice: new Prisma.Decimal(unitMoney(c.unitPrice)) } : l;
   });
   const kept = after.filter((l) => l.quantity > 0);
   if (r.decision === "APPROVE" && kept.length === 0) throw new UserError("Keep at least one item, or reject instead.");

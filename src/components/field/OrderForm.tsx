@@ -67,7 +67,7 @@ export function OrderForm({ clientId, clientName, visitId, initialKind, products
               <div className="flex-1 min-w-[60%]">
                 {l.productId ? <div className="font-medium">{l.description}</div>
                   : <input className="input !min-h-[34px]" value={l.description} onChange={(e) => patch(l.key, { description: e.target.value })} aria-label="Item description" placeholder="Item description" />}
-                <div className="text-xs text-muted mt-0.5">{usd(l.quantity * l.unitPrice)}{l.listPrice != null && l.unitPrice !== l.listPrice ? ` · list ${usd(l.listPrice)}` : ""}</div>
+                <div className="text-xs text-muted mt-0.5">{l.unitPrice === 0 ? "Price from accounting" : usd(l.quantity * l.unitPrice)}{l.listPrice != null && l.unitPrice !== l.listPrice ? ` · list ${usd(l.listPrice)}` : ""}</div>
                 {l.stock != null && l.quantity > l.stock && <div className="text-xs text-danger font-semibold mt-0.5">{l.stock <= 0 ? "Out of stock" : `Only ${l.stock.toLocaleString("en-US")} in stock`}</div>}
               </div>
               <button className="btn btn-ghost btn-sm" onClick={() => remove(l.key)} aria-label={`Remove ${l.description || "item"}`}><Icon name="trash" size={16} /></button>

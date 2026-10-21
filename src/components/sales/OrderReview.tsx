@@ -2,14 +2,14 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { reviewOrderAction } from "@/app/(field)/actions";
-import { usd } from "@/components/field/gps";
+import { priceInput, usd } from "@/components/field/gps";
 
 type Line = { id: string; description: string; sku: string; unit: string; quantity: number; unitPrice: number; requestedQty: number; requestedPrice: number };
 
 // Accounting edits quantities and prices in place, then approves or rejects. A quantity of 0 drops the line.
 export function OrderReview({ id, open, note: savedNote, reviewed, lines: initial }: { id: string; open: boolean; note: string; reviewed: string | null; lines: Line[] }) {
   const router = useRouter();
-  const [lines, setLines] = useState(initial.map((l) => ({ ...l, qtyText: String(l.quantity), priceText: l.unitPrice.toFixed(2) })));
+  const [lines, setLines] = useState(initial.map((l) => ({ ...l, qtyText: String(l.quantity), priceText: priceInput(l.unitPrice) })));
   const [note, setNote] = useState(savedNote);
   const [res, setRes] = useState<{ ok?: string; error?: string } | null>(null);
   const [busy, setBusy] = useState("");

@@ -6,6 +6,7 @@ import {
   reviewOrder, saveProduct, setFollowUp, todayFor, updateClient, visitsBoard,
 } from "@/lib/services/sales";
 import { makeUser, reset } from "./helpers";
+import { findHeader, guessMapping, parseCsv, stockLooksUnused } from "@/components/sales/importSheet";
 
 beforeEach(reset);
 
@@ -169,19 +170,55 @@ describe("product import", () => {
         { sku: "GLV-M", name: "Nitrile gloves M", unit: "box", price: "6,50", stock: "" },
         { sku: "SYR-5", name: "Syringe 5ml", unit: "", price: "$0.12", stock: "3", minStock: 50 },
         { sku: "", name: "", price: "" },
-        { sku: "BAD-1", name: "No price here", price: "" },
+        { sku: "NOP-1", name: "No price yet", price: "" },
+        { sku: "BAD-1", name: "Unreadable price", price: "call us" },
         { sku: "SYR-5", name: "Syringe 5 ml", price: 0.15, stock: 4 },
       ],
     });
-    expect(r).toMatchObject({ added: 1, updated: 1, hidden: 1, skipped: [{ row: 4, sku: "BAD-1", reason: "No price" }] });
+    expect(r).toMatchObject({ added: 2, updated: 1, hidden: 1, skipped: [{ row: 5, sku: "BAD-1", reason: "Price can't be read" }] });
     const all = await listProducts(false);
     const by = Object.fromEntries(all.map((p) => [p.sku, p]));
     expect(by["GLV-M"]).toMatchObject({ name: "Nitrile gloves M", stock: 40, minStock: 10, active: true });
     expect(Number(by["GLV-M"].price)).toBe(6.5);
     expect(by["SYR-5"]).toMatchObject({ name: "Syringe 5 ml", unit: "unit", stock: 4, minStock: null });
     expect(by["OLD-1"].active).toBe(false);
+    expect(Number(by["NOP-1"].price)).toBe(0);
     await importProducts(acc, { rows: [{ sku: "GLV-M", name: "Nitrile gloves M", price: 7 }] });
     expect((await listProducts(false)).find((p) => p.sku === "GLV-M")?.unit).toBe("box"); // no unit column: unit kept
     await expect(importProducts(acc, { rows: [{ sku: "A", name: "B", price: "x" }] })).rejects.toThrow(/None of the rows/);
+  });
+});
+
+describe("reading an export's columns", () => {
+  it("picks the selling price, stock on hand and minimum stock, not their look-alikes", () => {
+    const header = ["Ref", "Name", "Arabic name", "Category", "Unit", "Barcode", "Description", "Cost price", "Selling price", "Wholesale price", "Minimum selling price", "Minimum stock", "Reorder quantity", "Status", "Quantity"];
+    const m = guessMapping(header);
+    expect(Object.fromEntries(Object.entries(m).map(([k, v]) => [k, v == null ? null : header[v]]))).toEqual({
+      sku: "Ref", name: "Name", unit: "Unit", price: "Selling price", stock: "Quantity", minStock: "Minimum stock",
+    });
+    expect(guessMapping(["Item Code", "Description", "UOM", "Qty On Hand", "Reorder Level", "Selling Price"])).toEqual({ sku: 0, name: 1, unit: 2, stock: 3, minStock: 4, price: 5 });
+  });
+
+  it("finds the header under a title row, reads quoted CSV, and spots an unused stock column", () => {
+    const rows = parseCsv('\uFEFFItem list\nRef,Name,Selling price,Quantity\nA-1,"Syringe 1cc 25G x 1/2""",0.3375,0\nA-2,"Gloves, M",,0\n');
+    const h = findHeader(rows);
+    expect(h).toBe(1);
+    expect(rows[2]).toEqual(["A-1", 'Syringe 1cc 25G x 1/2"', "0.3375", "0"]);
+    expect(rows[3][1]).toBe("Gloves, M");
+    expect(stockLooksUnused(rows, h, guessMapping(rows[h]).stock)).toBe(true);
+    expect(stockLooksUnused([["Qty"], ["0"], ["4"]], 0, 0)).toBe(false);
+  });
+});
+
+describe("prices by the piece", () => {
+  it("keeps four decimals on catalogue and order prices", async () => {
+    const acc = await makeUser("ACCOUNTANT"), rep = await makeUser("STAFF");
+    await importProducts(acc, { rows: [{ sku: "SYR-1", name: "Syringe 1cc", price: "0.3375" }] });
+    const p = (await listProducts()).find((x) => x.sku === "SYR-1")!;
+    expect(Number(p.price)).toBe(0.3375);
+    const client = await createClient(rep, { name: "Dr Piece" });
+    const o = await createOrder(rep, { contactId: client.id, lines: [{ productId: p.id, quantity: 1000 }] });
+    expect(Number(o.total)).toBe(337.5);
+    expect(Number((await db.salesOrderLine.findFirstOrThrow({ where: { orderId: o.id } })).unitPrice)).toBe(0.3375);
   });
 });

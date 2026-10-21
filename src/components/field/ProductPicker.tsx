@@ -56,7 +56,7 @@ export function ProductPicker({ products, counts, onPick, onFree, onClose }: {
               <button className={`row w-full text-left !py-3 ${n ? "bg-teal-soft" : ""}`} onClick={() => onPick(p)}>
                 <span className="flex-1 min-w-0">
                   <span className="block font-medium">{p.name}</span>
-                  <span className="text-xs text-muted">{p.sku} · {usd(p.price)} / {p.unit}</span>
+                  <span className="text-xs text-muted">{p.sku} · {p.price ? `${usd(p.price)} / ${p.unit}` : "Price from accounting"}</span>
                   {p.stock != null && (
                     <span className={`block text-xs ${isLowStock(p) ? "text-danger font-semibold" : "text-muted"}`}>
                       {isLowStock(p) && p.stock > 0 ? `Low stock · ${p.stock.toLocaleString("en-US")} left` : stockLabel(p)}
