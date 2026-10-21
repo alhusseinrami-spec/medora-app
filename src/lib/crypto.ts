@@ -12,6 +12,12 @@ function keys(): Buffer[] {
 }
 const key = () => keys()[0];
 
+// For sign-in and the health check: a readable reason instead of a crash when the setting is wrong.
+export function encryptionKeyProblem(): string | null {
+  const v = (process.env.APP_ENCRYPTION_KEY ?? "").trim();
+  return v.length >= 32 ? null : v ? "APP_ENCRYPTION_KEY is shorter than 32 characters." : "APP_ENCRYPTION_KEY is not set.";
+}
+
 export function encrypt(plain: string): string {
   const iv = randomBytes(12);
   const c = createCipheriv("aes-256-gcm", key(), iv);
