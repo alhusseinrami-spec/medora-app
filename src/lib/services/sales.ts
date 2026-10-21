@@ -16,9 +16,10 @@ const parse = <T>(schema: { safeParse: (v: unknown) => { success: true; data: T 
   return p.data;
 };
 
-// Reps work their own clients. Managers see the whole team; accounting sees every client so it can review orders.
+// Clients are shared: every rep sees every client on the map and can visit or take an order there.
+// Orders stay private to the rep who took them; managers and accounting see them all.
 const seesAll = (a: Actor) => can(a.role, "team.view") || can(a.role, "sales.review");
-const clientScope = (a: Actor): Prisma.ContactWhereInput => ({ stage: { not: null }, ...(seesAll(a) ? {} : { ownerId: a.id }) });
+const clientScope: Prisma.ContactWhereInput = { stage: { not: null } };
 const orderScope = (a: Actor): Prisma.SalesOrderWhereInput => (seesAll(a) ? {} : { repId: a.id });
 
 function requireField(a: Actor) {
@@ -34,7 +35,7 @@ export function listClients(a: Actor, opts: { stage?: ClientStage; q?: string } 
   const s = opts.q?.trim();
   return db.contact.findMany({
     where: {
-      AND: [clientScope(a)],
+      AND: [clientScope],
       ...(opts.stage ? { stage: opts.stage } : {}),
       ...(s ? { OR: ["name", "company", "phone", "address", "placeType"].map((f) => ({ [f]: { contains: s, mode: "insensitive" } })) } : {}),
     },
@@ -45,14 +46,14 @@ export function listClients(a: Actor, opts: { stage?: ClientStage; q?: string } 
 
 export async function getClient(a: Actor, id: string) {
   const c = await db.contact.findFirst({
-    where: { id, ...clientScope(a) },
+    where: { id, ...clientScope },
     include: {
       owner: { select: { id: true, name: true } },
       visits: { orderBy: { at: "desc" }, take: 30, include: { rep: { select: { name: true } } } },
       orders: { orderBy: { createdAt: "desc" }, take: 30, select: { id: true, number: true, kind: true, status: true, total: true, createdAt: true, edited: true } },
     },
   });
-  if (!c) throw new UserError("That client doesn't exist or isn't yours.", "not_found");
+  if (!c) throw new UserError("That client doesn't exist.", "not_found");
   return c;
 }
 
@@ -125,11 +126,11 @@ export async function checkIn(a: Actor, contactId: string, raw: unknown, note = 
   return { visit, duplicate: false };
 }
 
-// "Log visit" on the Today screen: check in at whichever of the rep's clients they are standing at.
+// "Log visit" on the Today screen: check in at whichever client the rep is standing at.
 export async function checkInNearest(a: Actor, raw: unknown) {
   requireField(a);
   const fix = parse(GpsFix, raw, "location");
-  const mine = await db.contact.findMany({ where: { ownerId: a.id, stage: { not: null }, lat: { not: null }, lng: { not: null } }, select: { id: true, name: true, lat: true, lng: true } });
+  const mine = await db.contact.findMany({ where: { stage: { not: null }, lat: { not: null }, lng: { not: null } }, select: { id: true, name: true, lat: true, lng: true } });
   const best = mine
     .map((c) => ({ id: c.id, name: c.name, d: distanceM(fix, { lat: c.lat!, lng: c.lng! }) }))
     .reduce<{ id: string; name: string; d: number } | null>((b, c) => (!b || c.d < b.d ? c : b), null);

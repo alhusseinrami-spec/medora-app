@@ -21,6 +21,7 @@ export function FieldMap({ clients }: { clients: MapClient[] }) {
   const [sel, setSel] = useState<MapClient | null>(null);
   const [msg, setMsg] = useState<{ ok?: string; error?: string; warn?: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [q, setQ] = useState("");
   const [, start] = useTransition();
 
   useEffect(() => {
@@ -57,6 +58,14 @@ export function FieldMap({ clients }: { clients: MapClient[] }) {
     } catch (e) { setMsg({ error: (e as Error).message }); }
   }
 
+  const term = q.trim().toLowerCase();
+  const matches = term ? clients.filter((c) => `${c.name} ${c.placeType}`.toLowerCase().includes(term)).slice(0, 8) : [];
+
+  function pick(c: MapClient) {
+    map.current?.setView([c.lat, c.lng], 17);
+    setSel(c); setMsg(null); setQ("");
+  }
+
   async function checkIn(c: MapClient) {
     setBusy(true); setMsg(null);
     try { const r = await checkInAction(c.id, await getFix()); setMsg(r); if (!r.error) start(() => router.refresh()); }
@@ -66,11 +75,34 @@ export function FieldMap({ clients }: { clients: MapClient[] }) {
 
   return (
     <div className="relative flex-1 min-h-[calc(100dvh-56px-62px)]">
-      <div ref={el} className="absolute inset-0 z-0" role="application" aria-label="Map of your clients" />
-      <div className="absolute top-3 left-3 z-[500] card px-3 py-2 text-sm space-y-0.5">
+      <div ref={el} className="absolute inset-0 z-0" role="application" aria-label="Map of clients" />
+      <div className="absolute top-3 left-3 right-14 z-[700]">
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none"><Icon name="search" size={18} /></span>
+          <input
+            type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search clients by name"
+            aria-label="Search clients by name" className="input !pl-10 shadow-lg"
+            onKeyDown={(e) => { if (e.key === "Enter" && matches[0]) pick(matches[0]); }}
+          />
+        </div>
+        {term && (
+          <ul className="card mt-1 shadow-lg max-h-[50dvh] overflow-auto">
+            {matches.map((c) => (
+              <li key={c.id}>
+                <button className="w-full text-left px-3 py-2.5 flex items-center gap-2 hover:bg-surface-2" onClick={() => pick(c)}>
+                  <span className="w-3 h-3 rounded-full shrink-0" style={{ background: stageOf(c.stage).color }} />
+                  <span className="flex-1 min-w-0"><span className="block truncate font-medium">{c.name}</span>{c.placeType && <span className="block text-xs text-muted">{c.placeType}</span>}</span>
+                </button>
+              </li>
+            ))}
+            {matches.length === 0 && <li className="px-3 py-2.5 text-sm text-muted">No client on the map matches. Clients without a saved location are in Pipeline.</li>}
+          </ul>
+        )}
+      </div>
+      <div className="absolute top-16 left-3 z-[500] card px-3 py-2 text-sm space-y-0.5">
         {STAGES.map((s) => <div key={s.v} className="flex items-center gap-2"><span className="w-3 h-3 rounded-full" style={{ background: s.color }} />{s.label}</div>)}
       </div>
-      {clients.length === 0 && <p className="absolute top-3 right-14 left-32 z-[500] card p-2 text-sm">No clients with a location yet. Add one where you stand with +.</p>}
+      {clients.length === 0 && <p className="absolute top-16 right-14 left-32 z-[500] card p-2 text-sm">No clients with a location yet. Add one where you stand with +.</p>}
       <div className="absolute right-3 bottom-24 z-[500] flex flex-col gap-3">
         <button onClick={locate} className="w-12 h-12 rounded-xl bg-surface shadow-lg grid place-items-center border border-line" aria-label="Show where I am"><Icon name="target" /></button>
         <Link href="/field/clients/new" className="w-12 h-12 rounded-xl bg-teal text-white shadow-lg grid place-items-center" aria-label="Add a client here"><Icon name="plus" /></Link>

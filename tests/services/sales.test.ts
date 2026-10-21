@@ -49,12 +49,13 @@ describe("clients and visits", () => {
     expect((await db.contact.findUniqueOrThrow({ where: { id: c.id } })).lat).toBe(NEAR.lat);
   });
 
-  it("keeps reps to their own clients and stops them moving a saved pin", async () => {
+  it("shares clients across reps but stops them editing another rep's client or moving a saved pin", async () => {
     const a = await makeUser("STAFF"), b = await makeUser("STAFF"), mgr = await makeUser("MANAGER");
     const c = await createClient(a, { name: "Dr Kamil", location: { ...CLINIC, accuracy: 5 } });
-    expect(await listClients(b)).toHaveLength(0);
+    expect(await listClients(b)).toHaveLength(1);
     expect(await listClients(mgr)).toHaveLength(1);
-    await expect(checkIn(b, c.id, NEAR)).rejects.toThrow(/isn't yours/);
+    expect((await checkIn(b, c.id, NEAR)).visit.verified).toBe(true);
+    await expect(updateClient(b, c.id, { stage: "CUSTOMER" })).rejects.toThrow(/client's rep/);
     await expect(relocateClient(a, c.id, NEAR)).rejects.toThrow(/manager/);
     await relocateClient(mgr, c.id, NEAR);
     await updateClient(a, c.id, { stage: "PROSPECT" });
