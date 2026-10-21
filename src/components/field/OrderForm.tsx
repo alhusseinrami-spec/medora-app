@@ -1,11 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { createOrderAction } from "@/app/(field)/actions";
 import { usd } from "./gps";
+import { ProductPicker, type Product } from "./ProductPicker";
 
-type Product = { id: string; sku: string; name: string; unit: string; price: number };
 type Line = { key: string; productId: string | null; description: string; unit: string; quantity: number; unitPrice: number; listPrice: number | null };
 
 let seq = 0;
@@ -14,16 +14,13 @@ export function OrderForm({ clientId, clientName, visitId, initialKind, products
   const router = useRouter();
   const [kind, setKind] = useState(initialKind);
   const [lines, setLines] = useState<Line[]>([]);
-  const [q, setQ] = useState("");
+  const [picking, setPicking] = useState(false);
   const [notes, setNotes] = useState("");
   const [err, setErr] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const found = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    if (!s) return [];
-    return products.filter((p) => p.name.toLowerCase().includes(s) || p.sku.toLowerCase().includes(s)).slice(0, 8);
-  }, [q, products]);
+  const counts = Object.fromEntries(lines.filter((l) => l.productId).map((l) => [l.productId!, l.quantity]));
+  const closePicker = useCallback(() => setPicking(false), []);
   const total = lines.reduce((s, l) => s + l.quantity * l.unitPrice, 0);
 
   const add = (p: Product) => {
@@ -32,9 +29,8 @@ export function OrderForm({ clientId, clientName, visitId, initialKind, products
       if (i >= 0) return ls.map((l, j) => (j === i ? { ...l, quantity: l.quantity + 1 } : l));
       return [...ls, { key: `l${++seq}`, productId: p.id, description: p.name, unit: p.unit, quantity: 1, unitPrice: p.price, listPrice: p.price }];
     });
-    setQ("");
   };
-  const addFree = () => { setLines((ls) => [...ls, { key: `l${++seq}`, productId: null, description: q.trim(), unit: "unit", quantity: 1, unitPrice: 0, listPrice: null }]); setQ(""); };
+  const addFree = (description: string) => setLines((ls) => [...ls, { key: `l${++seq}`, productId: null, description, unit: "unit", quantity: 1, unitPrice: 0, listPrice: null }]);
   const patch = (key: string, p: Partial<Line>) => setLines((ls) => ls.map((l) => (l.key === key ? { ...l, ...p } : l)));
   const remove = (key: string) => setLines((ls) => ls.filter((l) => l.key !== key));
 
@@ -59,19 +55,10 @@ export function OrderForm({ clientId, clientName, visitId, initialKind, products
       </div>
       <p className="text-sm text-ink-2">{kind === "ORDER" ? "The client is buying. Accounting checks quantities and prices, then approves." : "The client wants a price offer first. Accounting prepares the proforma from this request."}</p>
 
-      <div className="relative">
-        <label className="block"><span className="label">Add products</span>
-          <input className="input !min-h-[44px]" value={q} onChange={(e) => setQ(e.target.value)} placeholder={products.length ? "Search by name or code" : "Type an item"} autoComplete="off" />
-        </label>
-        {q.trim() && (
-          <ul className="card mt-1 absolute inset-x-0 z-10 max-h-72 overflow-auto">
-            {found.map((p) => (
-              <li key={p.id}><button className="row w-full text-left" onClick={() => add(p)}><span className="flex-1 min-w-0"><span className="block truncate font-medium">{p.name}</span><span className="text-xs text-muted">{p.sku} · {usd(p.price)} / {p.unit}</span></span><Icon name="plus" size={18} /></button></li>
-            ))}
-            <li><button className="row w-full text-left text-teal font-medium" onClick={addFree}><Icon name="plus" size={18} />Add &quot;{q.trim()}&quot; as a new item</button></li>
-          </ul>
-        )}
-      </div>
+      <button onClick={() => setPicking(true)} className="btn w-full !min-h-[50px] !border-dashed !border-teal !text-teal !text-[15px]">
+        <Icon name="plus" />{lines.length ? "Add another item" : "Add item"}
+      </button>
+      {picking && <ProductPicker products={products} counts={counts} onPick={add} onFree={addFree} onClose={closePicker} />}
 
       {lines.length === 0 ? <p className="empty card text-center">No items yet.</p> : (
         <ul className="card">
