@@ -6,6 +6,7 @@ import { fmtDistance } from "@/lib/geo";
 import type { Permission } from "@/lib/rbac";
 import { UserError } from "@/lib/services/errors";
 import { retrySync } from "@/lib/services/accountingSync";
+import { assignDriver, markDelivered } from "@/lib/services/deliveries";
 import {
   cancelOrder, checkIn, checkInNearest, createClient, createOrder, importProducts, relocateClient, reviewOrder, saveProduct, setFollowUp, updateClient,
 } from "@/lib/services/sales";
@@ -76,3 +77,21 @@ export const importProductsAction = async (raw: unknown) => act("sales.review", 
   return { ok: `Imported. ${parts.join(", ")}.`, warn };
 });
 export const retrySyncAction = async (id: string) => act("sales.review", ["/sales"], async (u) => { await retrySync(u, id); return { ok: "Queued. It will be sent within a minute." }; });
+
+// Deliveries
+export const assignDriverAction = async (id: string, driverId: string | null) => act("sales.review", ["/sales", "/field"], async (u) => {
+  await assignDriver(u, id, driverId);
+  return { ok: driverId ? "Assigned. The driver has been told." : "Driver removed." };
+});
+export const markDeliveredAction = async (id: string, fix: unknown, note?: string) => act("sales.deliver", ["/field"], async (u) => {
+  const r = await markDelivered(u, id, fix, note);
+  if (r.duplicate) return { ok: "Already marked delivered." };
+  const o = r.order;
+  return {
+    ok: o.deliveryVerified ? "Delivered. Location verified." : "Delivered.",
+    warn: o.deliveryVerified ? undefined
+      : o.deliveryDistanceM == null ? "Not verified: this client has no saved location."
+      : (o.deliveryAccuracyM ?? 0) > 100 ? `Not verified: your phone's location was only accurate to ${fmtDistance(o.deliveryAccuracyM ?? 0)}.`
+      : `Not verified: you are ${fmtDistance(o.deliveryDistanceM)} from the client's saved location.`,
+  };
+});

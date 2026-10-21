@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth";
+import { fieldHome } from "@/lib/rbac";
 import { db } from "@/lib/db";
 import { addDaysKey, dayKey, fmtDate, fmtTime, startOfDayUtc } from "@/lib/time";
 import { listTasks } from "@/lib/services/tasks";
@@ -19,6 +21,8 @@ const PRI: Record<string, string> = { P1: "chip-danger", P2: "chip-warn", P3: ""
 
 export default async function Dashboard({ searchParams }: PageProps<"/">) {
   const { user } = await requireAuth();
+  const home = fieldHome(user.role);
+  if (home) redirect(home);
   const sp = await searchParams;
   const tz = user.timeZone;
   const today = dayKey(new Date(), tz);

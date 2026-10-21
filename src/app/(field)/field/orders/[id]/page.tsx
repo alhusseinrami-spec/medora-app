@@ -29,6 +29,9 @@ export default async function FieldOrder({ params, searchParams }: PageProps<"/f
         <span className={`chip ${s.chip}`}>{s.label}{o.edited && o.status === "APPROVED" ? " with changes" : ""}</span>
         {o.reviewedBy && o.reviewedAt && <p className="text-sm text-muted mt-1">By {o.reviewedBy.name}, {fmtDateTime(o.reviewedAt, tz)}</p>}
         {o.reviewNote && <p className="text-sm mt-1">&ldquo;{o.reviewNote}&rdquo;</p>}
+        {o.kind === "ORDER" && o.status === "APPROVED" && (
+          <p className="text-sm mt-1">{o.deliveredAt ? <span className="text-ok font-semibold">Delivered {fmtDateTime(o.deliveredAt, tz)}</span> : o.driver ? `Out for delivery with ${o.driver.name}` : "Waiting for a driver"}</p>
+        )}
       </div>
       <ul className="card">
         {o.lines.map((l) => {
