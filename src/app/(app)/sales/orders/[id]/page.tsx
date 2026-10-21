@@ -9,6 +9,9 @@ import { ORDER_STATUS } from "@/components/field/orderStatus";
 import { OrderReview } from "@/components/sales/OrderReview";
 import { SyncStatus } from "@/components/sales/SyncStatus";
 import { accountingConnected } from "@/lib/services/accountingSync";
+import { listDrivers } from "@/lib/services/deliveries";
+import { DeliveryAssign } from "@/components/sales/DeliveryAssign";
+import { fmtDistance } from "@/lib/geo";
 
 export const metadata = { title: "Review order" };
 
@@ -33,6 +36,15 @@ export default async function OrderReviewPage({ params }: PageProps<"/sales/orde
       {o.status === "APPROVED" && o.syncStatus && (
         <div className="mb-4">
           <SyncStatus id={o.id} status={o.syncStatus} connected={accountingConnected()} syncedAt={o.syncedAt ? fmtDateTime(o.syncedAt, tz) : null} error={o.syncError} attempts={o.syncAttempts} />
+        </div>
+      )}
+      {o.kind === "ORDER" && o.status === "APPROVED" && (
+        <div className="mb-4">
+          <DeliveryAssign
+            id={o.id} driverId={o.driverId} drivers={await listDrivers()}
+            assigned={o.assignedAt ? fmtDateTime(o.assignedAt, tz) : null}
+            delivered={o.deliveredAt ? { at: `${o.driver?.name ? `${o.driver.name}, ` : ""}${fmtDateTime(o.deliveredAt, tz)}`, verified: o.deliveryVerified, distance: o.deliveryDistanceM != null ? fmtDistance(o.deliveryDistanceM) : null, note: o.deliveryNote } : null}
+          />
         </div>
       )}
       <OrderReview

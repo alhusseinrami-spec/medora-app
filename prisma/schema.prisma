@@ -19,6 +19,8 @@ enum Role {
   MANAGER
   ACCOUNTANT
   STAFF
+  SALESPERSON
+  DRIVER
   VIEWER
 }
 
@@ -114,6 +116,7 @@ model User {
   visits        Visit[]
   salesOrders   SalesOrder[]     @relation("OrderRep")
   ordersReviewed SalesOrder[]    @relation("OrderReviewer")
+  deliveries    SalesOrder[]     @relation("OrderDriver")
 
   @@map("users")
 }
@@ -447,12 +450,24 @@ model SalesOrder {
   nextSyncAt   DateTime?
   syncedAt     DateTime?
   syncError    String      @default("")
+  // Delivery of approved orders: accounting assigns a driver, who marks it delivered at the client.
+  driverId          String?
+  driver            User?     @relation("OrderDriver", fields: [driverId], references: [id], onDelete: SetNull)
+  assignedAt        DateTime?
+  deliveredAt       DateTime?
+  deliveryLat       Float?
+  deliveryLng       Float?
+  deliveryAccuracyM Float?
+  deliveryDistanceM Float?
+  deliveryVerified  Boolean   @default(false)
+  deliveryNote      String    @default("")
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
   @@index([status, createdAt])
   @@index([repId, createdAt])
   @@index([syncStatus, nextSyncAt])
+  @@index([driverId, deliveredAt])
   @@map("sales_orders")
 }
 

@@ -1,5 +1,7 @@
 "use client";
 import { useState, useTransition } from "react";
+import type { Role } from "@prisma/client";
+import { ASSIGNABLE_ROLES, ROLE_LABEL } from "@/lib/rbac";
 import { addMemoryAction, changePasswordAction, createUserAction, deleteMemoryAction, deleteMyDataAction, revokeSessionAction, setRetentionAction, updateProfileAction, updateUserAction, type Res } from "@/app/(app)/actions";
 import { Icon } from "@/components/ui/Icon";
 
@@ -71,9 +73,9 @@ export function MemoryList({ items }: { items: { id: string; content: string; so
 
 type U = { id: string; name: string; email: string; role: string; disabled: boolean; mfaEnabled: boolean; createdAt: string };
 export function TeamManager({ users, me, isOwner }: { users: U[]; me: string; isOwner: boolean }) {
-  const [f, setF] = useState({ name: "", email: "", role: "STAFF", password: "" });
+  const [f, setF] = useState({ name: "", email: "", role: "SALESPERSON", password: "" });
   const { r, pending, run } = useAct();
-  const roles = isOwner ? ["ADMIN", "MANAGER", "ACCOUNTANT", "STAFF", "VIEWER"] : ["MANAGER", "ACCOUNTANT", "STAFF", "VIEWER"];
+  const roles = ASSIGNABLE_ROLES.filter((x) => isOwner || x !== "ADMIN");
   return (
     <>
       <div className="overflow-x-auto border border-line rounded-xl mb-4">
@@ -84,8 +86,8 @@ export function TeamManager({ users, me, isOwner }: { users: U[]; me: string; is
             return (
               <tr key={u.id} className="border-t border-line">
                 <td className="p-2.5"><div className="font-medium">{u.name}</div><div className="text-xs text-muted">{u.email}</div></td>
-                <td className="p-2.5">{locked ? u.role.charAt(0) + u.role.slice(1).toLowerCase() : (
-                  <select className="select !w-auto !min-h-[30px] !py-0" defaultValue={u.role} disabled={pending} onChange={(e) => run(() => updateUserAction(u.id, { role: e.target.value as never }))} aria-label={`Role for ${u.name}`}>{roles.map((x) => <option key={x} value={x}>{x.charAt(0) + x.slice(1).toLowerCase()}</option>)}</select>)}</td>
+                <td className="p-2.5">{locked ? ROLE_LABEL[u.role as Role] : (
+                  <select className="select !w-auto !min-h-[30px] !py-0" defaultValue={u.role} disabled={pending} onChange={(e) => run(() => updateUserAction(u.id, { role: e.target.value as never }))} aria-label={`Role for ${u.name}`}>{roles.map((x) => <option key={x} value={x}>{ROLE_LABEL[x]}</option>)}</select>)}</td>
                 <td className="p-2.5">{u.mfaEnabled ? <span className="chip chip-ok">On</span> : <span className="chip">Off</span>}</td>
                 <td className="p-2.5">{u.disabled ? <span className="chip chip-danger">Disabled</span> : <span className="chip chip-ok">Active</span>}</td>
                 <td className="p-2.5 text-right whitespace-nowrap">{!locked && <>
@@ -98,11 +100,12 @@ export function TeamManager({ users, me, isOwner }: { users: U[]; me: string; is
         </table>
       </div>
       <h3 className="font-semibold mb-2">Add a person</h3>
-      <form className="grid gap-3 sm:grid-cols-2" onSubmit={(e) => { e.preventDefault(); run(async () => { const x = await createUserAction(f as never); if (!x.error) setF({ name: "", email: "", role: "STAFF", password: "" }); return x; }); }}>
+      <form className="grid gap-3 sm:grid-cols-2" onSubmit={(e) => { e.preventDefault(); run(async () => { const x = await createUserAction(f as never); if (!x.error) setF({ name: "", email: "", role: "SALESPERSON", password: "" }); return x; }); }}>
         <label><span className="label">Name</span><input className="input" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} required /></label>
         <label><span className="label">Email</span><input className="input" type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} required /></label>
-        <label><span className="label">Role</span><select className="select" value={f.role} onChange={(e) => setF({ ...f, role: e.target.value })}>{roles.map((x) => <option key={x} value={x}>{x.charAt(0) + x.slice(1).toLowerCase()}</option>)}</select></label>
+        <label><span className="label">Role</span><select className="select" value={f.role} onChange={(e) => setF({ ...f, role: e.target.value })}>{roles.map((x) => <option key={x} value={x}>{ROLE_LABEL[x]}</option>)}</select></label>
         <label><span className="label">Temporary password</span><input className="input" type="text" autoComplete="off" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} required minLength={12} /></label>
+        <p className="text-xs text-muted sm:col-span-2">Salespeople and drivers sign in on their phone and open straight into the field app. Accountants, admins and the owner also need an authenticator app.</p>
         <div><button className="btn btn-primary" disabled={pending}>Add person</button></div>
       </form>
       <Msg r={r} />

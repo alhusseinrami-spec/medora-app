@@ -154,7 +154,7 @@ export async function visitsBoard(a: Actor, key: string) {
   const from = startOfDayUtc(key, tz), to = startOfDayUtc(addDaysKey(key, 1), tz);
   const [visits, reps, orders] = await Promise.all([
     listVisits(a, from, to),
-    db.user.findMany({ where: { disabledAt: null, role: { in: ["STAFF", "MANAGER", "OWNER"] } }, select: { id: true, name: true, role: true }, orderBy: { name: "asc" } }),
+    db.user.findMany({ where: { disabledAt: null, role: { in: ["SALESPERSON", "STAFF", "MANAGER", "OWNER"] } }, select: { id: true, name: true, role: true }, orderBy: { name: "asc" } }),
     db.salesOrder.groupBy({ by: ["repId"], where: { createdAt: { gte: from, lt: to } }, _count: { _all: true } }),
   ]);
   const byRep = new Map<string, typeof visits>();
@@ -166,7 +166,7 @@ export async function visitsBoard(a: Actor, key: string) {
       return { rep: r, visits: vs, verified: vs.filter((v) => v.verified).length, orders: orderCount.get(r.id) ?? 0 };
     })
     // Owners and managers appear only on days they actually visited someone.
-    .filter((row) => row.rep.role === "STAFF" || row.visits.length > 0);
+    .filter((row) => row.rep.role === "SALESPERSON" || row.rep.role === "STAFF" || row.visits.length > 0);
 }
 
 // ---- Today ----
@@ -350,7 +350,7 @@ export async function getOrder(a: Actor, id: string) {
     where: { id, ...orderScope(a) },
     include: {
       contact: { select: { id: true, name: true, placeType: true, phone: true, address: true } },
-      rep: { select: { id: true, name: true } }, reviewedBy: { select: { name: true } },
+      rep: { select: { id: true, name: true } }, reviewedBy: { select: { name: true } }, driver: { select: { id: true, name: true } },
       visit: { select: { at: true, verified: true } },
       lines: { orderBy: { position: "asc" }, include: { product: { select: { sku: true, unit: true } } } },
     },
