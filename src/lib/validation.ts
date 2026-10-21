@@ -131,4 +131,13 @@ export const ProductInput = z.object({
   unit: text(30).default("unit"),
   price: z.number().min(0, "Prices can't be negative.").max(10_000_000),
   active: z.boolean().default(true),
+  stock: z.number().int("Stock must be a whole number.").min(-1_000_000).max(100_000_000).nullable().optional(),
+  minStock: z.number().int("Low-stock level must be a whole number.").min(0, "Low-stock level can't be negative.").max(100_000_000).nullable().optional(),
+});
+
+// Rows read from an accounting export. Cells arrive as text or numbers; the service cleans them up.
+const cell = z.union([z.string(), z.number()]).nullable().optional();
+export const ProductImport = z.object({
+  rows: z.array(z.object({ sku: cell, name: cell, unit: cell, price: cell, stock: cell, minStock: cell })).min(1, "The file has no item rows.").max(10_000, "That file has more than 10,000 items. Split it into smaller files."),
+  hideMissing: z.boolean().default(false),
 });

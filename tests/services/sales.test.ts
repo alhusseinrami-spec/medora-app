@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/lib/db";
 import { distanceM, nearestRoute } from "@/lib/geo";
 import {
-  cancelOrder, checkIn, checkInNearest, createClient, createOrder, listClients, listOrders, relocateClient,
+  cancelOrder, checkIn, checkInNearest, createClient, createOrder, importProducts, listClients, listProducts, readNumber, listOrders, relocateClient,
   reviewOrder, saveProduct, setFollowUp, todayFor, updateClient, visitsBoard,
 } from "@/lib/services/sales";
 import { makeUser, reset } from "./helpers";
@@ -142,5 +142,46 @@ describe("orders and proformas", () => {
     await expect(createOrder(rep, { contactId: client.id, lines: [] })).rejects.toThrow(/at least one/);
     await expect(createOrder(rep, { contactId: client.id, lines: [{ productId: gloves.id, quantity: 1.5 }] })).rejects.toThrow(/whole numbers/);
     await expect(createOrder(rep, { contactId: client.id, lines: [{ description: "", quantity: 1 }] })).rejects.toThrow(/Describe/);
+  });
+});
+
+describe("product import", () => {
+  it("reads prices the way accounting exports write them", () => {
+    expect(readNumber("$1,250.50")).toBe(1250.5);
+    expect(readNumber("1.250,50")).toBe(1250.5);
+    expect(readNumber("6,5")).toBe(6.5);
+    expect(readNumber("1,250")).toBe(1250);
+    expect(readNumber("12 pcs")).toBe(12);
+    expect(readNumber(7.25)).toBe(7.25);
+    expect(readNumber("")).toBeNull();
+    expect(readNumber("n/a")).toBeNull();
+  });
+
+  it("adds new codes, updates existing ones, keeps stock when the cell is blank, and reports bad rows", async () => {
+    const acc = await makeUser("ACCOUNTANT"), rep = await makeUser("STAFF");
+    await saveProduct(acc, { sku: "GLV-M", name: "Gloves", unit: "box", price: 6, stock: 40, minStock: 10 });
+    await saveProduct(acc, { sku: "OLD-1", name: "Discontinued", price: 1 });
+    await expect(importProducts(rep, { rows: [{ sku: "X", name: "Y", price: 1 }] })).rejects.toThrow(/accounting/);
+
+    const r = await importProducts(acc, {
+      hideMissing: true,
+      rows: [
+        { sku: "GLV-M", name: "Nitrile gloves M", unit: "box", price: "6,50", stock: "" },
+        { sku: "SYR-5", name: "Syringe 5ml", unit: "", price: "$0.12", stock: "3", minStock: 50 },
+        { sku: "", name: "", price: "" },
+        { sku: "BAD-1", name: "No price here", price: "" },
+        { sku: "SYR-5", name: "Syringe 5 ml", price: 0.15, stock: 4 },
+      ],
+    });
+    expect(r).toMatchObject({ added: 1, updated: 1, hidden: 1, skipped: [{ row: 4, sku: "BAD-1", reason: "No price" }] });
+    const all = await listProducts(false);
+    const by = Object.fromEntries(all.map((p) => [p.sku, p]));
+    expect(by["GLV-M"]).toMatchObject({ name: "Nitrile gloves M", stock: 40, minStock: 10, active: true });
+    expect(Number(by["GLV-M"].price)).toBe(6.5);
+    expect(by["SYR-5"]).toMatchObject({ name: "Syringe 5 ml", unit: "unit", stock: 4, minStock: null });
+    expect(by["OLD-1"].active).toBe(false);
+    await importProducts(acc, { rows: [{ sku: "GLV-M", name: "Nitrile gloves M", price: 7 }] });
+    expect((await listProducts(false)).find((p) => p.sku === "GLV-M")?.unit).toBe("box"); // no unit column: unit kept
+    await expect(importProducts(acc, { rows: [{ sku: "A", name: "B", price: "x" }] })).rejects.toThrow(/None of the rows/);
   });
 });

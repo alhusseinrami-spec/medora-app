@@ -412,6 +412,8 @@ model Product {
   unit      String   @default("unit")
   price     Decimal  @db.Decimal(12, 2)
   active    Boolean  @default(true)
+  stock     Int?     // on hand; null when accounting hasn't given a figure
+  minStock  Int?     // at or below this the picker shows the item in red
   lines     SalesOrderLine[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -7,7 +7,7 @@ import type { Permission } from "@/lib/rbac";
 import { UserError } from "@/lib/services/errors";
 import { retrySync } from "@/lib/services/accountingSync";
 import {
-  cancelOrder, checkIn, checkInNearest, createClient, createOrder, relocateClient, reviewOrder, saveProduct, setFollowUp, updateClient,
+  cancelOrder, checkIn, checkInNearest, createClient, createOrder, importProducts, relocateClient, reviewOrder, saveProduct, setFollowUp, updateClient,
 } from "@/lib/services/sales";
 
 export type Res = { error?: string; ok?: string; id?: string; warn?: string };
@@ -67,4 +67,12 @@ export const reviewOrderAction = async (id: string, raw: unknown) => act("sales.
   return { ok: o.status === "APPROVED" ? "Approved. The rep has been told." : o.status === "REJECTED" ? "Rejected. The rep has been told." : "Changes saved" };
 });
 export const saveProductAction = async (raw: unknown, id?: string) => act("sales.review", ["/sales"], async (u) => { const p = await saveProduct(u, raw, id); return { id: p.id, ok: "Saved" }; });
+export const importProductsAction = async (raw: unknown) => act("sales.review", ["/sales", "/field"], async (u) => {
+  const r = await importProducts(u, raw);
+  const parts = [r.added && `${r.added} added`, r.updated && `${r.updated} updated`, r.hidden && `${r.hidden} hidden`].filter(Boolean);
+  const warn = r.skipped.length
+    ? `${r.skipped.length} row${r.skipped.length === 1 ? " was" : "s were"} skipped: ${r.skipped.slice(0, 5).map((x) => `${x.sku || `row ${x.row}`} (${x.reason.toLowerCase()})`).join(", ")}${r.skipped.length > 5 ? ", …" : ""}.`
+    : undefined;
+  return { ok: `Imported. ${parts.join(", ")}.`, warn };
+});
 export const retrySyncAction = async (id: string) => act("sales.review", ["/sales"], async (u) => { await retrySync(u, id); return { ok: "Queued. It will be sent within a minute." }; });

@@ -32,3 +32,7 @@ export const waLink = (n: string) => `https://wa.me/${n.replace(/[^\d]/g, "").re
 export const telLink = (n: string) => `tel:${n.replace(/[^\d+]/g, "")}`;
 export const directionsLink = (lat: number, lng: number) => `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 export const usd = (n: number) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+// Out of stock, or at or below the low-stock level accounting set for the item.
+export const isLowStock = (p: { stock: number | null; minStock: number | null }) => p.stock != null && (p.stock <= 0 || (p.minStock != null && p.stock <= p.minStock));
+export const stockLabel = (p: { stock: number | null; unit: string }) => (p.stock == null ? null : p.stock <= 0 ? "Out of stock" : `${p.stock.toLocaleString("en-US")} in stock`);

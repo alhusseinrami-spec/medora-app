@@ -19,7 +19,7 @@ export default async function NewOrderPage({ params, searchParams }: PageProps<"
       <OrderForm
         clientId={id} clientName={c.name} visitId={visitId}
         initialKind={sp.kind === "proforma" ? "PROFORMA" : "ORDER"}
-        products={products.map((p) => ({ id: p.id, sku: p.sku, name: p.name, unit: p.unit, price: Number(p.price) }))}
+        products={products.map((p) => ({ id: p.id, sku: p.sku, name: p.name, unit: p.unit, price: Number(p.price), stock: p.stock, minStock: p.minStock }))}
       />
     </div>
   );

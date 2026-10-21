@@ -13,7 +13,7 @@ export default async function ProductsPage() {
     <div className="max-w-4xl">
       <Link href="/sales/orders" className="text-sm text-ink-2 hover:underline">← Orders</Link>
       <PageHeader title="Products and prices" sub="What reps can pick when they take an order. Prices here are the starting price; you can still change them on each order." />
-      <ProductsEditor initial={products.map((p) => ({ id: p.id, sku: p.sku, name: p.name, unit: p.unit, price: Number(p.price), active: p.active }))} />
+      <ProductsEditor initial={products.map((p) => ({ id: p.id, sku: p.sku, name: p.name, unit: p.unit, price: Number(p.price), active: p.active, stock: p.stock, minStock: p.minStock }))} />
     </div>
   );
 }
