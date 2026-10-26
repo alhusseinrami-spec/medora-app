@@ -2,10 +2,11 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { db } from "@/lib/db";
 import { distanceM, nearestRoute } from "@/lib/geo";
 import {
-  cancelOrder, checkIn, checkInNearest, createClient, createOrder, importProducts, listClients, listProducts, readNumber, listOrders, relocateClient,
+  cancelOrder, checkIn, checkInNearest, countKnownLeads, createClient, createOrder, importLeads, importProducts, listClients, listProducts, readNumber, listOrders, relocateClient,
   reviewOrder, saveProduct, setFollowUp, todayFor, updateClient, visitsBoard,
 } from "@/lib/services/sales";
 import { makeUser, reset } from "./helpers";
+import { LEAD_LISTS } from "@/lib/leadLists";
 import { findHeader, guessMapping, parseCsv, stockLooksUnused } from "@/components/sales/importSheet";
 
 beforeEach(reset);
@@ -221,5 +222,35 @@ describe("prices by the piece", () => {
     const o = await createOrder(rep, { contactId: client.id, lines: [{ productId: p.id, quantity: 1000 }] });
     expect(Number(o.total)).toBe(337.5);
     expect(Number((await db.salesOrderLine.findFirstOrThrow({ where: { orderId: o.id } })).unitPrice)).toBe(0.3375);
+  });
+});
+
+describe("lead lists", () => {
+  const rows = [
+    { name: "Srour Pharmacy", placeType: "Pharmacy", phone: "07/740328", address: "Tyre" },
+    { name: "Nahouli Pharmacy", placeType: "Pharmacy", phone: "07-734167", address: "Saida" },
+    { name: "Manana Medical", placeType: "Medical supplies", phone: "", address: "Zahrani" },
+  ];
+
+  it("adds a list as shared leads once, skipping places already in the CRM", async () => {
+    const boss = await makeUser("MANAGER", "Boss");
+    await createClient(boss, { name: "Srour (old entry)", phone: "+961 7 740 328" });
+    const r = await importLeads(boss, { rows, tag: "test-list" });
+    expect(r).toEqual({ added: 2, skipped: 1 });
+    const nahouli = await db.contact.findFirstOrThrow({ where: { name: "Nahouli Pharmacy" } });
+    expect(nahouli).toMatchObject({ stage: "LEAD", category: "CUSTOMER", ownerId: boss.id, tags: ["test-list"], lat: null });
+    expect(await importLeads(boss, { rows, tag: "test-list" })).toEqual({ added: 0, skipped: 3 });
+    expect(await countKnownLeads(rows)).toBe(3);
+
+    const rep = await makeUser("SALESPERSON");
+    expect((await listClients(rep)).map((c) => c.name)).toContain("Manana Medical");
+    await expect(importLeads(rep, { rows })).rejects.toThrow(/manager/);
+  });
+
+  it("ships lists the import accepts", () => {
+    for (const l of LEAD_LISTS) {
+      expect(l.rows.length).toBeGreaterThan(0);
+      expect(l.rows.every((r) => r.name && r.address.length <= 300)).toBe(true);
+    }
   });
 });
