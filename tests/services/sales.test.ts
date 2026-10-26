@@ -247,10 +247,24 @@ describe("lead lists", () => {
     await expect(importLeads(rep, { rows })).rejects.toThrow(/manager/);
   });
 
+  it("places list leads at their town until a rep's check-in saves the exact spot", async () => {
+    const boss = await makeUser("MANAGER", "Boss");
+    const rep = await makeUser("SALESPERSON");
+    await importLeads(boss, { rows: [{ name: "Ghazieh Pharmacy", phone: "07-220028", address: "Ghazieh", lat: 33.5175, lng: 35.36889 }] });
+    const c = await db.contact.findFirstOrThrow({ where: { name: "Ghazieh Pharmacy" } });
+    expect(c).toMatchObject({ lat: 33.5175, locationApprox: true });
+
+    // Standing next to the town pin finds nothing: it isn't the shop's real spot.
+    expect((await checkInNearest(rep, { lat: 33.5175, lng: 35.36889, accuracy: 10 })).found).toBe(false);
+    const r = await checkIn(rep, c.id, { lat: 33.519, lng: 35.37, accuracy: 15 });
+    expect(r.visit).toMatchObject({ verified: false, distanceM: null });
+    expect(await db.contact.findUniqueOrThrow({ where: { id: c.id } })).toMatchObject({ lat: 33.519, lng: 35.37, locationApprox: false });
+  });
+
   it("ships lists the import accepts", () => {
     for (const l of LEAD_LISTS) {
       expect(l.rows.length).toBeGreaterThan(0);
-      expect(l.rows.every((r) => r.name && r.address.length <= 300)).toBe(true);
+      expect(l.rows.every((r) => r.name && r.address.length <= 300 && r.lat! > 33 && r.lat! < 33.7 && r.lng! > 35.1 && r.lng! < 35.7)).toBe(true);
     }
   });
 });

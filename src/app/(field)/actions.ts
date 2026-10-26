@@ -29,7 +29,7 @@ async function act(permission: Permission, paths: string[], fn: (u: Awaited<Retu
 
 const verdict = (v: { verified: boolean; distanceM: number | null; accuracyM: number }) =>
   v.verified ? undefined
-    : v.distanceM == null ? "Not verified: this client had no saved location, so this spot is now saved as theirs."
+    : v.distanceM == null ? "Not verified: this client had no exact location, so this spot is now saved as theirs."
     : v.accuracyM > 100 ? `Not verified: your phone's location was only accurate to ${fmtDistance(v.accuracyM)}.`
     : `Not verified: you are ${fmtDistance(v.distanceM)} from the client's saved location.`;
 
