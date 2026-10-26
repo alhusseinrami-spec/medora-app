@@ -252,6 +252,8 @@ model Contact {
   address    String          @default("")
   lat        Float?
   lng        Float?
+  // The pin is only roughly right (a lead placed at its town). A rep's first good check-in replaces it.
+  locationApprox Boolean     @default(false)
   followUpAt DateTime?
   visits     Visit[]
   orders     SalesOrder[]

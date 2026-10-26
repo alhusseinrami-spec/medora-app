@@ -105,6 +105,7 @@ export const LeadImport = z.object({
   rows: z.array(z.object({
     name: clientFields.name, placeType: clientFields.placeType.default(""), phone: clientFields.phone.default(""),
     address: clientFields.address.default(""), notes: clientFields.notes.default(""),
+    lat: z.number().min(-90).max(90).optional(), lng: z.number().min(-180).max(180).optional(),
   })).min(1, "The list has no places.").max(5_000, "That list has more than 5,000 places. Split it."),
   tag: text(60).default(""),
 });

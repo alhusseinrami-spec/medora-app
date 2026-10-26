@@ -70,7 +70,7 @@ export default async function ClientPage({ params }: PageProps<"/field/clients/[
         id={c.id} name={c.name} stage={c.stage!}
         phone={c.phone} whatsapp={c.whatsapp || c.phone}
         location={c.lat != null && c.lng != null ? { lat: c.lat, lng: c.lng } : null}
-        canMovePin={can(user.role, "team.view")} today={dayKey(new Date(), tz)}
+        canMovePin={can(user.role, "team.view") || c.locationApprox} today={dayKey(new Date(), tz)}
         hasFollowUp={!!c.followUpAt}
       />
 
