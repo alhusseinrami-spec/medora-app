@@ -1,0 +1,1686 @@
+{
+ "id": "south-pharmacies-2026-10",
+ "title": "Pharmacies and medical shops: Saida, Tyre, Nabatieh",
+ "rows": [
+  {
+   "name": "Family Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "81-010042",
+   "address": "الصرفند، حي عين القنطرة (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية وسام",
+   "placeType": "Pharmacy",
+   "phone": "03-411471",
+   "address": "الصرفند، طريق عام صيدا صور (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Joud Pharma",
+   "placeType": "Pharmacy",
+   "phone": "03-879339",
+   "address": "كوثرية السياد (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Saida Down Town Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-753227",
+   "address": "صيدا، الدكرمان (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية البابلية",
+   "placeType": "Pharmacy",
+   "phone": "07-421009",
+   "address": "البابلية، حي الحاموشة (Saida)",
+   "notes": "Other phones: 03-907504. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية البيطار",
+   "placeType": "Pharmacy",
+   "phone": "07-724922",
+   "address": "صيدا، الدكرمان (Saida)",
+   "notes": "Other phones: 03-724922. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الجردلي",
+   "placeType": "Pharmacy",
+   "phone": "07-723051",
+   "address": "صيدا، فخر الدين (Saida)",
+   "notes": "Other phones: 03-645423. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الزيباوي",
+   "placeType": "Pharmacy",
+   "phone": "07-730986",
+   "address": "صيدا، البراد، دوار مرجان (Saida)",
+   "notes": "Other phones: 70-076078. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الغازية",
+   "placeType": "Pharmacy",
+   "phone": "07-220028",
+   "address": "الغازية (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية المروج",
+   "placeType": "Pharmacy",
+   "phone": "07-420880",
+   "address": "الغسانية (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الهاني",
+   "placeType": "Pharmacy",
+   "phone": "07-722975",
+   "address": "الهلالية (Saida)",
+   "notes": "Other phones: 78-872920. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية إيليا",
+   "placeType": "Pharmacy",
+   "phone": "07-200884",
+   "address": "مغدوشة (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية بزون",
+   "placeType": "Pharmacy",
+   "phone": "07-260640",
+   "address": "البيسارية (Saida)",
+   "notes": "Other phones: 03-828920. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية بعاصيري",
+   "placeType": "Pharmacy",
+   "phone": "07-725623",
+   "address": "عبرا (Saida)",
+   "notes": "Other phones: 76-818806. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية داليا",
+   "placeType": "Pharmacy",
+   "phone": "07-737142",
+   "address": "عين الدلب (Saida)",
+   "notes": "Other phones: 70-693650. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الابتسام",
+   "placeType": "Pharmacy",
+   "phone": "07-215051",
+   "address": "كفرحتى (Saida)",
+   "notes": "Other phones: 03-725058. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية بحمد",
+   "placeType": "Pharmacy",
+   "phone": "07-215512",
+   "address": "كفرملكي (Saida)",
+   "notes": "Other phones: 71-595653. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية خوري",
+   "placeType": "Pharmacy",
+   "phone": "07-720066",
+   "address": "القرية (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية ربيع",
+   "placeType": "Pharmacy",
+   "phone": "07-260735",
+   "address": "المصيلح (Saida)",
+   "notes": "Other phones: 76-073632. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية زينة",
+   "placeType": "Pharmacy",
+   "phone": "03-893144",
+   "address": "صيدا، الوسطاني (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية مرجان",
+   "placeType": "Pharmacy",
+   "phone": "03-721077",
+   "address": "صيدا، الدكرمان (Saida)",
+   "notes": "Other phones: 07-722009. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية وسام بعاصيري",
+   "placeType": "Pharmacy",
+   "phone": "07-731701",
+   "address": "الصالحية، حي السهلة (Saida)",
+   "notes": "Other phones: 03-076390. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية طالب",
+   "placeType": "Pharmacy",
+   "phone": "07-721428",
+   "address": "عبرا، حي زكازيك (Saida)",
+   "notes": "Other phones: 03-290561. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية عاطف البساط",
+   "placeType": "Pharmacy",
+   "phone": "07-721821",
+   "address": "صيدا، الدكرمان، رياض الصلح (Saida)",
+   "notes": "Other phones: 71-535610, 03-767643. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية علي",
+   "placeType": "Pharmacy",
+   "phone": "07-421099",
+   "address": "تفاحتا، حي العريش (Saida)",
+   "notes": "Other phones: 70-098199. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية كاعين",
+   "placeType": "Pharmacy",
+   "phone": "07-223349",
+   "address": "الغازية (Saida)",
+   "notes": "Other phones: 03-407269. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية نادر",
+   "placeType": "Pharmacy",
+   "phone": "07-737350",
+   "address": "الهلالية (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية نغم",
+   "placeType": "Pharmacy",
+   "phone": "07-752353",
+   "address": "صيدا، الدكرمان، شارع جمال الحبال (Saida)",
+   "notes": "Other phones: 70-013032. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharmacy Dania",
+   "placeType": "Pharmacy",
+   "phone": "03-809692",
+   "address": "الداودية (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية مرجان الجديدة",
+   "placeType": "Pharmacy",
+   "phone": "07-720700",
+   "address": "صيدا، الدكرمان (Saida)",
+   "notes": "Other phones: 76-720700, 03-930808. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الصفاء",
+   "placeType": "Pharmacy",
+   "phone": "07-305309",
+   "address": "الزرارية (Saida)",
+   "notes": "Other phones: 03-413263. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية سما",
+   "placeType": "Pharmacy",
+   "phone": "07-224012",
+   "address": "الغازية، حي الزاهرية (Saida)",
+   "notes": "Other phones: 70-814197. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Green Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-705596",
+   "address": "المية ومية (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية أريج",
+   "placeType": "Pharmacy",
+   "phone": "07-225850",
+   "address": "الغازية، خلة السنديانة (Saida)",
+   "notes": "Other phones: 70-916723. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية داود",
+   "placeType": "Pharmacy",
+   "phone": "07-420050",
+   "address": "الغسانية (Saida)",
+   "notes": "Other phones: 03-543117. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية السراي",
+   "placeType": "Pharmacy",
+   "phone": "03-339678",
+   "address": "صيدا، الدكرمان (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية حبلي",
+   "placeType": "Pharmacy",
+   "phone": "03-055906",
+   "address": "عبرا (Saida)",
+   "notes": "Other phones: 81-126959. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية فارماسينا",
+   "placeType": "Pharmacy",
+   "phone": "03-916384",
+   "address": "مجدليون (Saida)",
+   "notes": "Other phones: 07-753523. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الحدق",
+   "placeType": "Pharmacy",
+   "phone": "03-697485",
+   "address": "الهلالية، حي قباعة (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Rassil Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "76-558797",
+   "address": "صيدا، الوسطاني (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية شرحبيل",
+   "placeType": "Pharmacy",
+   "phone": "07-726323",
+   "address": "بقسطا (Saida)",
+   "notes": "Other phones: 70-760834. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية سرحان",
+   "placeType": "Pharmacy",
+   "phone": "03-208916",
+   "address": "البيسارية (Saida)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Nahouli Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-734167",
+   "address": "صيدا، الوسطاني، شارع رياض الصلح (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Bachacha Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-739039",
+   "address": "صيدا، البولفار الشرقي (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Hassan Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-735968",
+   "address": "صيدا، الدكرمان، شارع السراي (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Eva Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-216182",
+   "address": "كفرحتى (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Jbeily Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-729877",
+   "address": "صيدا، شارع القدس (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Sahel Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "70-107079",
+   "address": "الصرفند (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Razi Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-751250",
+   "address": "صيدا، الدكرمان (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Imane Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-305366",
+   "address": "الزرارية (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Habbal Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-751446",
+   "address": "صيدا، الدكرمان، البولفار الشرقي (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharma-Plus Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-753458",
+   "address": "صيدا، الوسطاني (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Abou Zeid Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-755545",
+   "address": "صيدا، الوسطاني (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Sarah Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-206016",
+   "address": "عنقون، حي المرج (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Khodr Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-442425",
+   "address": "الصرفند، حي المشترك (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharmacare Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-730481",
+   "address": "حارة صيدا (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Hani Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-441330",
+   "address": "الصرفند، مفرق الصكساكية (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Sarafand Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-442271",
+   "address": "الصرفند (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Alfa Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-734750",
+   "address": "صيدا (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Tavita Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-443383",
+   "address": "الصرفند (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Obeid Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-755277",
+   "address": "صيدا، الدكرمان (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Hanane Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-200723",
+   "address": "مغدوشة، الطريق العام (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Katia Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-225235",
+   "address": "الغازية، حي البترون (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Battah Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-728728",
+   "address": "صيدا، الوسطاني (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Skafi Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-725754",
+   "address": "صيدا، الوسطاني، بناية سكافي (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Shibly Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-755673",
+   "address": "المية ومية (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al-Nour Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-729989",
+   "address": "صيدا، الدكرمان، شارع الست نفيسة (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Jad Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-260455",
+   "address": "المروانية، حي الرادار (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Lara Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-990170",
+   "address": "الرميلة، طريق صيدا بيروت (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Sakakini Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-720484",
+   "address": "صيدا، شارع الست نفيسة (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Karim Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-442892",
+   "address": "الصكساكية، راس المتول (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharmacie Haddad",
+   "placeType": "Pharmacy",
+   "phone": "70-697480",
+   "address": "الصالحية (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Ali Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-751428",
+   "address": "حارة صيدا، شارع جباع (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Darina Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-753080",
+   "address": "الهلالية (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Dana Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-754346",
+   "address": "حارة صيدا، أوتوستراد نبيه بري (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Dona Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-443009",
+   "address": "الصرفند، ضهور الصرفند (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Mariam Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-221251",
+   "address": "الغازية، مفرق مغدوشة (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Riham Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-752200",
+   "address": "حارة صيدا، شارع حسام الدين الحريري (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Lina Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-750213",
+   "address": "صيدا، شارع الثكنة (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Fouar Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-753788",
+   "address": "عين الدلب، الفوار (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Adam Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-224413",
+   "address": "الغازية، الطريق العام (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Arouce Al Bahr Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-726662",
+   "address": "حارة صيدا، شارع جباع (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Bint Al Hoda Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-525009",
+   "address": "بنعفول (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Hamzeh Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-505447",
+   "address": "المروانية (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Moustafa Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-754055",
+   "address": "المية ومية (Saida)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Moustapha Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-958311",
+   "address": "مخيم عين الحلوة (Saida)",
+   "notes": "Source: Theravex pharmacy finder. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Shour Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-400981",
+   "address": "جناتا (Tyre)",
+   "notes": "Other phones: 70-827727. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية رولا (Pharmacy Rola)",
+   "placeType": "Pharmacy",
+   "phone": "03-949479",
+   "address": "العباسية، مركز ساحلي (Tyre)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الحياة",
+   "placeType": "Pharmacy",
+   "phone": "07-350073",
+   "address": "صور (Tyre)",
+   "notes": "Other phones: 03-170442. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الزين",
+   "placeType": "Pharmacy",
+   "phone": "07-349933",
+   "address": "العباسية، حي البياضة (Tyre)",
+   "notes": "Other phones: 03-052274. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية النور",
+   "placeType": "Pharmacy",
+   "phone": "03-500560",
+   "address": "العباسية (Tyre)",
+   "notes": "Other phones: 07-346308, 07-742742. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية حرب",
+   "placeType": "Pharmacy",
+   "phone": "70-652380",
+   "address": "دير قانون النهر (Tyre)",
+   "notes": "Other phones: 07-382114. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية حكيم",
+   "placeType": "Pharmacy",
+   "phone": "07-346330",
+   "address": "البرج الشمالي، الحوش (Tyre)",
+   "notes": "Other phones: 03-337645. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية حلال",
+   "placeType": "Pharmacy",
+   "phone": "07-430296",
+   "address": "صور، الأوتوستراد (Tyre)",
+   "notes": "Other phones: 70-993110. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية حيدر",
+   "placeType": "Pharmacy",
+   "phone": "76-752836",
+   "address": "صور، البوابة (Tyre)",
+   "notes": "Other phones: 03-217496, 07-741411, 07-740428. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية سرور",
+   "placeType": "Pharmacy",
+   "phone": "07-740328",
+   "address": "صور، الرمل، مدخل صور (Tyre)",
+   "notes": "Other phones: 70-300443, 03-354684. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية صوفان",
+   "placeType": "Pharmacy",
+   "phone": "70-145028",
+   "address": "باتولية (Tyre)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الحوش",
+   "placeType": "Pharmacy",
+   "phone": "07-348428",
+   "address": "البرج الشمالي، الحوش (Tyre)",
+   "notes": "Other phones: 03-571221. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الوفاء",
+   "placeType": "Pharmacy",
+   "phone": "81-934299",
+   "address": "صديقين (Tyre)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية بدوي",
+   "placeType": "Pharmacy",
+   "phone": "07-346472",
+   "address": "العباسية، حي الحوش (Tyre)",
+   "notes": "Other phones: 70-001322. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية رشا بسما",
+   "placeType": "Pharmacy",
+   "phone": "07-350391",
+   "address": "عين بعال (Tyre)",
+   "notes": "Other phones: 70-355226. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية عز الدين",
+   "placeType": "Pharmacy",
+   "phone": "07-741632",
+   "address": "صور، مفرق الاستراحة (Tyre)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية عطوي",
+   "placeType": "Pharmacy",
+   "phone": "07-740087",
+   "address": "صور، الروم الأرثوذكس (Tyre)",
+   "notes": "Other phones: 03-702360, 70-658196. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية قصير",
+   "placeType": "Pharmacy",
+   "phone": "07-400448",
+   "address": "دير قانون النهر، ضهر الهوا (Tyre)",
+   "notes": "Other phones: 70-639349. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية مادونا",
+   "placeType": "Pharmacy",
+   "phone": "07-396316",
+   "address": "دير قانون رأس العين (Tyre)",
+   "notes": "Other phones: 03-740356. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية مسلماني",
+   "placeType": "Pharmacy",
+   "phone": "07-340046",
+   "address": "الناقورة (Tyre)",
+   "notes": "Other phones: 03-733764. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية معركة",
+   "placeType": "Pharmacy",
+   "phone": "07-315315",
+   "address": "معركة، الشارع العام (Tyre)",
+   "notes": "Other phones: 71-411417. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الشهابية",
+   "placeType": "Pharmacy",
+   "phone": "07-410870",
+   "address": "الشهابية، درب السوق (Tyre)",
+   "notes": "Other phones: 03-604791. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الجواد",
+   "placeType": "Pharmacy",
+   "phone": "81-929677",
+   "address": "جويا (Tyre)",
+   "notes": "Other phones: 81-608486. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الحسن",
+   "placeType": "Pharmacy",
+   "phone": "70-528101",
+   "address": "معروب (Tyre)",
+   "notes": "Other phones: 76-142697. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية العماد",
+   "placeType": "Pharmacy",
+   "phone": "07-412040",
+   "address": "الشهابية (Tyre)",
+   "notes": "Other phones: 03-895150. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية طباجة",
+   "placeType": "Pharmacy",
+   "phone": "07-411209",
+   "address": "المجادل (Tyre)",
+   "notes": "Other phones: 76-626082. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية مايا",
+   "placeType": "Pharmacy",
+   "phone": "76-911734",
+   "address": "طيردبا (Tyre)",
+   "notes": "Other phones: 76-725886. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Well Care Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "81-064030",
+   "address": "معركة (Tyre)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية لين",
+   "placeType": "Pharmacy",
+   "phone": "81-038015",
+   "address": "قانا (Tyre)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Lily Pharma",
+   "placeType": "Pharmacy",
+   "phone": "70-637305",
+   "address": "العباسية (Tyre)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "فارما عاصي (Assi Pharma)",
+   "placeType": "Pharmacy",
+   "phone": "70-679637",
+   "address": "الشهابية، كرم سويدان (Tyre)",
+   "notes": "Other phones: 07-411298. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "AL-Mostafa Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-350779",
+   "address": "البرج الشمالي (Tyre)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharmacity Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-348248",
+   "address": "صور، الرمل، شارع الرئيس نبيه بري (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Majadel Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "76-672127",
+   "address": "المجادل (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharmacie Saed & Hajj Ali",
+   "placeType": "Pharmacy",
+   "phone": "07-344227",
+   "address": "صور (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Randa Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-380165",
+   "address": "دير قانون (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Darwiche Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-400406",
+   "address": "معروب (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Alaik Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-430945",
+   "address": "عين بعال (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Bouchra Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-400672",
+   "address": "دير قانون النهر (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharma Zahra Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-395585",
+   "address": "البرج الشمالي (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Jaafar Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-410710",
+   "address": "جويا (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Abboud Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "71-433283",
+   "address": "دير عامص (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Hanane Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-411944",
+   "address": "المجادل (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Awada Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-410699",
+   "address": "جويا (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Lina Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-430711",
+   "address": "قانا (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Ramadan Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-410355",
+   "address": "جويا (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Mira Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-320043",
+   "address": "صور (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Hasanein Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "71-947440",
+   "address": "صديقين (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Assar Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-349106",
+   "address": "صور (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Mamlouk Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-345439",
+   "address": "صور (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Elissar Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-411926",
+   "address": "صلعا (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Nabila Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-431275",
+   "address": "صديقين (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Houssein Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-430966",
+   "address": "قانا (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Zahra Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-741368",
+   "address": "صور (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Islah Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-347525",
+   "address": "البرج الشمالي (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharmacie Zahraa",
+   "placeType": "Pharmacy",
+   "phone": "07-350590",
+   "address": "البرج الشمالي (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Houmani Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-343158",
+   "address": "صور (Tyre)",
+   "notes": "Other phones: 03-565523. Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Kaem Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-348491",
+   "address": "البرج الشمالي (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Marej Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-385085",
+   "address": "صريفا (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Bazourieh Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-376161",
+   "address": "البازورية (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Israa Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-350044",
+   "address": "عين بعال (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Zein El Abidine Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-430363",
+   "address": "العيتيت (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Malak Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-346076",
+   "address": "العباسية (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Kana Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-431088",
+   "address": "قانا (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Adnan Srour Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-345357",
+   "address": "صور (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Jana Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "76-765488",
+   "address": "صور (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Nakoura Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-460123",
+   "address": "الناقورة (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Saha Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-430706",
+   "address": "قانا (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Redwan Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-395865",
+   "address": "القليلة (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Hadil Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-380820",
+   "address": "معروب (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Fardoun Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-380380",
+   "address": "العباسية (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Abdallah Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-343835",
+   "address": "العباسية (Tyre)",
+   "notes": "Other phones: 70-704416. Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Ali Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-411501",
+   "address": "الشهابية (Tyre)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Hadi Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-343069",
+   "address": "صور، الرمل، شارع المصارف، دنيا سنتر (Tyre)",
+   "notes": "Other phones: 03-797241. Source: Theravex pharmacy finder. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Sour Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-740079",
+   "address": "صور، قرب المشرق للتشخيص الطبي (Tyre)",
+   "notes": "Source: Theravex pharmacy finder. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Atieh / Nicolas Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-431236",
+   "address": "قانا، حناوية (Tyre)",
+   "notes": "Source: Theravex pharmacy finder. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Chefaa Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-834233",
+   "address": "البرج الشمالي (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Hiram Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-270053",
+   "address": "البص (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Jaffal Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-379564",
+   "address": "البازورية (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Moustapha Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-376328",
+   "address": "برغلية (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Nagham Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-361436",
+   "address": "العيتيت (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Andalos Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-277580",
+   "address": "صور (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Marina Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-599253",
+   "address": "صور، الرمل (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "L'Orient Pharmacie",
+   "placeType": "Pharmacy",
+   "phone": "70-980551",
+   "address": "صور (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Abou Khalil Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-087525",
+   "address": "صور، الرمل (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Adnan Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-305498",
+   "address": "صور (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Basma Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-157020",
+   "address": "صور (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Bassam Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-387463",
+   "address": "باتولية (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Batoul Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-672708",
+   "address": "صور (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Diana Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-178128",
+   "address": "الشهابية (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Nahed Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-753867",
+   "address": "الشهابية (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Noura Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-523949",
+   "address": "صور (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Sawsan Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-375043",
+   "address": "البازورية (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Sultanieh Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "03-647829",
+   "address": "السلطانية (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Bee Pharm (صيدلية نحلة)",
+   "placeType": "Pharmacy",
+   "phone": "03-575439",
+   "address": "كفرتبنيت (Nabatieh)",
+   "notes": "Other phones: 07-764144. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Rabih Pharma",
+   "placeType": "Pharmacy",
+   "phone": "07-535835",
+   "address": "عربصاليم (Nabatieh)",
+   "notes": "Other phones: 03-638320. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Samer Pharmacie",
+   "placeType": "Pharmacy",
+   "phone": "03-894334",
+   "address": "زبدين (Nabatieh)",
+   "notes": "Other phones: 07-764391. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الإقليم",
+   "placeType": "Pharmacy",
+   "phone": "07-211722",
+   "address": "عين قانا (Nabatieh)",
+   "notes": "Other phones: 03-714815. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الأمير",
+   "placeType": "Pharmacy",
+   "phone": "07-512556",
+   "address": "جبشيت، حي السموقة (Nabatieh)",
+   "notes": "Other phones: 71-307378. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الريف",
+   "placeType": "Pharmacy",
+   "phone": "07-540437",
+   "address": "كفرصير (Nabatieh)",
+   "notes": "Other phones: 03-045332. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية السلام",
+   "placeType": "Pharmacy",
+   "phone": "07-769446",
+   "address": "النبطية، أوتوستراد نبيه بري (Nabatieh)",
+   "notes": "Other phones: 03-760292. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية بسام",
+   "placeType": "Pharmacy",
+   "phone": "07-533204",
+   "address": "تلة كفرجوز (Nabatieh)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية حمدان",
+   "placeType": "Pharmacy",
+   "phone": "07-762718",
+   "address": "بئر القنديل، البركة (Nabatieh)",
+   "notes": "Other phones: 03-371937. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية رامي",
+   "placeType": "Pharmacy",
+   "phone": "07-530689",
+   "address": "مزرعة كفرجوز (Nabatieh)",
+   "notes": "Other phones: 03-349071. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية سليم",
+   "placeType": "Pharmacy",
+   "phone": "07-769963",
+   "address": "النبطية التحتا، خلة الهواء (Nabatieh)",
+   "notes": "Other phones: 71-858333. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الأميري",
+   "placeType": "Pharmacy",
+   "phone": "07-768936",
+   "address": "كفررمان، المستديرة (Nabatieh)",
+   "notes": "Other phones: 03-031006. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية العين",
+   "placeType": "Pharmacy",
+   "phone": "07-520309",
+   "address": "حومين الفوقا (Nabatieh)",
+   "notes": "Other phones: 70-955649. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية دانا",
+   "placeType": "Pharmacy",
+   "phone": "07-762627",
+   "address": "كفررمان، حي البيدر (Nabatieh)",
+   "notes": "Other phones: 03-694801. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية علي (الدوير)",
+   "placeType": "Pharmacy",
+   "phone": "07-436788",
+   "address": "الدوير، الشارع العام (Nabatieh)",
+   "notes": "Other phones: 03-788249. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية ليال",
+   "placeType": "Pharmacy",
+   "phone": "07-571120",
+   "address": "أرنون (Nabatieh)",
+   "notes": "Other phones: 71-168797. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية نور",
+   "placeType": "Pharmacy",
+   "phone": "81-998518",
+   "address": "جناتا، حي البياض (Nabatieh)",
+   "notes": "Other phones: 07-400349. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية الحاج علي",
+   "placeType": "Pharmacy",
+   "phone": "70-743949",
+   "address": "النبطية التحتا، شارع سوق اللحم (Nabatieh)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "فارما فيل (Pharmaville)",
+   "placeType": "Pharmacy",
+   "phone": "07-769524",
+   "address": "النبطية، حي الميدان (Nabatieh)",
+   "notes": "Other phones: 71-415747. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية البتول",
+   "placeType": "Pharmacy",
+   "phone": "07-531075",
+   "address": "دير الزهراني، كرم السلطانة (Nabatieh)",
+   "notes": "Other phones: 71-116334. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية محمد",
+   "placeType": "Pharmacy",
+   "phone": "70-797750",
+   "address": "النبطية الفوقا (Nabatieh)",
+   "notes": "Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "صيدلية كريم",
+   "placeType": "Pharmacy",
+   "phone": "03-630647",
+   "address": "الدوير (Nabatieh)",
+   "notes": "Other phones: 76-630799. Source: Ministry of Public Health pharmacy list (Aug 2026). Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Konine Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-450687",
+   "address": "النبطية (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Kawthar Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-435953",
+   "address": "النبطية، الشرقية، الشارع الرئيسي (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharma Ahmad Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-767550",
+   "address": "كفرتبنيت (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Araj Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-385290",
+   "address": "برج قلاوية، المحطة (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Jinane Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-768060",
+   "address": "النبطية التحتا (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Sabbah Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-760610",
+   "address": "النبطية، حي السراي (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Balad Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-542218",
+   "address": "صير الغربية (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Dima Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-767660",
+   "address": "الكفور (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Farah Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-531233",
+   "address": "حبوش، الشارع الرئيسي (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Fadia Khamis Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-531173",
+   "address": "حبوش، البياضية (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharmacie Al Nabatieh",
+   "placeType": "Pharmacy",
+   "phone": "07-762414",
+   "address": "النبطية (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Zaher Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-760522",
+   "address": "النبطية الفوقا، طريق مرجعيون (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharmacie Medicale",
+   "placeType": "Pharmacy",
+   "phone": "07-542468",
+   "address": "كفرصير (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Markaz Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-435740",
+   "address": "الدوير (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Badreddine Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-767225",
+   "address": "النبطية، شارع حسن كامل الصباح (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Wehbe Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-760799",
+   "address": "النبطية، طريق مرجعيون (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Fawaz Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-768501",
+   "address": "كفرتبنيت (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Hayat Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-210062",
+   "address": "جباع (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Nader Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-532467",
+   "address": "كفرجوز (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Jabal Amel Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-767914",
+   "address": "النبطية، طريق مرجعيون (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Chehrazad Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-765590",
+   "address": "زبدين (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Daoud Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-769619",
+   "address": "كفرتبنيت، طريق أرنون (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Donna Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-761828",
+   "address": "النبطية، الساحة (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Zahraa Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-435308",
+   "address": "الدوير (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Pharmacity Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-761090",
+   "address": "النبطية، حي البياض (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Sayegh Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "07-540944",
+   "address": "البريكة (Nabatieh)",
+   "notes": "Source: GLinkco directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Al Moustakbal Pharmacy",
+   "placeType": "Pharmacy",
+   "phone": "81-822778",
+   "address": "النبطية التحتا (Nabatieh)",
+   "notes": "Source: Theravex pharmacy finder. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "مؤسسة وجيه العبد (مستلزمات طبية)",
+   "placeType": "Medical supplies",
+   "phone": "07-734453",
+   "address": "صيدا (Saida)",
+   "notes": "Other phones: 71-399661. Source: General Security medical suppliers list. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "مؤسسة مارس للوازم التأهيل الطبي",
+   "placeType": "Medical supplies",
+   "phone": "07-730165",
+   "address": "صيدا، ساحة القدس (Saida)",
+   "notes": "Source: General Security medical suppliers list. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "مركز بلسمة (مستلزمات طبية وأطراف اصطناعية)",
+   "placeType": "Medical supplies",
+   "phone": "07-727623",
+   "address": "صيدا، الهلالية، قرب صيدلية عسيران (Saida)",
+   "notes": "Source: General Security medical suppliers list. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Life Med (مستلزمات طبية)",
+   "placeType": "Medical supplies",
+   "phone": "03-938570",
+   "address": "الصرفند (Saida)",
+   "notes": "Other phones: 07-441688. Source: General Security medical suppliers list. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Strong-Med Supplies (SMS)",
+   "placeType": "Medical supplies",
+   "phone": "07-441366",
+   "address": "الصرفند (Saida)",
+   "notes": "Source: Index of Lebanon directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "الجمعية اللبنانية لرعاية المعاقين (مستلزمات طبية)",
+   "placeType": "Medical supplies",
+   "phone": "07-441010",
+   "address": "الصرفند (Saida)",
+   "notes": "Other phones: 07-441020. Source: General Security medical suppliers list. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Amedic",
+   "placeType": "Medical supplies",
+   "phone": "70-050489",
+   "address": "الخرايب، الطريق العام (Saida)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Manana Daoud Medical Equipment",
+   "placeType": "Medical supplies",
+   "phone": "",
+   "address": "الزهراني (Saida)",
+   "notes": "Source: Index of Lebanon directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "FlashMed (معدات طبية وأسنان)",
+   "placeType": "Medical supplies",
+   "phone": "07-350875",
+   "address": "صور، البص، مركز حيرام (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "Tyr Drug Warehouse (مستودع أدوية)",
+   "placeType": "Medical supplies",
+   "phone": "",
+   "address": "صور (Tyre)",
+   "notes": "Source: Yelleb directory. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  },
+  {
+   "name": "مؤسسة إبراهيم عاصي (مستلزمات طبية وأحذية طبية)",
+   "placeType": "Medical supplies",
+   "phone": "70-274848",
+   "address": "الدوير (Nabatieh)",
+   "notes": "Other phones: 03-274848. Source: General Security medical suppliers list. Imported from the South Lebanon lead list, Oct 2026. Confirm the number on first call."
+  }
+ ]
+}

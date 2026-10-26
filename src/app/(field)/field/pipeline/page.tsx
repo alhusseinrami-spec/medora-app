@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { requireAuth } from "@/lib/auth";
-import { listClients } from "@/lib/services/sales";
+import { countKnownLeads, listClients } from "@/lib/services/sales";
+import { can } from "@/lib/rbac";
+import { LEAD_LISTS } from "@/lib/leadLists";
+import { LeadLists } from "@/components/field/LeadLists";
 import { fmtDate, TZ_DEFAULT } from "@/lib/time";
 import { STAGES } from "@/components/field/gps";
 
@@ -14,6 +17,9 @@ export default async function Pipeline({ searchParams }: PageProps<"/field/pipel
   const tz = user.timeZone || TZ_DEFAULT;
   const now = new Date();
   const overdue = clients.filter((c) => c.followUpAt && c.followUpAt < now);
+  const lists = can(user.role, "team.view")
+    ? await Promise.all(LEAD_LISTS.map(async (l) => ({ id: l.id, title: l.title, total: l.rows.length, added: await countKnownLeads(l.rows) })))
+    : [];
   return (
     <div className="space-y-4">
       <h1 className="text-[24px] font-bold">My pipeline</h1>
@@ -32,6 +38,7 @@ export default async function Pipeline({ searchParams }: PageProps<"/field/pipel
           <ul>{overdue.map((c) => <li key={c.id}><Link href={`/field/clients/${c.id}`} className="row"><span className="flex-1 truncate font-medium">{c.name}</span><span className="text-xs text-danger">{fmtDate(c.followUpAt!, tz)}</span></Link></li>)}</ul>
         </section>
       )}
+      {lists.length > 0 && <LeadLists lists={lists} />}
       {STAGES.map((s) => {
         const list = clients.filter((c) => c.stage === s.v);
         return (

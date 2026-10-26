@@ -26,7 +26,7 @@ export const STAGES = [
 export type Stage = (typeof STAGES)[number]["v"];
 export const stageOf = (v: string) => STAGES.find((s) => s.v === v) ?? STAGES[0];
 
-export const PLACE_TYPES = ["Clinic", "Hospital", "Laboratory", "Pharmacy", "Dental clinic", "Medical center", "Distributor", "Other"];
+export const PLACE_TYPES = ["Clinic", "Hospital", "Laboratory", "Pharmacy", "Dental clinic", "Medical center", "Medical supplies", "Distributor", "Other"];
 
 export const waLink = (n: string) => `https://wa.me/${n.replace(/[^\d]/g, "").replace(/^0+/, "")}`;
 export const telLink = (n: string) => `tel:${n.replace(/[^\d+]/g, "")}`;

@@ -4,7 +4,7 @@ import { audit } from "../audit";
 import { can } from "../rbac";
 import { distanceM, MAX_ACCURACY_M, VERIFY_RADIUS_M } from "../geo";
 import { addDaysKey, dayKey, startOfDayUtc, TZ_DEFAULT, zonedToUtc } from "../time";
-import { ClientInput, ClientPatch, GpsFix, OrderInput, OrderReview, ProductImport, ProductInput } from "../validation";
+import { ClientInput, ClientPatch, GpsFix, LeadImport, OrderInput, OrderReview, ProductImport, ProductInput } from "../validation";
 import { UserError } from "./errors";
 import { notify } from "./notifications";
 
@@ -101,6 +101,51 @@ export async function setFollowUp(a: Actor, id: string, date: string | null, tim
   await db.reminder.create({ data: { title: `Follow up: ${c.name}`, dueAt: at, userId: a.id } });
   await audit({ actorId: a.id, action: "client.follow_up", entity: "contact", entityId: id, meta: { at: at.toISOString() } });
   return at;
+}
+
+// The same number written as 07/740328, +961 7 740328 or 07-740-328.
+export const phoneKey = (p: string) => p.replace(/\D/g, "").replace(/^(00)?961/, "").replace(/^0/, "");
+
+// A manager adds a researched list of places as leads. Places already in the CRM (same phone, or same name and
+// address) are skipped, so running the same list twice adds nothing.
+// Tells whether a place is already in the CRM. Adding a place to it makes later copies count as known.
+async function knownPlaces() {
+  const existing = await db.contact.findMany({ select: { name: true, address: true, phone: true, whatsapp: true } });
+  const nameKey = (n: string, addr: string) => `${n.trim().toLowerCase()}|${addr.trim().toLowerCase()}`;
+  const phones = new Set(existing.flatMap((c) => [c.phone, c.whatsapp]).map(phoneKey).filter((k) => k.length >= 6));
+  const names = new Set(existing.map((c) => nameKey(c.name, c.address)));
+  return {
+    has: (r: { name: string; address: string; phone: string }) => {
+      const pk = phoneKey(r.phone);
+      return (pk.length >= 6 && phones.has(pk)) || names.has(nameKey(r.name, r.address));
+    },
+    add: (r: { name: string; address: string; phone: string }) => {
+      const pk = phoneKey(r.phone);
+      if (pk.length >= 6) phones.add(pk);
+      names.add(nameKey(r.name, r.address));
+    },
+  };
+}
+
+export async function countKnownLeads(rows: { name: string; address: string; phone: string }[]) {
+  const known = await knownPlaces();
+  return rows.filter((r) => known.has(r)).length;
+}
+
+export async function importLeads(a: Actor, raw: unknown) {
+  if (!can(a.role, "team.view")) throw new UserError("Only a manager can add a lead list.", "forbidden");
+  const { rows, tag } = parse(LeadImport, raw, "lead list");
+  const known = await knownPlaces();
+  const fresh: Prisma.ContactCreateManyInput[] = [];
+  let skipped = 0;
+  for (const r of rows) {
+    if (known.has(r)) { skipped++; continue; }
+    known.add(r);
+    fresh.push({ ...r, stage: "LEAD", category: "CUSTOMER", ownerId: a.id, tags: tag ? [tag] : [] });
+  }
+  if (fresh.length) await db.contact.createMany({ data: fresh });
+  await audit({ actorId: a.id, action: "client.import_leads", entity: "contact", meta: { tag, added: fresh.length, skipped } });
+  return { added: fresh.length, skipped };
 }
 
 // ---- Visits ----

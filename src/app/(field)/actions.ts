@@ -7,8 +7,9 @@ import type { Permission } from "@/lib/rbac";
 import { UserError } from "@/lib/services/errors";
 import { retrySync } from "@/lib/services/accountingSync";
 import { assignDriver, markDelivered } from "@/lib/services/deliveries";
+import { leadList } from "@/lib/leadLists";
 import {
-  cancelOrder, checkIn, checkInNearest, createClient, createOrder, importProducts, relocateClient, reviewOrder, saveProduct, setFollowUp, updateClient,
+  cancelOrder, checkIn, checkInNearest, createClient, createOrder, importLeads, importProducts, relocateClient, reviewOrder, saveProduct, setFollowUp, updateClient,
 } from "@/lib/services/sales";
 
 export type Res = { error?: string; ok?: string; id?: string; warn?: string };
@@ -61,6 +62,14 @@ export const createOrderAction = async (raw: unknown) => act("sales.field", ["/f
   return { id: o.id, ok: o.kind === "ORDER" ? `Order #${o.number} sent to accounting` : `Proforma request #${o.number} sent to accounting` };
 });
 export const cancelOrderAction = async (id: string) => act("sales.field", ["/field", "/sales"], async (u) => { await cancelOrder(u, id); return { ok: "Cancelled" }; });
+
+// Manager actions
+export const importLeadListAction = async (id: string) => act("team.view", ["/field"], async (u) => {
+  const list = leadList(id);
+  if (!list) throw new UserError("That lead list doesn't exist.");
+  const r = await importLeads(u, { rows: list.rows, tag: list.id });
+  return { ok: r.added ? `${r.added} leads added to the pipeline.` : "Every place on this list is already in the pipeline.", warn: r.skipped ? `${r.skipped} were already in the CRM and were skipped.` : undefined };
+});
 
 // Accounting actions
 export const reviewOrderAction = async (id: string, raw: unknown) => act("sales.review", ["/sales", "/field"], async (u) => {
