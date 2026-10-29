@@ -304,6 +304,14 @@ export async function importProducts(a: Actor, raw: unknown) {
   });
   if (bySku.size === 0) throw new UserError(skipped.length ? `None of the rows could be read. Row ${skipped[0].row}: ${skipped[0].reason}.` : "The file has no item rows.");
 
+  // A row still carrying a code from before the RH-001 renumbering updates the renamed product instead of adding a copy.
+  const renamed = await db.product.findMany({ where: { oldSku: { in: [...bySku.keys()] } }, select: { sku: true, oldSku: true } });
+  for (const { sku, oldSku } of renamed) {
+    const x = bySku.get(oldSku!)!;
+    bySku.delete(oldSku!);
+    if (!bySku.has(sku)) bySku.set(sku, { ...x, sku });
+  }
+
   const items = [...bySku.values()];
   const existing = new Map((await db.product.findMany({ where: { sku: { in: [...bySku.keys()] } }, select: { sku: true, unit: true } })).map((p) => [p.sku, p.unit]));
   // A file without a unit column keeps the units already saved.

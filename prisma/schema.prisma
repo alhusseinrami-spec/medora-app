@@ -411,6 +411,7 @@ model Visit {
 model Product {
   id        String   @id @default(cuid())
   sku       String   @unique
+  oldSku    String?  // code before the RH-001 renumbering; still searchable and still matched on import
   name      String
   unit      String   @default("unit")
   price     Decimal  @db.Decimal(14, 4)
@@ -421,6 +422,7 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([oldSku])
   @@map("products")
 }
 
