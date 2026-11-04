@@ -44,7 +44,9 @@ Owners and Managers open **Customer alerts** in the Command Center to:
 
 - see how many phones have notifications on,
 - write a title, a message and which page it opens (always a page of this site), then send it to every subscribed phone. Phones that turned notifications off are removed automatically,
-- upload the shop page: in the shop's ⚙ Admin, use **Download site file**, then upload that `index.html` here (up to 4 MB).
+- upload the shop page once: in the shop's ⚙ Admin, use **Download site file**, then upload that `index.html` here (up to 4 MB).
+
+After that, products and prices are edited on the site itself: an Owner or Manager signed in to the Command Center opens **/shop** on the same device, taps **⚙ Admin**, edits, and presses **Save & publish**. The change reaches every customer within about a minute, including home-screen installs. Customers never see the Admin button (`/api/shop/me` checks the sign-in).
 
 Only the phone's push address is stored, no name or number. The sending keys (VAPID) are made automatically the first time and kept in the database with the private key encrypted by `APP_ENCRYPTION_KEY`. To use your own, set `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` (and optionally `VAPID_SUBJECT`, a `mailto:` or `https:` contact). Changing the keys later means every customer has to turn notifications on again.
 
