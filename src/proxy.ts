@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // /api/cron and /api/nour have no session: they check their own secret key instead.
 // /shop is the public customer shop; /api/push/subscribe is how a customer's phone turns notifications on or off.
 const PUBLIC = ["/login", "/setup", "/api/health", "/api/cron", "/api/nour", "/shop", "/api/push/subscribe"];
-const PUBLIC_FILES = ["/shop-sw.js", "/shop-push.js", "/shop.webmanifest", "/shop-icon-192.png", "/shop-icon-512.png"];
+const PUBLIC_FILES = ["/shop-sw.js", "/shop-push.js", "/shop-admin.js", "/shop.webmanifest", "/shop-icon-192.png", "/shop-icon-512.png"];
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;

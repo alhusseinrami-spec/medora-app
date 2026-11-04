@@ -116,7 +116,7 @@ export async function shopHtml(): Promise<string | null> {
 
 // Adds the home-screen app details and the "Get offers on your phone" button to the uploaded page.
 export function injectPush(html: string, publicKey: string): string {
-  const head = `<link rel="manifest" href="/shop.webmanifest"><link rel="apple-touch-icon" href="/shop-icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Medora Care"><meta name="theme-color" content="#0f5f66">`;
+  const head = `<link rel="manifest" href="/shop.webmanifest"><link rel="apple-touch-icon" href="/shop-icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Medora Care"><meta name="theme-color" content="#0f5f66"><script src="/shop-admin.js"></script>`;
   const body = `<script id="medora-push">window.MEDORA_PUSH_KEY=${JSON.stringify(publicKey)};</script><script src="/shop-push.js" defer></script>`;
   const h = html.search(/<\/head>/i);
   let out = h >= 0 ? html.slice(0, h) + head + html.slice(h) : head + html;
