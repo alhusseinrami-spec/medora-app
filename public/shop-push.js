@@ -68,15 +68,22 @@
     }
     if (Notification.permission === "denied") return say(t("blocked"));
     btn.disabled = true;
-    Notification.requestPermission().then(function (p) {
-      if (p !== "granted") throw "denied";
-      return (reg || navigator.serviceWorker.register("/shop-sw.js", { scope: "/shop" })).then(function (r) { reg = r; return navigator.serviceWorker.ready; });
-    }).then(function (r) {
-      return r.pushManager.getSubscription().then(function (s) { return s || r.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(KEY) }); });
-    }).then(function (s) {
+    var opts = { userVisibleOnly: true, applicationServerKey: keyBytes(KEY) };
+    // iPhone only allows subscribe() during the tap itself, so call it straight away when the
+    // service worker is already running; subscribe() also asks for permission when needed.
+    var start = reg && reg.active
+      ? reg.pushManager.subscribe(opts)
+      : Notification.requestPermission().then(function (p) {
+          if (p !== "granted") throw "denied";
+          return Promise.resolve(reg || navigator.serviceWorker.register("/shop-sw.js", { scope: "/shop" }))
+            .then(function (r) { reg = r; return navigator.serviceWorker.ready; })
+            .then(function (r) { return r.pushManager.subscribe(opts); });
+        });
+    start.then(function (s) {
       return send("POST", { subscription: s.toJSON(), lang: ar() ? "ar" : "en" }).then(function () { sub = s; render(); say(t("thanks")); });
     }).catch(function (e) {
-      say(e === "denied" ? t("blocked") : t("fail"));
+      var denied = e === "denied" || (e && e.name === "NotAllowedError" && Notification.permission !== "granted");
+      say(denied ? t("blocked") : t("fail") + (e && (e.name || e.message) ? " (" + (e.name || "") + (e.message ? ": " + e.message : "") + ")" : ""));
     }).then(function () { btn.disabled = false; });
   };
 
