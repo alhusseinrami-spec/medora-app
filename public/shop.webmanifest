@@ -1,0 +1,14 @@
+{
+  "name": "Medora Care",
+  "short_name": "Medora Care",
+  "description": "Medical and laboratory supplies, delivered across Lebanon.",
+  "start_url": "/shop",
+  "scope": "/shop",
+  "display": "standalone",
+  "background_color": "#f1f7f8",
+  "theme_color": "#0f5f66",
+  "icons": [
+    { "src": "/shop-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/shop-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
