@@ -12,12 +12,13 @@ export type Permission =
   | "settings.company"
   | "sales.field" // field app: own clients, visits, orders
   | "sales.review" // approve, edit or reject orders and proformas; manage products
-  | "sales.deliver"; // driver app: deliver the approved orders assigned to them
+  | "sales.deliver" // driver app: deliver the approved orders assigned to them
+  | "customers.notify"; // send phone notifications to shop customers, update the public shop page
 
 const GRANTS: Record<Role, Permission[]> = {
-  OWNER: ["workspace.use", "team.view", "team.assign", "approvals.decide", "users.manage", "audit.view", "data.export", "data.delete", "settings.company", "sales.field", "sales.review"],
+  OWNER: ["workspace.use", "team.view", "team.assign", "approvals.decide", "users.manage", "audit.view", "data.export", "data.delete", "settings.company", "sales.field", "sales.review", "customers.notify"],
   ADMIN: ["workspace.use", "team.view", "team.assign", "users.manage", "audit.view", "data.export", "settings.company"],
-  MANAGER: ["workspace.use", "team.view", "team.assign", "approvals.decide", "sales.field"],
+  MANAGER: ["workspace.use", "team.view", "team.assign", "approvals.decide", "sales.field", "customers.notify"],
   ACCOUNTANT: ["workspace.use", "sales.review"],
   STAFF: ["workspace.use", "sales.field"],
   SALESPERSON: ["workspace.use", "sales.field"],

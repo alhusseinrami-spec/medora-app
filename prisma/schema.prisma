@@ -102,6 +102,7 @@ model User {
   reminders     Reminder[]
   contacts      Contact[]
   notifications Notification[]
+  pushCampaigns PushCampaign[]
   approvals     Approval[]       @relation("ApprovalOwner")
   decisions     Approval[]       @relation("ApprovalDecider")
   conversations Conversation[]
@@ -555,4 +556,49 @@ model AutomationRule {
   updatedAt     DateTime @updatedAt
 
   @@map("automation_rules")
+}
+
+// ---- Customer phone notifications (public shop) ----
+
+// A customer's phone or browser that said yes to notifications on the public shop at /shop.
+// No name or phone number is kept: only the address the phone's push service gave us.
+model PushSubscriber {
+  id         String    @id @default(cuid())
+  endpoint   String    @unique
+  p256dh     String
+  auth       String
+  lang       String    @default("en")
+  userAgent  String    @default("")
+  createdAt  DateTime  @default(now())
+  lastSentAt DateTime?
+
+  @@map("push_subscribers")
+}
+
+// One notification sent to every subscribed customer.
+model PushCampaign {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  link      String   @default("/shop")
+  sentById  String
+  sentBy    User     @relation(fields: [sentById], references: [id])
+  total     Int      @default(0)
+  delivered Int      @default(0)
+  removed   Int      @default(0)
+  failed    Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("push_campaigns")
+}
+
+// The public shop page served at /shop, uploaded from the shop's Admin → "Download site file".
+model ShopPage {
+  id         String   @id @default("main")
+  html       String
+  updatedAt  DateTime @updatedAt
+  updatedBy  String   @default("")
+
+  @@map("shop_pages")
 }

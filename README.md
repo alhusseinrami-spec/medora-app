@@ -36,6 +36,18 @@ Approved orders and proforma requests are then sent on to the accounting system:
 
 Managers see **Field visits**: each rep's day with verified and unverified check-ins and orders. Accounting manages **Products and prices**, either one by one or by importing the item list exported from the accounting system (Excel .xlsx or CSV; columns such as Item Code, Description, Selling Price, Qty On Hand and Reorder Level are matched automatically and can be changed before importing). Products with a stock figure at or below their low-stock level, or out of stock, show in red in the rep's product list. New role **Accountant** (two-step sign-in required) reviews orders; reps use the **Staff** role. The map uses OpenStreetMap tiles, the only outside resource the app loads.
 
+## Customer phone notifications
+
+The public online shop lives at **/shop** on this site (no sign-in). Customers who open it see a **🔔 Get offers on your phone** button. When they tap it and allow notifications, their phone is added to the list. On iPhone (iOS 16.4 or later) they first add the shop to the home screen and open it from there; the button explains this.
+
+Owners and Managers open **Customer alerts** in the Command Center to:
+
+- see how many phones have notifications on,
+- write a title, a message and which page it opens (always a page of this site), then send it to every subscribed phone. Phones that turned notifications off are removed automatically,
+- upload the shop page: in the shop's ⚙ Admin, use **Download site file**, then upload that `index.html` here (up to 4 MB).
+
+Only the phone's push address is stored, no name or number. The sending keys (VAPID) are made automatically the first time and kept in the database with the private key encrypted by `APP_ENCRYPTION_KEY`. To use your own, set `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` (and optionally `VAPID_SUBJECT`, a `mailto:` or `https:` contact). Changing the keys later means every customer has to turn notifications on again.
+
 ## How the assistant is kept safe
 
 - It can only call the tools in `src/lib/ai/tools.ts`. None of them sends anything outside the app, pays, changes financial data or commits to a purchase.
