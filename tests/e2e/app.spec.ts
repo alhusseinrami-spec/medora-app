@@ -166,6 +166,11 @@ test("search palette, dashboard customisation and theme", async () => {
   await page.keyboard.press("Escape");
 
   await page.goto("/");
+  await page.getByRole("link", { name: "Go to Customer alerts" }).click();
+  await expect(page).toHaveURL(/\/customers\/notify$/);
+  await expect(page.getByRole("heading", { name: "Customer alerts" })).toBeVisible();
+
+  await page.goto("/");
   await page.getByRole("button", { name: "Customize dashboard" }).click();
   await page.getByRole("checkbox", { name: "Tasks due in the next 7 days" }).uncheck();
   await page.waitForTimeout(800);

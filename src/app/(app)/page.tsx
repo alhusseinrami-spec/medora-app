@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth";
-import { fieldHome } from "@/lib/rbac";
+import { can, fieldHome } from "@/lib/rbac";
 import { db } from "@/lib/db";
 import { addDaysKey, dayKey, fmtDate, fmtTime, startOfDayUtc } from "@/lib/time";
 import { listTasks } from "@/lib/services/tasks";
@@ -122,7 +122,11 @@ export default async function Dashboard({ searchParams }: PageProps<"/">) {
   return (
     <>
       {sp.denied && <div role="alert" className="card p-3 mb-4 border-warn text-sm"><strong>That page needs a different role.</strong> Ask the owner if you need access.</div>}
-      <PageHeader title={`${greet}, ${user.name.split(" ")[0]}`} sub={`${fmtDate(new Date(), tz)} · ${overdue.length} overdue · ${dueToday.length} due today · ${todayEvents.length} meeting${todayEvents.length === 1 ? "" : "s"} · ${approvals.length} waiting for approval`} />
+      <PageHeader title={`${greet}, ${user.name.split(" ")[0]}`} sub={`${fmtDate(new Date(), tz)} · ${overdue.length} overdue · ${dueToday.length} due today · ${todayEvents.length} meeting${todayEvents.length === 1 ? "" : "s"} · ${approvals.length} waiting for approval`}
+        actions={can(user.role, "customers.notify") ? (
+          <Link href="/customers/notify" className="btn btn-primary"><Icon name="bell" size={18} />Go to Customer alerts</Link>
+        ) : undefined}
+      />
       <DashboardGrid
         panels={Object.entries(panels).map(([id, p]) => ({ id, title: p.title, wide: !!p.wide, node: p.node }))}
         layout={layout}
