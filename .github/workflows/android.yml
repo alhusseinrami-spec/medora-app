@@ -1,0 +1,30 @@
+# Builds the Medora Care Android app (android/) without signing it.
+# The upload key never goes to GitHub: download the "medora-android-unsigned" artifact
+# and sign it with the key from the project files (android/README.md, "Signing").
+name: Android app
+
+on:
+  workflow_dispatch:
+  push:
+    paths: ["android/**", ".github/workflows/android.yml"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Build the app bundle and APK
+        working-directory: android
+        run: ./gradlew --no-daemon bundleRelease assembleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: medora-android-unsigned
+          path: |
+            android/app/build/outputs/bundle/release/*.aab
+            android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
