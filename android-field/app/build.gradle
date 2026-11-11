@@ -11,7 +11,8 @@ android {
 
     defaultConfig {
         applicationId "com.medoracare.field"
-        minSdk 23
+        // Android 7 and later: the APK is signed with signature scheme v2 only.
+        minSdk 24
         targetSdk 36
         // Raise both for every upload to Google Play.
         versionCode 1
