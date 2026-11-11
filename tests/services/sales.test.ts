@@ -189,6 +189,17 @@ describe("product import", () => {
     expect((await listProducts(false)).find((p) => p.sku === "GLV-M")?.unit).toBe("box"); // no unit column: unit kept
     await expect(importProducts(acc, { rows: [{ sku: "A", name: "B", price: "x" }] })).rejects.toThrow(/None of the rows/);
   });
+
+  it("lands an old-code row on the product renamed to its RH code", async () => {
+    const acc = await makeUser("ACCOUNTANT");
+    const p = await saveProduct(acc, { sku: "RH-001", name: "Gloves", unit: "box", price: 6 });
+    await db.product.update({ where: { id: p.id }, data: { oldSku: "ATW-001" } });
+    const r = await importProducts(acc, { rows: [{ sku: "ATW-001", name: "Nitrile gloves", price: 7 }] });
+    expect(r).toMatchObject({ added: 0, updated: 1 });
+    const all = await listProducts(false);
+    expect(all.map((x) => x.sku)).toEqual(["RH-001"]);
+    expect(Number(all[0].price)).toBe(7);
+  });
 });
 
 describe("reading an export's columns", () => {

@@ -4,7 +4,7 @@ import { createPortal } from "react-dom";
 import { Icon } from "@/components/ui/Icon";
 import { isLowStock, stockLabel, usd } from "./gps";
 
-export type Product = { id: string; sku: string; name: string; unit: string; price: number; stock: number | null; minStock: number | null };
+export type Product = { id: string; sku: string; oldSku?: string | null; name: string; unit: string; price: number; stock: number | null; minStock: number | null };
 
 // Full-screen list of the catalogue: scroll it, or type part of a name or code to narrow it down.
 // Tapping a product adds one; tapping again adds another. Items not in the list can be typed by hand.
@@ -28,7 +28,7 @@ export function ProductPicker({ products, counts, onPick, onFree, onClose }: {
     const words = q.trim().toLowerCase().split(/\s+/).filter(Boolean);
     if (!words.length) return products;
     return products
-      .filter((p) => { const hay = `${p.name} ${p.sku}`.toLowerCase(); return words.every((w) => hay.includes(w)); })
+      .filter((p) => { const hay = `${p.name} ${p.sku} ${p.oldSku ?? ""}`.toLowerCase(); return words.every((w) => hay.includes(w)); })
       // An exact or leading code match goes first, so typing a code finds that product straight away.
       .sort((a, b) => Number(b.sku.toLowerCase().startsWith(words[0])) - Number(a.sku.toLowerCase().startsWith(words[0])));
   }, [q, products]);
