@@ -1,0 +1,11 @@
+name: Verify field APK signature
+on: push
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          BT=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+          $BT/apksigner verify --verbose --print-certs --min-sdk-version 24 Medora-Field.apk
+          $BT/zipalign -c -P 16 -v 4 Medora-Field.apk | tail -3
