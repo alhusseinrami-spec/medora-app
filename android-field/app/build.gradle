@@ -1,0 +1,57 @@
+plugins { id "com.android.application" }
+
+// The Medora Field app opens the live field app (/field) as a Trusted Web Activity:
+// everything comes from the website, so there is nothing to update here when the app changes.
+def siteHost = "medora-app-gamma.vercel.app"
+def startPath = "/field"
+
+android {
+    namespace "com.medoracare.field"
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "com.medoracare.field"
+        minSdk 23
+        targetSdk 36
+        // Raise both for every upload to Google Play.
+        versionCode 1
+        versionName "1.0.0"
+
+        resValue "string", "app_name", "Medora Field"
+        resValue "string", "launch_url", "https://${siteHost}${startPath}"
+        resValue "string", "host", siteHost
+        resValue "string", "provider_authority", "com.medoracare.field.fileprovider"
+        resValue "string", "asset_statements",
+            "[{ \\\"relation\\\": [\\\"delegate_permission/common.handle_all_urls\\\"], \\\"target\\\": { \\\"namespace\\\": \\\"web\\\", \\\"site\\\": \\\"https://${siteHost}\\\" } }]"
+        manifestPlaceholders = [hostName: siteHost]
+    }
+
+    // Release builds are signed after the build, with the upload key kept outside git
+    // (see android/README.md). A signing config is used only when these are set.
+    signingConfigs {
+        upload {
+            if (System.getenv("MEDORA_FIELD_KEYSTORE")) {
+                storeFile file(System.getenv("MEDORA_FIELD_KEYSTORE"))
+                storePassword System.getenv("MEDORA_FIELD_KEYSTORE_PASSWORD")
+                keyAlias System.getenv("MEDORA_KEY_ALIAS") ?: "medora"
+                keyPassword System.getenv("MEDORA_FIELD_KEYSTORE_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (System.getenv("MEDORA_FIELD_KEYSTORE")) signingConfig signingConfigs.upload
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation "com.google.androidbrowserhelper:androidbrowserhelper:2.5.0"
+}
