@@ -1,0 +1,30 @@
+# Builds the Medora Field Android app (android-field/) without signing it.
+# The signing key never goes to GitHub: download the "medora-field-android-unsigned" artifact
+# and sign it with the key from the project files (android-field/README.md, "Signing").
+name: Field Android app
+
+on:
+  workflow_dispatch:
+  push:
+    paths: ["android-field/**", ".github/workflows/android-field.yml"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Build the APK and app bundle
+        working-directory: android-field
+        run: ./gradlew --no-daemon assembleRelease bundleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: medora-field-android-unsigned
+          path: |
+            android-field/app/build/outputs/apk/release/*.apk
+            android-field/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
