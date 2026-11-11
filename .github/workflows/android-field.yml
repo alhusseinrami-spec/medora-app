@@ -8,9 +8,6 @@ on:
   push:
     paths: ["android-field/**", ".github/workflows/android-field.yml"]
 
-permissions:
-  contents: write
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,10 +28,3 @@ jobs:
             android-field/app/build/outputs/apk/release/*.apk
             android-field/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
-      # TEMPORARY: hands the unsigned build over for signing outside GitHub. Removed after the first build.
-      - name: Hand the unsigned build over
-        run: |
-          mkdir /tmp/out && cp android-field/app/build/outputs/apk/release/*.apk android-field/app/build/outputs/bundle/release/*.aab /tmp/out/
-          cd /tmp/out && git init -q && git checkout -q -b android-field-build-output
-          git add . && git -c user.name=ci -c user.email=ci@users.noreply.github.com commit -qm "Unsigned field build $GITHUB_SHA"
-          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" android-field-build-output

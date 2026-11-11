@@ -22,6 +22,7 @@ installed phones only accept updates signed with this same key.
 
 ```sh
 java -jar uber-apk-signer.jar --apks app-release-unsigned.apk --ks medora-field-upload.keystore --ksAlias medora
+# or, with the Android SDK: apksigner sign --ks medora-field-upload.keystore --ks-key-alias medora --out Medora-Field.apk app-release-unsigned.apk
 ```
 
 Or build signed directly by setting `MEDORA_FIELD_KEYSTORE` and `MEDORA_FIELD_KEYSTORE_PASSWORD`.
