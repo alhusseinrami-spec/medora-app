@@ -26,7 +26,10 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@node-rs/argon2"],
+  // pdfkit reads its font data from its own folder, so it stays a normal Node package.
+  serverExternalPackages: ["@node-rs/argon2", "pdfkit"],
+  // Fonts embedded in the pro forma PDF (made on the shop order page).
+  outputFileTracingIncludes: { "/customers/orders/**": ["./src/assets/fonts/*.ttf"] },
   turbopack: {
     rules: {
       "*.css": { loaders: ["@tailwindcss/turbopack"], as: "*.css" },

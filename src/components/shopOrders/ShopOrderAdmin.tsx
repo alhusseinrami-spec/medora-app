@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 import type { ShopOrderStatus } from "@prisma/client";
-import { createShopOrderAction, customerLinkAction, removeShopDocumentAction, setShopOrderStatusAction, type Res } from "@/app/(app)/customers/orders/actions";
+import { createProformaAction, createShopOrderAction, customerLinkAction, removeShopDocumentAction, saveShopOrderLinesAction, setShopOrderStatusAction, type Res } from "@/app/(app)/customers/orders/actions";
 
 function Msg({ r }: { r: Res }) {
   if (r.error) return <p role="alert" className="err mt-2">{r.error}</p>;
@@ -197,5 +197,68 @@ export function NewShopOrderForm() {
       <div><button className="btn btn-primary" disabled={pending}>{pending ? "Saving…" : "Save order"}</button></div>
       <Msg r={r} />
     </form>
+  );
+}
+
+type PLine = { code: string; name: string; nameAr: string; qty: string; price: string; shopPrice: number };
+const usd = (v: number) => "$" + v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+// The order's items as an editable pro forma: change quantities, enter prices, add or remove lines,
+// then make the PDF. It goes straight into the customer's My orders.
+export function ProformaEditor({ id, lines, number, validUntil, note, hasProforma }: {
+  id: string;
+  lines: { code: string; name: string; nameAr: string; qty: number; price: number; shopPrice: number }[];
+  number: string; validUntil: string; note: string; hasProforma: boolean;
+}) {
+  const router = useRouter();
+  const [rows, setRows] = useState<PLine[]>(lines.map((l) => ({ ...l, qty: String(l.qty), price: l.price ? String(l.price) : "" })));
+  const [f, setF] = useState({ number, validUntil, note });
+  const [r, setR] = useState<Res>({});
+  const [pending, start] = useTransition();
+  const set = (i: number, k: "code" | "name" | "qty" | "price", v: string) => { setRows(rows.map((x, j) => (j === i ? { ...x, [k]: v } : x))); setR({}); };
+  const clean = () => rows.filter((x) => x.name.trim() || x.code.trim()).map((x) => ({ code: x.code.trim().toUpperCase(), name: x.name.trim() || x.code.trim(), nameAr: x.nameAr, qty: Math.round(Number(x.qty)) || 0, price: Number(x.price) || 0 }));
+  const total = rows.reduce((s, x) => s + (Number(x.qty) || 0) * (Number(x.price) || 0), 0);
+  const save = () => start(async () => { const res = await saveShopOrderLinesAction(id, clean()); setR(res); if (res.ok) router.refresh(); });
+  const create = () => start(async () => {
+    const res = await createProformaAction(id, { ...f, lines: clean() });
+    setR(res);
+    if (res.ok) router.refresh();
+  });
+  return (
+    <section className="card mt-4">
+      <div className="p-3 pb-0 flex flex-wrap items-baseline justify-between gap-2">
+        <h2 className="font-semibold">Items and pro forma</h2>
+        <p className="text-xs text-muted">Change quantities, enter prices, then press Create pro forma.</p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead><tr className="text-left text-muted"><th className="p-2 pl-3 font-medium">Code</th><th className="p-2 font-medium">Item</th><th className="p-2 font-medium w-24">Qty</th><th className="p-2 font-medium w-28">Unit price $</th><th className="p-2 font-medium text-right w-24">Total</th><th className="w-10" /></tr></thead>
+          <tbody>
+            {rows.map((x, i) => (
+              <tr key={i} className="border-t border-line align-top">
+                <td className="p-2 pl-3 w-28"><input className="input" value={x.code} onChange={(e) => set(i, "code", e.target.value)} aria-label={`Code, line ${i + 1}`} dir="ltr" /></td>
+                <td className="p-2 min-w-[200px]"><input className="input" value={x.name} onChange={(e) => set(i, "name", e.target.value)} aria-label={`Item, line ${i + 1}`} />{x.shopPrice > 0 && <span className="text-xs text-muted">Shop price {usd(x.shopPrice)}</span>}</td>
+                <td className="p-2"><input className="input" type="number" min={1} inputMode="numeric" value={x.qty} onChange={(e) => set(i, "qty", e.target.value)} aria-label={`Quantity, line ${i + 1}`} /></td>
+                <td className="p-2"><input className={`input ${x.price && Number(x.price) > 0 ? "" : "!border-warn"}`} type="number" min={0} step="0.01" inputMode="decimal" value={x.price} placeholder="0.00" onChange={(e) => set(i, "price", e.target.value)} aria-label={`Unit price, line ${i + 1}`} /></td>
+                <td className="p-2 text-right pt-4 whitespace-nowrap">{usd((Number(x.qty) || 0) * (Number(x.price) || 0))}</td>
+                <td className="p-2"><button type="button" className="btn btn-sm btn-ghost" aria-label={`Remove line ${i + 1}`} onClick={() => setRows(rows.length > 1 ? rows.filter((_, j) => j !== i) : rows)}>✕</button></td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot><tr className="border-t border-line font-semibold"><td className="p-3" colSpan={4}><button type="button" className="btn btn-sm font-normal" onClick={() => setRows([...rows, { code: "", name: "", nameAr: "", qty: "1", price: "", shopPrice: 0 }])}>Add line</button></td><td className="p-3 text-right whitespace-nowrap">{usd(total)}</td><td /></tr></tfoot>
+        </table>
+      </div>
+      <div className="p-3 border-t border-line grid gap-3 sm:grid-cols-[1fr_1fr_2fr]">
+        <label><span className="label">Pro forma no.</span><input className="input" value={f.number} onChange={(e) => setF({ ...f, number: e.target.value })} dir="ltr" /></label>
+        <label><span className="label">Valid until</span><input className="input" type="date" value={f.validUntil} onChange={(e) => setF({ ...f, validUntil: e.target.value })} /></label>
+        <label><span className="label">Note on the pro forma</span><input className="input" maxLength={400} value={f.note} onChange={(e) => setF({ ...f, note: e.target.value })} /></label>
+      </div>
+      <div className="p-3 pt-0 flex flex-wrap items-center gap-2">
+        <button type="button" className="btn btn-primary" disabled={pending} onClick={create}>{pending ? "Working…" : hasProforma ? "Create pro forma again" : "Create pro forma"}</button>
+        <button type="button" className="btn" disabled={pending} onClick={save}>Save changes only</button>
+        {r.id && <a className="btn btn-ghost underline" href={`/api/customers/documents/${r.id}`} target="_blank" rel="noopener">Open the PDF</a>}
+      </div>
+      <div className="px-3 pb-3"><Msg r={r} /></div>
+    </section>
   );
 }

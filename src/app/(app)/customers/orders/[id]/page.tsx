@@ -1,15 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAuth } from "@/lib/auth";
-import { DOC_KIND, getShopOrder, SHOP_STATUS, type DocKind } from "@/lib/services/shopOrders";
+import { catalogPrices, defaultValidUntil, DOC_KIND, getShopOrder, PROFORMA_NOTE, SHOP_STATUS, suggestProformaNumber, type DocKind } from "@/lib/services/shopOrders";
 import { UserError } from "@/lib/services/errors";
 import { fmtDateTime, TZ_DEFAULT } from "@/lib/time";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { CustomerLink, DocumentList, DocumentUpload, StatusPanel } from "@/components/shopOrders/ShopOrderAdmin";
+import { CustomerLink, DocumentList, DocumentUpload, ProformaEditor, StatusPanel } from "@/components/shopOrders/ShopOrderAdmin";
 
 export const metadata = { title: "Shop order" };
 
-const money = (v: number) => "$" + v.toFixed(2);
 
 export default async function ShopOrderPage({ params }: PageProps<"/customers/orders/[id]">) {
   const { user } = await requireAuth({ permission: "shop.orders" });
@@ -17,7 +16,8 @@ export default async function ShopOrderPage({ params }: PageProps<"/customers/or
   const o = await getShopOrder(user, id).catch((e) => { if (e instanceof UserError) notFound(); throw e; });
   const tz = user.timeZone || TZ_DEFAULT;
   const st = SHOP_STATUS[o.status];
-  const priced = o.lines.some((l) => l.price > 0);
+  const [prices, suggested] = await Promise.all([catalogPrices(o.lines.map((l) => l.code)), suggestProformaNumber()]);
+  const lastPf = [...o.documents].reverse().find((d) => d.kind === "PROFORMA" && d.number);
   const wa = o.customer.phone.replace(/\D/g, "");
   return (
     <div className="max-w-4xl">
@@ -44,28 +44,19 @@ export default async function ShopOrderPage({ params }: PageProps<"/customers/or
 
       <StatusPanel id={o.id} status={o.status} />
 
-      <section className="card mt-4 overflow-x-auto">
-        <h2 className="font-semibold p-3 pb-0">Items</h2>
-        <table className="w-full text-sm">
-          <thead><tr className="text-left text-muted"><th className="p-3 font-medium">Code</th><th className="p-3 font-medium">Item</th><th className="p-3 font-medium text-right">Qty</th>{priced && <th className="p-3 font-medium text-right">Price</th>}</tr></thead>
-          <tbody>
-            {o.lines.map((l, i) => (
-              <tr key={i} className="border-t border-line">
-                <td className="p-3 whitespace-nowrap" dir="ltr">{l.code || "–"}</td>
-                <td className="p-3">{l.name}{l.nameAr && l.nameAr !== l.name && <div className="text-muted text-xs" dir="rtl">{l.nameAr}</div>}</td>
-                <td className="p-3 text-right">{l.qty}</td>
-                {priced && <td className="p-3 text-right">{l.price ? money(l.price) : "–"}</td>}
-              </tr>
-            ))}
-          </tbody>
-          {priced && <tfoot><tr className="border-t border-line font-semibold"><td className="p-3" colSpan={3}>Estimated total (shop prices)</td><td className="p-3 text-right">{money(Number(o.total))}</td></tr></tfoot>}
-        </table>
-        {o.note && <p className="p-3 text-sm border-t border-line"><span className="text-muted">Note: </span>{o.note}</p>}
-      </section>
+      <ProformaEditor
+        id={o.id}
+        lines={o.lines.map((l) => ({ code: l.code, name: l.name, nameAr: l.nameAr ?? "", qty: l.qty, price: l.price || prices[l.code] || 0, shopPrice: l.price }))}
+        number={lastPf?.number || suggested}
+        validUntil={defaultValidUntil()}
+        note={PROFORMA_NOTE}
+        hasProforma={!!lastPf}
+      />
+      {o.note && <p className="card p-3 mt-4 text-sm"><span className="text-muted">Customer&apos;s note: </span>{o.note}</p>}
 
       <section className="card p-3 mt-4">
-        <h2 className="font-semibold mb-1">Pro forma and invoice</h2>
-        <p className="text-sm text-muted mb-3">The customer can open these in My orders as soon as you attach them.</p>
+        <h2 className="font-semibold mb-1">Documents</h2>
+        <p className="text-sm text-muted mb-3">The customer can open these in My orders. Pro formas made above appear here; you can also upload an invoice or a pro forma made elsewhere.</p>
         <DocumentList docs={o.documents.map((d) => ({ id: d.id, kind: DOC_KIND[d.kind as DocKind]?.label ?? d.kind, name: d.fileName, meta: `${Math.max(1, Math.round(d.sizeBytes / 1024))} KB · ${d.uploadedBy ? d.uploadedBy + ", " : ""}${fmtDateTime(d.createdAt, tz)}` }))} />
         <DocumentUpload id={o.id} />
       </section>

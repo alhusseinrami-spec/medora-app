@@ -689,6 +689,7 @@ model ShopOrderDocument {
   orderId    String
   order      ShopOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
   kind       String    // PROFORMA or INVOICE
+  number     String    @default("") // e.g. PF-2026-0008 when made here; "" for uploaded files
   fileName   String
   mimeType   String
   sizeBytes  Int

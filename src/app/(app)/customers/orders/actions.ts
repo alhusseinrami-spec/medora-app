@@ -6,7 +6,7 @@ import { requireAuth } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { log } from "@/lib/log";
 import { UserError } from "@/lib/services/errors";
-import { createStaffShopOrder, customerLink, removeShopOrderDocument, setShopOrderStatus, SHOP_STATUS } from "@/lib/services/shopOrders";
+import { createShopProforma, createStaffShopOrder, customerLink, removeShopOrderDocument, saveShopOrderLines, setShopOrderStatus, SHOP_STATUS } from "@/lib/services/shopOrders";
 import { zonedToUtc, TZ_DEFAULT } from "@/lib/time";
 
 export type Res = { error?: string; ok?: string; id?: string; link?: string };
@@ -62,4 +62,26 @@ export async function customerLinkAction(customerId: string): Promise<Res> {
     const origin = process.env.APP_URL?.startsWith("https://") ? process.env.APP_URL.replace(/\/$/, "") : `${h.get("x-forwarded-proto") ?? "https"}://${host}`;
     return { link: await customerLink(user, customerId, origin) };
   } catch (e) { return fail(e, "link"); }
+}
+
+export async function saveShopOrderLinesAction(id: string, lines: unknown): Promise<Res> {
+  const { user } = await requireAuth({ permission: "shop.orders" });
+  try {
+    await saveShopOrderLines(user, id, lines);
+    await audit({ actorId: user.id, action: "shop_order.lines_saved", entity: "ShopOrder", entityId: id });
+    revalidatePath(`/customers/orders/${id}`);
+    return { ok: "Saved." };
+  } catch (e) { return fail(e, "lines"); }
+}
+
+// validUntil: "YYYY-MM-DD" (end of that day in Beirut).
+export async function createProformaAction(id: string, f: { number: string; validUntil: string; note: string; lines: unknown }): Promise<Res> {
+  const { user } = await requireAuth({ permission: "shop.orders" });
+  try {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(f.validUntil)) return { error: "Choose the valid-until date." };
+    const r = await createShopProforma(user, id, { number: f.number, note: f.note, lines: f.lines, validUntil: zonedToUtc(f.validUntil, "23:59", TZ_DEFAULT) });
+    await audit({ actorId: user.id, action: "shop_order.proforma_created", entity: "ShopOrder", entityId: id, meta: { number: r.doc.number, total: r.total } });
+    revalidatePath(`/customers/orders/${id}`);
+    return { ok: `${r.doc.number} is ready in the customer's My orders.${reached(r.phones)}`, id: r.doc.id };
+  } catch (e) { return fail(e, "proforma"); }
 }
