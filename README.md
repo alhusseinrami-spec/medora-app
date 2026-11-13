@@ -59,6 +59,7 @@ Customers tap **📦 Orders** in the shop (or **📦 My orders** under the Whats
 | Customer sends an order | WhatsApp opens exactly as before. The first time, the shop asks once for a name and phone. The order is saved with a reference such as MC-7K3QXD, which is added to the WhatsApp message |
 | Staff see it | **Shop orders** in the Command Center (Owner, Manager, Accountant), and a notification in the bell |
 | Staff update it | Confirm, Mark to be delivered (with the estimated time), Mark delivered or Cancel (with a reason). Attach a pro forma or invoice (PDF, PNG or JPG up to 4 MB). Each change shows in the customer's My orders and, if their phone has notifications on, arrives as a notification |
+| Pro forma | On the order page, change quantities, enter prices (filled in from Products and prices when known), add or remove lines, then **Create pro forma**. It makes the PDF in the usual Medora layout, numbered after PF-2026-0007 (the number can be changed), and puts it in the customer's My orders. Creating it again with the same number replaces it |
 | Orders by phone or WhatsApp | **New order** enters one for the customer's phone number, so it shows in their My orders too |
 | Another phone | The customer's My orders link (shown on each order in the Command Center, and in My orders under "Open My orders on another phone") opens their orders on any phone |
 

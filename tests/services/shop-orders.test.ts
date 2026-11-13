@@ -139,3 +139,30 @@ describe("My orders", () => {
     expect(out).toContain('<script src="/shop-orders.js" defer></script></body>');
   });
 });
+
+describe("Pro forma made on the order page", () => {
+  it("saves the prices and quantities, makes the PDF and puts it in My orders", async () => {
+    const { createShopProforma, suggestProformaNumber, catalogPrices } = await import("@/lib/services/shopOrders");
+    const staff = await makeUser("ACCOUNTANT", "Rami");
+    await db.product.create({ data: { sku: "RH-012", name: "Gauze", price: 3.25 } });
+    expect(await catalogPrices(["RH-012", "RH-999"])).toEqual({ "RH-012": 3.25 });
+    const o = await placeShopOrder(order());
+    expect(await suggestProformaNumber(new Date("2026-11-13T08:00:00Z"))).toBe("PF-2026-0008");
+    const lines = [{ code: "RH-012", name: "Gauze 10x10", qty: 5, price: 3.25 }];
+    await expect(createShopProforma(staff, o.id, { number: "PF-2026-0008", validUntil: new Date(Date.now() + 864e5), note: "", lines: [{ ...lines[0], price: 0 }] })).rejects.toThrow(/price/);
+    const r = await createShopProforma(staff, o.id, { number: "pf-2026-0008", validUntil: new Date(Date.now() + 864e5), note: "Delivery in 2 days", lines });
+    expect(r.doc).toMatchObject({ number: "PF-2026-0008", fileName: "PF-2026-0008.pdf" });
+    expect(r.total).toBe(16.25);
+    // Making it again with the same number replaces it; the next suggestion moves on.
+    await createShopProforma(staff, o.id, { number: "PF-2026-0008", validUntil: new Date(Date.now() + 864e5), note: "", lines: [{ ...lines[0], qty: 6 }] });
+    const view = (await customerOrders(KEY))!.orders[0];
+    expect(view.documents).toHaveLength(1);
+    expect(view.lines).toEqual([expect.objectContaining({ code: "RH-012", qty: 6, price: 3.25 })]);
+    expect(await suggestProformaNumber(new Date("2026-11-13T08:00:00Z"))).toBe("PF-2026-0009");
+    const d = await db.shopOrderDocument.findFirstOrThrow();
+    expect(Buffer.from(d.data).subarray(0, 5).toString()).toBe("%PDF-");
+    // A number already used on another order is refused.
+    const other = await placeShopOrder(order({ ref: "MC-ZZZ999" }));
+    await expect(createShopProforma(staff, other.id, { number: "PF-2026-0008", validUntil: new Date(Date.now() + 864e5), note: "", lines })).rejects.toThrow(/already used/);
+  });
+});

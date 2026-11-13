@@ -8,6 +8,7 @@ import { can } from "@/lib/rbac";
 import { notify } from "./notifications";
 import { sendToCustomer } from "./push";
 import { UserError } from "./errors";
+import { buildProformaPdf, isoDay } from "@/lib/proformaPdf";
 
 // My orders for shop customers. Customers don't sign in: the shop keeps a random key on the phone
 // (made by the phone itself, so sending the order never waits for the server) and every request
@@ -161,7 +162,7 @@ export async function getShopOrder(user: User, id: string) {
     include: {
       customer: { include: { _count: { select: { orders: true, phones: true } } } },
       events: { orderBy: { at: "asc" } },
-      documents: { orderBy: { createdAt: "asc" }, select: { id: true, kind: true, fileName: true, sizeBytes: true, uploadedBy: true, createdAt: true } },
+      documents: { orderBy: { createdAt: "asc" }, select: { id: true, kind: true, number: true, fileName: true, sizeBytes: true, uploadedBy: true, createdAt: true } },
     },
   });
   if (!o) throw new UserError("Order not found.", "not_found");
@@ -297,4 +298,84 @@ export function fileResponse(d: { data: Uint8Array; mimeType: string; fileName: 
       "x-content-type-options": "nosniff",
     },
   });
+}
+
+// ---- Pro forma made on the order page ----
+
+export const PROFORMA_NOTE = "Prices in US dollars. Delivery within 2 working days after confirmation.";
+// The last number used before pro formas were made here (PF-2026-0007), so numbering carries on.
+const PF_FLOOR: Record<number, number> = { 2026: 7 };
+
+// Pro formas are valid for two weeks unless staff change it.
+export const defaultValidUntil = (from = new Date()) => isoDay(new Date(from.getTime() + 14 * 86400_000));
+
+export async function suggestProformaNumber(now = new Date()) {
+  const year = Number(isoDay(now).slice(0, 4));
+  const docs = await db.shopOrderDocument.findMany({ where: { number: { startsWith: `PF-${year}-` } }, select: { number: true } });
+  const last = docs.reduce((m, d) => Math.max(m, Number(d.number.split("-")[2]) || 0), PF_FLOOR[year] ?? 0);
+  return `PF-${year}-${String(last + 1).padStart(4, "0")}`;
+}
+
+// Prices from Products and prices (Command Center), by the shop's item code or its old code.
+export async function catalogPrices(codes: string[]): Promise<Record<string, number>> {
+  const list = [...new Set(codes.filter(Boolean))];
+  if (!list.length) return {};
+  const rows = await db.product.findMany({ where: { OR: [{ sku: { in: list } }, { oldSku: { in: list } }] }, select: { sku: true, oldSku: true, price: true } });
+  const out: Record<string, number> = {};
+  for (const r of rows) {
+    const v = Number(r.price);
+    if (!(v > 0)) continue;
+    if (list.includes(r.sku)) out[r.sku] = v;
+    if (r.oldSku && list.includes(r.oldSku) && !(r.oldSku in out)) out[r.oldSku] = v;
+  }
+  return out;
+}
+
+const LinesSchema = z.array(Line).min(1, "Keep at least one item").max(300);
+
+// Changes the order's items (quantities, prices, added or removed lines). The customer sees the
+// new quantities in My orders, and Order again uses them.
+export async function saveShopOrderLines(user: User, id: string, raw: unknown) {
+  assertStaff(user);
+  const lines = LinesSchema.parse(raw);
+  const o = await db.shopOrder.findUnique({ where: { id }, select: { id: true } });
+  if (!o) throw new UserError("Order not found.", "not_found");
+  return db.shopOrder.update({ where: { id }, data: { lines: lines as Prisma.InputJsonValue, total: total(lines) } });
+}
+
+const ProformaSchema = z.object({
+  number: z.string().trim().toUpperCase().regex(/^[A-Z]{2,4}-\d{4}-\d{1,6}$/, "Use a number like PF-2026-0008"),
+  validUntil: z.date(),
+  note: z.string().trim().max(400).default(""),
+  lines: LinesSchema,
+});
+
+// Saves the items, makes the pro forma PDF and puts it in the customer's My orders.
+// Making it again with the same number replaces the earlier copy.
+export async function createShopProforma(user: User, id: string, raw: unknown) {
+  assertStaff(user);
+  const p = ProformaSchema.parse(raw);
+  if (p.lines.some((l) => !(l.price > 0))) throw new UserError("Enter a price for every item, or remove the item.");
+  const o = await db.shopOrder.findUnique({ where: { id }, include: { customer: true } });
+  if (!o) throw new UserError("Order not found.", "not_found");
+  const clash = await db.shopOrderDocument.findFirst({ where: { number: p.number, NOT: { orderId: id } }, include: { order: { select: { ref: true } } } });
+  if (clash) throw new UserError(`${p.number} is already used on order ${clash.order.ref}.`);
+  const now = new Date();
+  if (p.validUntil.getTime() < now.getTime() - 86400_000) throw new UserError("The valid-until date is in the past.");
+  const pdf = await buildProformaPdf({ number: p.number, date: now, validUntil: p.validUntil, customer: { name: o.customer.name, phone: o.customer.phone }, lines: p.lines, note: p.note, orderRef: o.ref });
+  const doc = await db.$transaction(async (tx) => {
+    await tx.shopOrder.update({ where: { id }, data: { lines: p.lines as Prisma.InputJsonValue, total: total(p.lines) } });
+    await tx.shopOrderDocument.deleteMany({ where: { orderId: id, number: p.number } });
+    return tx.shopOrderDocument.create({
+      data: { orderId: id, kind: "PROFORMA", number: p.number, fileName: `${p.number}.pdf`, mimeType: "application/pdf", sizeBytes: pdf.length, data: new Uint8Array(pdf), uploadedBy: user.name },
+      select: { id: true, number: true, fileName: true },
+    });
+  });
+  const ar = o.customer.lang === "ar";
+  const phones = await sendToCustomer(o.customerId, {
+    title: "Medora Care",
+    body: ar ? `الفاتورة المبدئية ${p.number} لطلبك ${o.ref} جاهزة في «طلباتي».` : `Your pro forma ${p.number} for order ${o.ref} is ready in My orders.`,
+    url: "/shop#my-orders", tag: "doc-" + doc.id,
+  });
+  return { doc, phones, total: total(p.lines) };
 }
