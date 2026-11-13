@@ -24,7 +24,7 @@ export default async function OrdersPage({ searchParams }: PageProps<"/sales/ord
   const tz = user.timeZone || TZ_DEFAULT;
   return (
     <div className="max-w-5xl">
-      <PageHeader title="Orders and proformas" sub="Sent by sales reps from the field app. Check quantities and prices, then approve or reject." actions={<Link href="/sales/products" className="btn">Products and prices</Link>} />
+      <PageHeader title="Orders and proformas" sub="Sent by sales reps from the field app. Check quantities and prices, then approve or reject." actions={<><Link href="/customers/orders" className="btn">Shop orders (from the app)</Link><Link href="/sales/products" className="btn">Products and prices</Link></>} />
       <nav className="flex flex-wrap gap-1 mb-4" aria-label="Filter">
         {TABS.map((t) => <Link key={t.key} href={`/sales/orders?tab=${t.key}`} aria-current={t === tab ? "page" : undefined} className={`btn btn-sm ${t === tab ? "btn-primary" : ""}`}>{t.label}</Link>)}
       </nav>

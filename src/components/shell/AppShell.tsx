@@ -10,14 +10,14 @@ import { ChatPanel } from "@/components/chat/ChatPanel";
 import { ThemeToggle } from "./ThemeToggle";
 import { logout } from "@/app/(auth)/actions";
 
-type Props = { user: { name: string; role: string; email: string }; approvals: number; orders: number; perms: string[]; aiReady: boolean; children: React.ReactNode };
+type Props = { user: { name: string; role: string; email: string }; approvals: number; orders: number; shopOrders?: number; perms: string[]; aiReady: boolean; children: React.ReactNode };
 
 const store = {
   get: (k: string) => { try { return localStorage.getItem(k); } catch { return null; } },
   set: (k: string, v: string) => { try { localStorage.setItem(k, v); } catch {} },
 };
 
-export function AppShell({ user, approvals, orders, perms, aiReady, children }: Props) {
+export function AppShell({ user, approvals, orders, shopOrders = 0, perms, aiReady, children }: Props) {
   const permKey = perms.join(",");
   const nav = useMemo(() => NAV.filter((n) => !n.perm || permKey.split(",").includes(n.perm)), [permKey]);
   const path = usePathname();
@@ -68,6 +68,7 @@ export function AppShell({ user, approvals, orders, perms, aiReady, children }: 
               <Icon name={n.icon} />
               {(!collapsed || mobile) && <span className="flex-1">{n.label}</span>}
               {n.href === "/approvals" && approvals > 0 && (!collapsed || mobile) && <span className="chip !bg-teal !text-white" aria-label={`${approvals} waiting`}>{approvals}</span>}
+              {n.href === "/customers/orders" && shopOrders > 0 && (!collapsed || mobile) && <span className="chip !bg-teal !text-white" aria-label={`${shopOrders} new`}>{shopOrders}</span>}
               {n.href === "/sales/orders" && orders > 0 && (!collapsed || mobile) && <span className="chip !bg-teal !text-white" aria-label={`${orders} waiting`}>{orders}</span>}
             </Link>
           </li>
