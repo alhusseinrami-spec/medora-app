@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { decrypt, encrypt } from "@/lib/crypto";
 import { log } from "@/lib/log";
 import { UserError } from "./errors";
+import { SPLASH_BODY, SPLASH_HEAD } from "@/lib/shop-splash";
 
 // Phone notifications for customers of the public shop (/shop), using standard Web Push.
 // A customer's phone only gets them after it opened the shop and tapped "Allow".
@@ -114,13 +115,24 @@ export async function shopHtml(): Promise<string | null> {
   return injectPush(p.html, publicKey);
 }
 
-// Adds the home-screen app details and the "Get offers on your phone" button to the uploaded page.
+// Adds the home-screen app details, the animated logo shown when the shop opens as an app,
+// and the "Get offers on your phone" button to the uploaded page.
 export function injectPush(html: string, publicKey: string): string {
-  const head = `<link rel="manifest" href="/shop.webmanifest"><link rel="apple-touch-icon" href="/shop-icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Medora Care"><meta name="theme-color" content="#0f5f66"><script src="/shop-admin.js"></script>`;
+  // A page saved from the live shop may already carry the logo; never add it twice.
+  html = html.replace(/<style id="medora-splash-css">[\s\S]*?<\/style>|<script id="medora-splash-js">[\s\S]*?<\/script>/g, "");
+  const head = SPLASH_HEAD + `<link rel="manifest" href="/shop.webmanifest"><link rel="apple-touch-icon" href="/shop-icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Medora Care"><meta name="theme-color" content="#0f5f66"><script src="/shop-admin.js"></script>`;
   const body = `<script id="medora-push">window.MEDORA_PUSH_KEY=${JSON.stringify(publicKey)};</script><script src="/shop-push.js" defer></script>`;
   const h = html.search(/<\/head>/i);
   let out = h >= 0 ? html.slice(0, h) + head + html.slice(h) : head + html;
   const b = out.search(/<\/body>(?![\s\S]*<\/body>)/i);
   out = b >= 0 ? out.slice(0, b) + body + out.slice(b) : out + body;
+  // The logo goes first in <body> so it covers the page before anything else draws.
+  // Scripts are skipped so a "<body>" written inside one (the shop's own "Download site file") isn't mistaken for the tag.
+  let at = -1;
+  for (const m of out.matchAll(/<script\b[\s\S]*?<\/script\s*>|<body\b[^>]*>/gi)) {
+    if (/^<body/i.test(m[0])) { at = m.index + m[0].length; break; }
+  }
+  if (at >= 0) out = out.slice(0, at) + SPLASH_BODY + out.slice(at);
+  else out = out.replace(body, SPLASH_BODY + body);
   return out;
 }
