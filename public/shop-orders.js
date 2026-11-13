@@ -96,10 +96,17 @@
   var css = document.createElement("style");
   css.id = "medora-orders-css";
   css.textContent = [
-    "#mo-btn{border:1px solid var(--bd,#dbe7e9);background:var(--card,#fff);color:var(--prd,#0f5f66);border-radius:99px;padding:7px 12px;font:inherit;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;line-height:1.2}",
-    "#mo-btn b{background:#e8604c;color:#fff;border-radius:99px;min-width:18px;height:18px;display:inline-grid;place-items:center;font-size:11px;padding:0 4px}",
+    // In the header on wider screens; on phones a large floating button that is always in view.
+    "#mo-btn,#mo-fab{border:2px solid var(--prd,#0f5f66);background:var(--soft,#e4f3f5);color:var(--prd,#0f5f66);border-radius:99px;padding:8px 16px;font:inherit;font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:8px;line-height:1.2}",
+    "#mo-btn span:first-child,#mo-fab span:first-child{font-size:18px}",
+    "#mo-btn b,#mo-fab b{background:#e8604c;color:#fff;border-radius:99px;min-width:22px;height:22px;display:inline-grid;place-items:center;font-size:12px;padding:0 6px}",
+    "#mo-fab{display:none;position:fixed;inset-inline-end:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:35;background:var(--prd,#0f5f66);border-color:var(--prd,#0f5f66);color:#fff;padding:13px 20px;font-size:17px;box-shadow:0 8px 24px rgba(0,0,0,.28)}",
+    "#mo-fab span:first-child{font-size:20px}#mo-fab b{background:#fff;color:var(--prd,#0f5f66)}",
     "#mo-btn.float{position:fixed;inset-inline-end:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:35;box-shadow:0 6px 20px rgba(0,0,0,.18)}",
-    "@media(max-width:420px){#mo-btn{padding:6px 9px;font-size:12px;gap:4px}}@media(max-width:374px){#mo-btn .mo-l{display:none}}",
+    "@media(max-width:700px){#mo-btn:not(.float){display:none}#mo-fab{display:inline-flex}}",
+    // Narrow phones: sits above the shop's own floating buttons instead of beside them.
+    "@media(max-width:470px){#mo-fab{bottom:calc(70px + env(safe-area-inset-bottom,0px))}body:has(#admbtn) #mo-fab{bottom:calc(122px + env(safe-area-inset-bottom,0px))}}",
+    "#mo-dr{font-size:15px!important;padding:12px!important;border-width:2px!important;border-color:var(--prd,#0f5f66)!important}",
     "#mo-dr{display:block;width:100%;margin-top:8px;border:1px solid var(--bd,#dbe7e9);background:transparent;color:var(--prd,#0f5f66);border-radius:10px;padding:9px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}",
     "#mo{position:fixed;inset:0;z-index:46;background:var(--bg,#f1f7f8);color:var(--tx,#12363b);display:none;flex-direction:column;font-family:inherit;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}",
     "#mo.open{display:flex}",
@@ -147,13 +154,18 @@
   var cartBtn = document.getElementById("cb");
   if (cartBtn && cartBtn.parentNode) cartBtn.parentNode.insertBefore(btn, cartBtn);
   else { btn.className = "float"; document.body.appendChild(btn); }
+  var fab = null;
+  if (!btn.className) { fab = document.createElement("button"); fab.id = "mo-fab"; fab.type = "button"; document.body.appendChild(fab); fab.onclick = function () { open(); }; }
   var openCount = 0;
   function renderBtn() {
-    btn.innerHTML = "<span aria-hidden='true'>📦</span><span class='mo-l'></span>" + (openCount ? "<b></b>" : "");
-    btn.querySelector(".mo-l").textContent = t("short");
+    [btn, fab].forEach(function (b) {
+      if (!b) return;
+      b.innerHTML = "<span aria-hidden='true'>📦</span><span class='mo-l'></span>" + (openCount ? "<b></b>" : "");
+      b.querySelector(".mo-l").textContent = t("title");
+      b.setAttribute("aria-label", t("title") + (openCount ? " (" + openCount + ")" : ""));
+      if (openCount) b.querySelector("b").textContent = String(openCount);
+    });
     if (drBtn) drBtn.textContent = "📦 " + t("title");
-    btn.setAttribute("aria-label", t("title"));
-    if (openCount) btn.querySelector("b").textContent = String(openCount);
   }
   btn.onclick = function () { open(); };
   // Also under "Send order on WhatsApp" in the order drawer.
