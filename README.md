@@ -50,6 +50,20 @@ After that, products and prices are edited on the site itself: an Owner or Manag
 
 Only the phone's push address is stored, no name or number. The sending keys (VAPID) are made automatically the first time and kept in the database with the private key encrypted by `APP_ENCRYPTION_KEY`. To use your own, set `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` (and optionally `VAPID_SUBJECT`, a `mailto:` or `https:` contact). Changing the keys later means every customer has to turn notifications on again.
 
+## My orders (shop customers)
+
+Customers tap **📦 Orders** in the shop (or **📦 My orders** under the WhatsApp button) to see every order they sent: its status (Received, Confirmed, To be delivered with the expected time, Delivered, Cancelled), its **pro forma** and **invoice**, and **Order again**, which puts the same items back in the cart at today's prices.
+
+| Step | What happens |
+|---|---|
+| Customer sends an order | WhatsApp opens exactly as before. The first time, the shop asks once for a name and phone. The order is saved with a reference such as MC-7K3QXD, which is added to the WhatsApp message |
+| Staff see it | **Shop orders** in the Command Center (Owner, Manager, Accountant), and a notification in the bell |
+| Staff update it | Confirm, Mark to be delivered (with the estimated time), Mark delivered or Cancel (with a reason). Attach a pro forma or invoice (PDF, PNG or JPG up to 4 MB). Each change shows in the customer's My orders and, if their phone has notifications on, arrives as a notification |
+| Orders by phone or WhatsApp | **New order** enters one for the customer's phone number, so it shows in their My orders too |
+| Another phone | The customer's My orders link (shown on each order in the Command Center, and in My orders under "Open My orders on another phone") opens their orders on any phone |
+
+Customers don't sign in. Their phone keeps a random key; the server stores only its SHA-256 for look-ups and an encrypted copy (with `APP_ENCRYPTION_KEY`) so staff can send the link. Each document link works for that one document only. My orders is added to every shop page the site serves, like the animated logo, so it survives uploading a new shop file and needs no new Android or iPhone app.
+
 ## How the assistant is kept safe
 
 - It can only call the tools in `src/lib/ai/tools.ts`. None of them sends anything outside the app, pays, changes financial data or commits to a purchase.

@@ -13,13 +13,14 @@ export type Permission =
   | "sales.field" // field app: own clients, visits, orders
   | "sales.review" // approve, edit or reject orders and proformas; manage products
   | "sales.deliver" // driver app: deliver the approved orders assigned to them
-  | "customers.notify"; // send phone notifications to shop customers, update the public shop page
+  | "customers.notify" // send phone notifications to shop customers, update the public shop page
+  | "shop.orders"; // shop customers' My orders: set the status, attach pro formas and invoices
 
 const GRANTS: Record<Role, Permission[]> = {
-  OWNER: ["workspace.use", "team.view", "team.assign", "approvals.decide", "users.manage", "audit.view", "data.export", "data.delete", "settings.company", "sales.field", "sales.review", "customers.notify"],
+  OWNER: ["workspace.use", "team.view", "team.assign", "approvals.decide", "users.manage", "audit.view", "data.export", "data.delete", "settings.company", "sales.field", "sales.review", "customers.notify", "shop.orders"],
   ADMIN: ["workspace.use", "team.view", "team.assign", "users.manage", "audit.view", "data.export", "settings.company"],
-  MANAGER: ["workspace.use", "team.view", "team.assign", "approvals.decide", "sales.field", "customers.notify"],
-  ACCOUNTANT: ["workspace.use", "sales.review"],
+  MANAGER: ["workspace.use", "team.view", "team.assign", "approvals.decide", "sales.field", "customers.notify", "shop.orders"],
+  ACCOUNTANT: ["workspace.use", "sales.review", "shop.orders"],
   STAFF: ["workspace.use", "sales.field"],
   SALESPERSON: ["workspace.use", "sales.field"],
   DRIVER: ["workspace.use", "sales.deliver"],

@@ -47,6 +47,8 @@
     return out;
   }
   function send(method, data) {
+    // Links this phone to its My orders, so order updates arrive here too.
+    try { var ck = localStorage.getItem("medora_ck"); if (ck && method === "POST") data.customer = ck; } catch { /* storage blocked */ }
     return fetch("/api/push/subscribe", { method: method, headers: { "content-type": "application/json" }, body: JSON.stringify(data) })
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); });
   }

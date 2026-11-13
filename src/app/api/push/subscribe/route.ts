@@ -12,7 +12,7 @@ export async function POST(req: Request) {
   if (rateLimited("push-sub:" + ip(req), 10, 60_000)) return json({ error: "Too many requests" }, 429);
   const body = await req.json().catch(() => null);
   try {
-    await saveSubscriber(body?.subscription, String(body?.lang ?? "en"), req.headers.get("user-agent") ?? "");
+    await saveSubscriber(body?.subscription, String(body?.lang ?? "en"), req.headers.get("user-agent") ?? "", body?.customer);
     return json({ ok: true });
   } catch (e) {
     log.warn("push.subscribe_rejected", { error: String(e).slice(0, 200) });

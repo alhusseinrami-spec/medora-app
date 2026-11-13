@@ -10,6 +10,7 @@ export const NAV: NavItem[] = [
   { href: "/reminders", label: "Reminders", icon: "clock", key: "g r" },
   { href: "/approvals", label: "Approvals", icon: "shield", key: "g a" },
   { href: "/sales/orders", label: "Orders", icon: "cart", key: "g o", perm: "sales.review" },
+  { href: "/customers/orders", label: "Shop orders", icon: "box", key: "g m", perm: "shop.orders" },
   { href: "/customers/notify", label: "Customer alerts", icon: "bell", key: "g n", perm: "customers.notify" },
   { href: "/sales/visits", label: "Field visits", icon: "pin", key: "g v", perm: "team.view" },
   { href: "/field", label: "Field app", icon: "phone", key: "g f", perm: "sales.field" },

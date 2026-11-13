@@ -2,7 +2,7 @@ import "server-only";
 import webpush from "web-push";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { decrypt, encrypt } from "@/lib/crypto";
+import { decrypt, encrypt, sha256 } from "@/lib/crypto";
 import { log } from "@/lib/log";
 import { UserError } from "./errors";
 import { SPLASH_BODY, SPLASH_HEAD } from "@/lib/shop-splash";
@@ -45,9 +45,14 @@ const SubSchema = z.object({
   keys: z.object({ p256dh: z.string().min(10).max(200), auth: z.string().min(4).max(100) }),
 });
 
-export async function saveSubscriber(raw: unknown, lang: string, userAgent: string) {
+// customerKey: the My orders key kept on the same phone, if it has ordered. Links the phone to that
+// customer so it also gets their order updates. An unknown key is ignored.
+export async function saveSubscriber(raw: unknown, lang: string, userAgent: string, customerKey?: unknown) {
   const s = SubSchema.parse(raw);
-  const data = { p256dh: s.keys.p256dh, auth: s.keys.auth, lang: lang === "ar" ? "ar" : "en", userAgent: userAgent.slice(0, 300) };
+  const customer = typeof customerKey === "string" && /^[A-Za-z0-9_-]{32,64}$/.test(customerKey)
+    ? await db.shopCustomer.findUnique({ where: { keyHash: sha256(customerKey) }, select: { id: true } })
+    : null;
+  const data = { p256dh: s.keys.p256dh, auth: s.keys.auth, lang: lang === "ar" ? "ar" : "en", userAgent: userAgent.slice(0, 300), ...(customer ? { customerId: customer.id } : {}) };
   await db.pushSubscriber.upsert({ where: { endpoint: s.endpoint }, create: { endpoint: s.endpoint, ...data }, update: data });
 }
 
@@ -65,10 +70,42 @@ const CampaignSchema = z.object({
     .refine((v) => v.startsWith("/") && !v.startsWith("//") && !v.includes("\\"), "The link must be a page of this site, such as /shop or /shop#shop"),
 });
 
+function vapidSubject() {
+  return process.env.VAPID_SUBJECT?.trim() || (process.env.APP_URL?.startsWith("https://") ? process.env.APP_URL : "mailto:support@medora-care.com");
+}
+
+// One customer's phones (an order update). Never throws: the order change has already been saved.
+export async function sendToCustomer(customerId: string, msg: { title: string; body: string; url: string; tag: string }) {
+  try {
+    const subs = await db.pushSubscriber.findMany({ where: { customerId }, select: { id: true, endpoint: true, p256dh: true, auth: true } });
+    if (!subs.length) return 0;
+    const { publicKey, privateKey } = await vapidKeys();
+    const payload = JSON.stringify(msg);
+    let delivered = 0;
+    const gone: string[] = [];
+    await Promise.all(subs.map(async (s) => {
+      try {
+        await webpush.sendNotification({ endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }, payload,
+          { vapidDetails: { subject: vapidSubject(), publicKey, privateKey }, TTL: 3 * 86400, urgency: "high", timeout: 10_000 });
+        delivered++;
+      } catch (e) {
+        const code = (e as { statusCode?: number }).statusCode;
+        if (code === 404 || code === 410) gone.push(s.id);
+        else log.warn("push.order_update_failed", { code, error: String(e).slice(0, 200) });
+      }
+    }));
+    if (gone.length) await db.pushSubscriber.deleteMany({ where: { id: { in: gone } } });
+    return delivered;
+  } catch (e) {
+    log.warn("push.order_update_failed", { error: String(e).slice(0, 200) });
+    return 0;
+  }
+}
+
 export async function sendCampaign(userId: string, raw: unknown) {
   const c = CampaignSchema.parse(raw);
   const { publicKey, privateKey } = await vapidKeys();
-  const subject = process.env.VAPID_SUBJECT?.trim() || (process.env.APP_URL?.startsWith("https://") ? process.env.APP_URL : "mailto:support@medora-care.com");
+  const subject = vapidSubject();
   const subs = await db.pushSubscriber.findMany({ select: { id: true, endpoint: true, p256dh: true, auth: true } });
   if (!subs.length) throw new UserError("No customer has turned on notifications yet.");
   const payload = JSON.stringify({ title: c.title, body: c.body, url: c.link, tag: "medora-" + Date.now() });
@@ -116,12 +153,12 @@ export async function shopHtml(): Promise<string | null> {
 }
 
 // Adds the home-screen app details, the animated logo shown when the shop opens as an app,
-// and the "Get offers on your phone" button to the uploaded page.
+// the "Get offers on your phone" button and My orders to the uploaded page.
 export function injectPush(html: string, publicKey: string): string {
   // A page saved from the live shop may already carry the logo; never add it twice.
   html = html.replace(/<style id="medora-splash-css">[\s\S]*?<\/style>|<script id="medora-splash-js">[\s\S]*?<\/script>/g, "");
   const head = SPLASH_HEAD + `<link rel="manifest" href="/shop.webmanifest"><link rel="apple-touch-icon" href="/shop-icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Medora Care"><meta name="theme-color" content="#0f5f66"><script src="/shop-admin.js"></script>`;
-  const body = `<script id="medora-push">window.MEDORA_PUSH_KEY=${JSON.stringify(publicKey)};</script><script src="/shop-push.js" defer></script>`;
+  const body = `<script id="medora-push">window.MEDORA_PUSH_KEY=${JSON.stringify(publicKey)};</script><script src="/shop-push.js" defer></script><script src="/shop-orders.js" defer></script>`;
   const h = html.search(/<\/head>/i);
   let out = h >= 0 ? html.slice(0, h) + head + html.slice(h) : head + html;
   const b = out.search(/<\/body>(?![\s\S]*<\/body>)/i);
