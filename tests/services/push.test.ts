@@ -66,6 +66,6 @@ describe("customer phone notifications", () => {
 
   it("puts the button in the last body when the page has two", () => {
     const out = injectPush("<html><head></head><body><template><body></body></template></body></html>", "KEY");
-    expect(out.endsWith('<script src="/shop-push.js" defer></script></body></html>')).toBe(true);
+    expect(out.endsWith('<script src="/shop-push.js" defer></script><script src="/shop-orders.js" defer></script></body></html>')).toBe(true);
   });
 });
