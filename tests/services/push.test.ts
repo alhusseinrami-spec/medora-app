@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import webpush from "web-push";
 import { db } from "@/lib/db";
-import { injectPush, isPushEndpoint, saveShopPage, saveSubscriber, sendCampaign, shopHtml, vapidKeys } from "@/lib/services/push";
+import { catalogueSavedAt, injectPush, isPushEndpoint, saveShopPage, shopPageInfo, shopVersion, saveSubscriber, sendCampaign, shopHtml, vapidKeys } from "@/lib/services/push";
 import { makeUser, reset } from "./helpers";
 
 beforeEach(async () => { await reset(); vi.restoreAllMocks(); });
@@ -62,6 +62,34 @@ describe("customer phone notifications", () => {
     expect(html).toContain('<link rel="manifest" href="/shop.webmanifest">');
     expect(html.indexOf("/shop-push.js")).toBeLessThan(html.lastIndexOf("</body>"));
     expect(html.indexOf("rel=\"manifest\"")).toBeLessThan(html.indexOf("</head>"));
+  });
+
+  it("never lets a stale copy replace a newer shop page", async () => {
+    const page = (upd: string, label: string) =>
+      `<!doctype html><html><head><title>Shop</title></head><body><p>${label}</p><script type="application/json" id="db">{"v":1,"set":{"upd":"${upd}"},"cats":[],"items":[]}</script></body></html>`;
+    const v1 = await saveShopPage(page("2026-11-16T10:00:00.000Z", "one"), "Rami");
+    expect(catalogueSavedAt(page("2026-11-16T10:00:00.000Z", "x"))).toBe("2026-11-16T10:00:00.000Z");
+    // The served page carries its version, for the Admin to send back.
+    expect((await shopHtml())!).toContain(`<meta name="medora-shop-version" content="${v1}">`);
+    // Admin opened on v1 saves: fine, and the version moves on.
+    const v2 = await saveShopPage(page("2026-11-16T11:00:00.000Z", "two"), "Rami", { baseVersion: v1 });
+    expect(v2).not.toBe(v1);
+    // A second Admin still open on v1 cannot overwrite it.
+    await expect(saveShopPage(page("2026-11-16T12:00:00.000Z", "stale"), "Rami", { baseVersion: v1 })).rejects.toMatchObject({ kind: "live" });
+    // An uploaded file with older products is refused unless confirmed.
+    await expect(saveShopPage(page("2026-11-16T10:30:00.000Z", "old file"), "Rami")).rejects.toMatchObject({ kind: "older" });
+    expect((await shopHtml())!).toContain("<p>two</p>");
+    await saveShopPage(page("2026-11-16T10:30:00.000Z", "old file"), "Rami", { force: true });
+    expect((await shopHtml())!).toContain("<p>old file</p>");
+    // A newer file goes straight in.
+    await saveShopPage(page("2026-11-16T13:00:00.000Z", "new file"), "Rami");
+    expect(shopVersion((await shopPageInfo())!.updatedAt)).not.toBe(v2);
+  });
+
+  it("keeps only the current version in a page saved from the live shop", () => {
+    const out = injectPush('<html><head><meta name="medora-shop-version" content="1"></head><body></body></html>', "KEY", "2");
+    expect(out).not.toContain('content="1"');
+    expect(out).toContain('<meta name="medora-shop-version" content="2">');
   });
 
   it("puts the button in the last body when the page has two", () => {
