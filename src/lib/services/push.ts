@@ -6,6 +6,7 @@ import { decrypt, encrypt, sha256 } from "@/lib/crypto";
 import { log } from "@/lib/log";
 import { UserError } from "./errors";
 import { SPLASH_BODY, SPLASH_HEAD } from "@/lib/shop-splash";
+import { applyBrand } from "@/lib/shop-brand";
 
 // Phone notifications for customers of the public shop (/shop), using standard Web Push.
 // A customer's phone only gets them after it opened the shop and tapped "Allow".
@@ -152,11 +153,13 @@ export async function shopHtml(): Promise<string | null> {
   return injectPush(p.html, publicKey);
 }
 
-// Adds the home-screen app details, the animated logo shown when the shop opens as an app,
+// Adds the official logo, the home-screen app details, the animated logo shown when the shop opens as an app,
 // the "Get offers on your phone" button and My orders to the uploaded page.
 export function injectPush(html: string, publicKey: string): string {
   // A page saved from the live shop may already carry the logo; never add it twice.
   html = html.replace(/<style id="medora-splash-css">[\s\S]*?<\/style>|<script id="medora-splash-js">[\s\S]*?<\/script>/g, "");
+  // The official logo and tab icon, whatever logo the uploaded file was saved with.
+  html = applyBrand(html);
   const head = SPLASH_HEAD + `<link rel="manifest" href="/shop.webmanifest"><link rel="apple-touch-icon" href="/shop-icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Medora Care"><meta name="theme-color" content="#0f5f66"><script src="/shop-admin.js"></script>`;
   const body = `<script id="medora-push">window.MEDORA_PUSH_KEY=${JSON.stringify(publicKey)};</script><script src="/shop-push.js" defer></script><script src="/shop-orders.js" defer></script>`;
   const h = html.search(/<\/head>/i);
