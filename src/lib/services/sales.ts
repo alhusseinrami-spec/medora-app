@@ -81,9 +81,9 @@ export async function updateClient(a: Actor, id: string, raw: unknown) {
 export async function relocateClient(a: Actor, id: string, raw: unknown) {
   const c = await getClient(a, id);
   const fix = parse(GpsFix, raw, "location");
-  if (c.lat != null && !can(a.role, "team.view")) throw new UserError("Ask a manager to move a client's saved location.", "forbidden");
+  if (c.lat != null && !c.locationApprox && !can(a.role, "team.view")) throw new UserError("Ask a manager to move a client's saved location.", "forbidden");
   if (fix.accuracy > MAX_ACCURACY_M) throw new UserError(`Your location is only accurate to ${Math.round(fix.accuracy)} m. Step outside or wait a moment and try again.`);
-  await db.contact.update({ where: { id }, data: { lat: fix.lat, lng: fix.lng } });
+  await db.contact.update({ where: { id }, data: { lat: fix.lat, lng: fix.lng, locationApprox: false } });
   await audit({ actorId: a.id, action: "client.relocate", entity: "contact", entityId: id, meta: { from: c.lat != null ? [c.lat, c.lng] : null, to: [fix.lat, fix.lng] } });
 }
 
@@ -141,7 +141,10 @@ export async function importLeads(a: Actor, raw: unknown) {
   for (const r of rows) {
     if (known.has(r)) { skipped++; continue; }
     known.add(r);
-    fresh.push({ ...r, stage: "LEAD", category: "CUSTOMER", ownerId: a.id, tags: tag ? [tag] : [] });
+    const { lat, lng, ...fields } = r;
+    // A list's coordinates are the town the place is in, so the pin is marked approximate.
+    const pin = lat != null && lng != null ? { lat, lng, locationApprox: true } : {};
+    fresh.push({ ...fields, ...pin, stage: "LEAD", category: "CUSTOMER", ownerId: a.id, tags: tag ? [tag] : [] });
   }
   if (fresh.length) await db.contact.createMany({ data: fresh });
   await audit({ actorId: a.id, action: "client.import_leads", entity: "contact", meta: { tag, added: fresh.length, skipped } });
@@ -159,10 +162,13 @@ export async function checkIn(a: Actor, contactId: string, raw: unknown, note = 
   if (recent) return { visit: recent, duplicate: true };
 
   let distance: number | null = null;
-  if (c.lat != null && c.lng != null) distance = distanceM(fix, { lat: c.lat, lng: c.lng });
+  // An approximate pin can't verify a visit; the rep's first good fix takes its place.
+  if (c.lat != null && c.lng != null && !c.locationApprox) distance = distanceM(fix, { lat: c.lat, lng: c.lng });
   const verified = distance !== null && distance <= VERIFY_RADIUS_M && fix.accuracy <= MAX_ACCURACY_M;
   // A client with no saved pin takes this one, but the visit stays unverified: there was nothing to check against.
-  if (c.lat == null && fix.accuracy <= MAX_ACCURACY_M) await db.contact.update({ where: { id: contactId }, data: { lat: fix.lat, lng: fix.lng } });
+  if ((c.lat == null || c.locationApprox) && fix.accuracy <= MAX_ACCURACY_M) {
+    await db.contact.update({ where: { id: contactId }, data: { lat: fix.lat, lng: fix.lng, locationApprox: false } });
+  }
 
   const visit = await db.visit.create({
     data: { contactId, repId: a.id, lat: fix.lat, lng: fix.lng, accuracyM: fix.accuracy, distanceM: distance, verified, note: note.trim().slice(0, 2000) },
@@ -175,7 +181,7 @@ export async function checkIn(a: Actor, contactId: string, raw: unknown, note = 
 export async function checkInNearest(a: Actor, raw: unknown) {
   requireField(a);
   const fix = parse(GpsFix, raw, "location");
-  const mine = await db.contact.findMany({ where: { stage: { not: null }, lat: { not: null }, lng: { not: null } }, select: { id: true, name: true, lat: true, lng: true } });
+  const mine = await db.contact.findMany({ where: { stage: { not: null }, lat: { not: null }, lng: { not: null }, locationApprox: false }, select: { id: true, name: true, lat: true, lng: true } });
   const best = mine
     .map((c) => ({ id: c.id, name: c.name, d: distanceM(fix, { lat: c.lat!, lng: c.lng! }) }))
     .reduce<{ id: string; name: string; d: number } | null>((b, c) => (!b || c.d < b.d ? c : b), null);
