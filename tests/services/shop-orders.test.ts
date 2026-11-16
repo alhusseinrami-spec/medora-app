@@ -165,4 +165,22 @@ describe("Pro forma made on the order page", () => {
     const other = await placeShopOrder(order({ ref: "MC-ZZZ999" }));
     await expect(createShopProforma(staff, other.id, { number: "PF-2026-0008", validUntil: new Date(Date.now() + 864e5), note: "", lines })).rejects.toThrow(/already used/);
   });
+
+  it("keeps free goods from a shop offer on their own line at no charge, down to the pro forma", async () => {
+    const { createShopProforma } = await import("@/lib/services/shopOrders");
+    const staff = await makeUser("ACCOUNTANT", "Rami");
+    const lines = [
+      { code: "OX-550010", name: "Burnshield hydrogel tube 10 ml (25% off)", qty: 5, price: 2.81 },
+      { code: "OX-550010", name: "Burnshield hydrogel tube 10 ml", qty: 2, price: 0, free: true },
+    ];
+    const o = await placeShopOrder(order({ lines }));
+    expect(Number(o.total)).toBe(14.05);
+    const saved = (await customerOrders(KEY))!.orders[0].lines;
+    expect(saved[1]).toMatchObject({ qty: 2, price: 0, free: true });
+    expect(saved[0]).not.toHaveProperty("free");
+    // A free line needs no price; a paid line still does.
+    const r = await createShopProforma(staff, o.id, { number: "PF-2026-0008", validUntil: new Date(Date.now() + 864e5), note: "", lines: [...lines, { code: "OX-1", name: "Free line given a price", qty: 1, price: 9, free: true }] });
+    expect(r.total).toBe(14.05);
+    await expect(createShopProforma(staff, o.id, { number: "PF-2026-0008", validUntil: new Date(Date.now() + 864e5), note: "", lines: [{ ...lines[0], price: 0 }, lines[1]] })).rejects.toThrow(/price/);
+  });
 });

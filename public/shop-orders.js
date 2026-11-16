@@ -19,6 +19,7 @@
   var ar = function () { return (document.documentElement.lang || "").slice(0, 2) === "ar"; };
   var T = {
     short: ["Orders", "طلباتي"],
+    free: ["Free:", "مجاناً:"],
     added2: ["Your earlier order is in the cart. Check it and send it on WhatsApp.", "طلبك السابق في السلة. راجعه وأرسله عبر واتساب."],
     title: ["My orders", "طلباتي"],
     close: ["Close", "إغلاق"],
@@ -212,7 +213,7 @@
     if (o.status === "DELIVERED" && o.deliveredAt) h += "<div class='mo-mu'>✓ " + esc(t("deliveredOn")) + " " + esc(fmt(o.deliveredAt, true)) + "</div>";
     if (o.status === "CANCELLED" && o.cancelReason) h += "<div class='mo-mu'>" + esc(t("reason")) + ": " + esc(o.cancelReason) + "</div>";
     h += "<details><summary>" + esc(t("showItems")) + "</summary><ul>" + o.lines.map(function (l) {
-      return "<li>" + l.qty + " × " + esc((ar() && l.nameAr) || l.name) + (l.code ? " <code>" + esc(l.code) + "</code>" : "") + "</li>";
+      return "<li>" + l.qty + " × " + (l.free ? "🎁 " + esc(t("free")) + " " : "") + esc((ar() && l.nameAr) || l.name) + (l.code ? " <code>" + esc(l.code) + "</code>" : "") + "</li>";
     }).join("") + "</ul></details>";
     h += o.documents.length
       ? "<div class='mo-d'>" + o.documents.map(function (d) { return "<a href='" + esc(d.url) + "' target='_blank' rel='noopener'>" + esc(t(d.kind)) + "</a>"; }).join("") + "</div>"
@@ -289,6 +290,7 @@
     var byOld = {};
     if (s.byId) Object.keys(s.byId).forEach(function (id) { var p = s.byId[id]; if (p && p.o) byOld[p.o] = id; });
     o.lines.forEach(function (l) {
+      if (l.free) return; // free goods come back with the offer itself
       var id = l.code && s.byId ? (s.byId[l.code] ? l.code : byOld[l.code]) : (!s.byId && l.code ? l.code : null);
       if (id) { c[id] = l.qty; added++; } else missing.push((ar() && l.nameAr) || l.name);
     });
@@ -309,6 +311,8 @@
 
   // ---- Saving the order when it is sent on WhatsApp ----
   function cartLines() {
+    // A shop page with offers builds its own lines (prices it shows, free goods on their own line).
+    try { /* global shopLines */ if (typeof shopLines === "function") { var own = shopLines(); if (Array.isArray(own)) return own; } } catch { /* older shop page */ }
     var s = shop(), showPrices = false;
     try { /* global SHOW_PRICES */ showPrices = !!SHOW_PRICES; } catch { /* prices hidden */ }
     var c = s.cart && typeof s.cart === "object" ? s.cart : (function () { try { return JSON.parse(ls("mc") || "{}"); } catch { return {}; } })();

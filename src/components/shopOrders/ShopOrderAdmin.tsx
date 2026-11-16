@@ -200,14 +200,14 @@ export function NewShopOrderForm() {
   );
 }
 
-type PLine = { code: string; name: string; nameAr: string; qty: string; price: string; shopPrice: number };
+type PLine = { code: string; name: string; nameAr: string; qty: string; price: string; shopPrice: number; free?: boolean };
 const usd = (v: number) => "$" + v.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 // The order's items as an editable pro forma: change quantities, enter prices, add or remove lines,
 // then make the PDF. It goes straight into the customer's My orders.
 export function ProformaEditor({ id, lines, number, validUntil, note, hasProforma }: {
   id: string;
-  lines: { code: string; name: string; nameAr: string; qty: number; price: number; shopPrice: number }[];
+  lines: { code: string; name: string; nameAr: string; qty: number; price: number; shopPrice: number; free?: boolean }[];
   number: string; validUntil: string; note: string; hasProforma: boolean;
 }) {
   const router = useRouter();
@@ -216,8 +216,8 @@ export function ProformaEditor({ id, lines, number, validUntil, note, hasProform
   const [r, setR] = useState<Res>({});
   const [pending, start] = useTransition();
   const set = (i: number, k: "code" | "name" | "qty" | "price", v: string) => { setRows(rows.map((x, j) => (j === i ? { ...x, [k]: v } : x))); setR({}); };
-  const clean = () => rows.filter((x) => x.name.trim() || x.code.trim()).map((x) => ({ code: x.code.trim().toUpperCase(), name: x.name.trim() || x.code.trim(), nameAr: x.nameAr, qty: Math.round(Number(x.qty)) || 0, price: Number(x.price) || 0 }));
-  const total = rows.reduce((s, x) => s + (Number(x.qty) || 0) * (Number(x.price) || 0), 0);
+  const clean = () => rows.filter((x) => x.name.trim() || x.code.trim()).map((x) => ({ code: x.code.trim().toUpperCase(), name: x.name.trim() || x.code.trim(), nameAr: x.nameAr, qty: Math.round(Number(x.qty)) || 0, price: x.free ? 0 : Number(x.price) || 0, ...(x.free ? { free: true } : {}) }));
+  const total = rows.reduce((s, x) => s + (x.free ? 0 : (Number(x.qty) || 0) * (Number(x.price) || 0)), 0);
   const save = () => start(async () => { const res = await saveShopOrderLinesAction(id, clean()); setR(res); if (res.ok) router.refresh(); });
   const create = () => start(async () => {
     const res = await createProformaAction(id, { ...f, lines: clean() });
@@ -239,8 +239,8 @@ export function ProformaEditor({ id, lines, number, validUntil, note, hasProform
                 <td className="p-2 pl-3 w-28"><input className="input" value={x.code} onChange={(e) => set(i, "code", e.target.value)} aria-label={`Code, line ${i + 1}`} dir="ltr" /></td>
                 <td className="p-2 min-w-[200px]"><input className="input" value={x.name} onChange={(e) => set(i, "name", e.target.value)} aria-label={`Item, line ${i + 1}`} />{x.shopPrice > 0 && <span className="text-xs text-muted">Shop price {usd(x.shopPrice)}</span>}</td>
                 <td className="p-2"><input className="input" type="number" min={1} inputMode="numeric" value={x.qty} onChange={(e) => set(i, "qty", e.target.value)} aria-label={`Quantity, line ${i + 1}`} /></td>
-                <td className="p-2"><input className={`input ${x.price && Number(x.price) > 0 ? "" : "!border-warn"}`} type="number" min={0} step="0.01" inputMode="decimal" value={x.price} placeholder="0.00" onChange={(e) => set(i, "price", e.target.value)} aria-label={`Unit price, line ${i + 1}`} /></td>
-                <td className="p-2 text-right pt-4 whitespace-nowrap">{usd((Number(x.qty) || 0) * (Number(x.price) || 0))}</td>
+                <td className="p-2">{x.free ? <span className="inline-block pt-2 font-medium" title="Free goods from a shop offer">Free</span> : <input className={`input ${x.price && Number(x.price) > 0 ? "" : "!border-warn"}`} type="number" min={0} step="0.01" inputMode="decimal" value={x.price} placeholder="0.00" onChange={(e) => set(i, "price", e.target.value)} aria-label={`Unit price, line ${i + 1}`} />}</td>
+                <td className="p-2 text-right pt-4 whitespace-nowrap">{usd(x.free ? 0 : (Number(x.qty) || 0) * (Number(x.price) || 0))}</td>
                 <td className="p-2"><button type="button" className="btn btn-sm btn-ghost" aria-label={`Remove line ${i + 1}`} onClick={() => setRows(rows.length > 1 ? rows.filter((_, j) => j !== i) : rows)}>✕</button></td>
               </tr>
             ))}
