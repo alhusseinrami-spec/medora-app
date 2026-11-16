@@ -138,29 +138,70 @@ export const recentCampaigns = () => db.pushCampaign.findMany({ orderBy: { creat
 
 export const MAX_SHOP_BYTES = 4_000_000; // Vercel accepts uploads up to about 4.5 MB
 
-export async function saveShopPage(html: string, userName: string) {
+export const shopVersion = (d: Date) => String(d.getTime());
+
+// The shop was changed somewhere else, so saving now would throw that change away.
+// "live": the Admin was opened on an older copy of the page. "older": an uploaded file holds an older catalogue than the live shop.
+export class ShopConflictError extends UserError {
+  constructor(public kind: "live" | "older", message: string) { super(message); }
+}
+
+// When the shop's Admin last saved the catalogue (set.upd inside <script id="db">), or null for a page without one.
+export function catalogueSavedAt(html: string): string | null {
+  const m = html.match(/<script type="application\/json" id="db">([\s\S]*?)<\/script>/);
+  if (!m) return null;
+  try {
+    const u = JSON.parse(m[1])?.set?.upd;
+    return typeof u === "string" && !Number.isNaN(Date.parse(u)) ? u : null;
+  } catch { return null; }
+}
+
+const when = (iso: string) => iso.slice(0, 16).replace("T", " ") + " UTC";
+
+// The database holds the one live shop page. Two guards keep a stale copy from replacing a newer one:
+// - baseVersion (sent by the shop's Admin): the version of the page the Admin was opened on. If the page changed since, nothing is saved.
+// - an uploaded file whose catalogue is older than the live one is refused, unless force is set (the person confirmed it).
+export async function saveShopPage(html: string, userName: string, opts: { baseVersion?: string; force?: boolean } = {}): Promise<string> {
   if (!/<html[\s>]/i.test(html) || !/<\/body>/i.test(html)) throw new UserError("That file is not the shop page. In the shop, open ⚙ Admin and use “Download site file”, then upload that index.html.");
   if (Buffer.byteLength(html) > MAX_SHOP_BYTES) throw new UserError("The shop file is larger than 4 MB. Remove or shrink some photos in the shop's Admin, then download it again.");
-  await db.shopPage.upsert({ where: { id: "main" }, create: { id: "main", html, updatedBy: userName }, update: { html, updatedBy: userName } });
+  const cur = await db.shopPage.findUnique({ where: { id: "main" }, select: { html: true, updatedAt: true } });
+  if (!cur) {
+    const p = await db.shopPage.create({ data: { id: "main", html, updatedBy: userName }, select: { updatedAt: true } });
+    return shopVersion(p.updatedAt);
+  }
+  const live = "The shop was updated somewhere else after this Admin was opened, so nothing was saved. Load the latest version and make your changes again.";
+  if (opts.baseVersion !== undefined && opts.baseVersion !== shopVersion(cur.updatedAt)) throw new ShopConflictError("live", live);
+  if (opts.baseVersion === undefined && !opts.force) {
+    const mine = catalogueSavedAt(html), theirs = catalogueSavedAt(cur.html);
+    if (mine && theirs && Date.parse(mine) < Date.parse(theirs))
+      throw new ShopConflictError("older", `This file's products were saved ${when(mine)}, but the live shop has newer ones from ${when(theirs)}. Uploading it would undo those changes.`);
+  }
+  // Only replaces the page if nobody saved in between (two saves at the same moment).
+  const { count } = await db.shopPage.updateMany({ where: { id: "main", updatedAt: cur.updatedAt }, data: { html, updatedBy: userName } });
+  if (count === 0) throw new ShopConflictError("live", live);
+  const p = await db.shopPage.findUniqueOrThrow({ where: { id: "main" }, select: { updatedAt: true } });
+  return shopVersion(p.updatedAt);
 }
 
 export const shopPageInfo = () => db.shopPage.findUnique({ where: { id: "main" }, select: { updatedAt: true, updatedBy: true } });
 
 export async function shopHtml(): Promise<string | null> {
-  const p = await db.shopPage.findUnique({ where: { id: "main" }, select: { html: true } });
+  const p = await db.shopPage.findUnique({ where: { id: "main" }, select: { html: true, updatedAt: true } });
   if (!p) return null;
   const { publicKey } = await vapidKeys();
-  return injectPush(p.html, publicKey);
+  return injectPush(p.html, publicKey, shopVersion(p.updatedAt));
 }
 
 // Adds the official logo, the home-screen app details, the animated logo shown when the shop opens as an app,
 // the "Get offers on your phone" button and My orders to the uploaded page.
-export function injectPush(html: string, publicKey: string): string {
+export function injectPush(html: string, publicKey: string, version?: string): string {
   // A page saved from the live shop may already carry the logo; never add it twice.
   html = html.replace(/<style id="medora-splash-css">[\s\S]*?<\/style>|<script id="medora-splash-js">[\s\S]*?<\/script>/g, "");
   // The official logo and tab icon, whatever logo the uploaded file was saved with.
   html = applyBrand(html);
-  const head = SPLASH_HEAD + `<link rel="manifest" href="/shop.webmanifest"><link rel="apple-touch-icon" href="/shop-icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Medora Care"><meta name="theme-color" content="#0f5f66"><script src="/shop-admin.js"></script>`;
+  // A page saved from the live shop carries the version it was opened on; only the current one counts.
+  html = html.replace(/<meta name="medora-shop-version"[^>]*>/g, "");
+  const head = SPLASH_HEAD + `<link rel="manifest" href="/shop.webmanifest"><link rel="apple-touch-icon" href="/shop-icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Medora Care"><meta name="theme-color" content="#0f5f66">${version ? `<meta name="medora-shop-version" content="${version.replace(/\D/g, "")}">` : ""}<script src="/shop-admin.js"></script>`;
   const body = `<script id="medora-push">window.MEDORA_PUSH_KEY=${JSON.stringify(publicKey)};</script><script src="/shop-push.js" defer></script><script src="/shop-orders.js" defer></script>`;
   const h = html.search(/<\/head>/i);
   let out = h >= 0 ? html.slice(0, h) + head + html.slice(h) : head + html;

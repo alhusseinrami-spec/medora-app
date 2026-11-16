@@ -47,18 +47,23 @@ export function ShopUpload() {
   const router = useRouter();
   const [r, setR] = useState<SendRes>({});
   const [busy, setBusy] = useState(false);
-  async function choose(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file) return;
-    setBusy(true); setR({});
+  // A file whose products are older than the live shop's waits here until the person confirms.
+  const [older, setOlder] = useState<string | null>(null);
+  async function send(html: string, force: boolean) {
+    setBusy(true); setR({}); setOlder(null);
     try {
-      const res = await fetch("/api/shop/upload", { method: "POST", headers: { "content-type": "text/html" }, body: await file.text() });
+      const res = await fetch(`/api/shop/upload${force ? "?force=1" : ""}`, { method: "POST", headers: { "content-type": "text/html" }, body: html });
       const j = await res.json().catch(() => ({}));
-      if (!res.ok) setR({ error: j.error ?? "Upload failed." });
+      if (res.status === 409 && j.conflict === "older") { setOlder(html); setR({ error: j.error }); }
+      else if (!res.ok) setR({ error: j.error ?? "Upload failed." });
       else { setR({ ok: "Shop updated. Customers see the new page within a minute." }); router.refresh(); }
     } catch { setR({ error: "Upload failed. Check your connection and try again." }); }
     setBusy(false);
+  }
+  async function choose(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (file) await send(await file.text(), false);
   }
   return (
     <div>
@@ -67,6 +72,12 @@ export function ShopUpload() {
         <input type="file" accept=".html,text/html" className="sr-only" onChange={choose} disabled={busy} />
       </label>
       <Msg r={r} />
+      {older && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          <button className="btn btn-danger" disabled={busy} onClick={() => send(older, true)}>Upload anyway and replace the newer products</button>
+          <button className="btn" disabled={busy} onClick={() => { setOlder(null); setR({}); }}>Keep the live shop</button>
+        </div>
+      )}
     </div>
   );
 }

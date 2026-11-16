@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireAuth } from "@/lib/auth";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { recentCampaigns, shopPageInfo, subscriberCount } from "@/lib/services/push";
@@ -27,7 +28,7 @@ export default async function CustomerAlertsPage() {
 
       <section className="card p-4">
         <h2 className="font-semibold mb-1">Shop page</h2>
-        <p className="text-sm text-ink-2 mb-3">{shop ? `Last updated ${fmt(shop.updatedAt)}${shop.updatedBy ? ` by ${shop.updatedBy}` : ""}.` : "No shop page yet. Customers who open /shop see a short “being updated” page until you upload one."} To change products or prices, open <a className="underline" href="/shop" target="_blank">/shop</a> on this device while you are signed in here, tap ⚙ Admin, make your changes and press Save &amp; publish. Everyone sees them within a minute, including customers who added the shop to their home screen. Use the upload below only for a file downloaded from the shop&apos;s Admin.</p>
+        <p className="text-sm text-ink-2 mb-3">{shop ? `Last updated ${fmt(shop.updatedAt)}${shop.updatedBy ? ` by ${shop.updatedBy}` : ""}.` : "No shop page yet. Customers who open /shop see a short “being updated” page until you upload one."} To change products, prices or offers, open <Link className="underline" href="/customers/shop">Shop products</Link> and press Save &amp; publish there. Everyone sees the changes within a minute, including customers who added the shop to their home screen. Use the upload below only for a file downloaded from the shop&apos;s Admin; if its products are older than the live shop&apos;s, you are asked before anything is replaced.</p>
         <ShopUpload />
       </section>
 

@@ -25,6 +25,12 @@ const securityHeaders = [
   },
 ];
 
+// The public shop may be shown inside this app (Shop products opens its Admin there), never inside another site.
+const shopHeaders = securityHeaders.map((h) =>
+  h.key === "X-Frame-Options" ? { ...h, value: "SAMEORIGIN" }
+  : h.key === "Content-Security-Policy" ? { ...h, value: h.value.replace("frame-ancestors 'none'", "frame-ancestors 'self'") }
+  : h);
+
 const nextConfig: NextConfig = {
   // pdfkit reads its font data from its own folder, so it stays a normal Node package.
   serverExternalPackages: ["@node-rs/argon2", "pdfkit"],
@@ -36,7 +42,8 @@ const nextConfig: NextConfig = {
     },
   },
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    // The later entry wins for /shop.
+    return [{ source: "/:path*", headers: securityHeaders }, { source: "/shop", headers: shopHeaders }];
   },
 };
 
