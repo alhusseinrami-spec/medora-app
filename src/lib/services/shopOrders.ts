@@ -48,6 +48,8 @@ const Line = z.object({
   nameAr: z.string().trim().max(200).default(""),
   qty: z.coerce.number().int().min(1).max(100_000),
   price: z.coerce.number().min(0).max(1_000_000).default(0),
+  // Free goods from a shop offer ("buy 5, get 2 free"): kept on their own line at no charge.
+  free: z.boolean().optional().transform((v) => v || undefined),
 });
 type LineT = z.infer<typeof Line>;
 
@@ -63,7 +65,7 @@ const PlaceSchema = z.object({
   note: z.string().trim().max(500).default(""),
 });
 
-const total = (lines: LineT[]) => Math.round(lines.reduce((s, l) => s + l.qty * l.price, 0) * 100) / 100;
+const total = (lines: LineT[]) => Math.round(lines.reduce((s, l) => s + (l.free ? 0 : l.qty * l.price), 0) * 100) / 100;
 
 async function staffToTell() {
   const users = await db.user.findMany({ where: { disabledAt: null }, select: { id: true, role: true } });
@@ -355,7 +357,7 @@ const ProformaSchema = z.object({
 export async function createShopProforma(user: User, id: string, raw: unknown) {
   assertStaff(user);
   const p = ProformaSchema.parse(raw);
-  if (p.lines.some((l) => !(l.price > 0))) throw new UserError("Enter a price for every item, or remove the item.");
+  if (p.lines.some((l) => !l.free && !(l.price > 0))) throw new UserError("Enter a price for every item, or remove the item.");
   const o = await db.shopOrder.findUnique({ where: { id }, include: { customer: true } });
   if (!o) throw new UserError("Order not found.", "not_found");
   const clash = await db.shopOrderDocument.findFirst({ where: { number: p.number, NOT: { orderId: id } }, include: { order: { select: { ref: true } } } });

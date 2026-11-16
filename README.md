@@ -50,6 +50,18 @@ After that, products and prices are edited on the site itself: an Owner or Manag
 
 Only the phone's push address is stored, no name or number. The sending keys (VAPID) are made automatically the first time and kept in the database with the private key encrypted by `APP_ENCRYPTION_KEY`. To use your own, set `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` (and optionally `VAPID_SUBJECT`, a `mailto:` or `https:` contact). Changing the keys later means every customer has to turn notifications on again.
 
+## Shop offers and the Oxinab products
+
+The shop page can carry the same offers as the Oxinab app, set per product in the shop's ⚙ Admin (Edit an item):
+
+| Offer | What the customer sees |
+|---|---|
+| Discount % | A red "−25%" badge, the public price crossed out and the price they pay |
+| Buy X, get Y free | A "🎁 Buy 5, get 2 free" badge; in the cart, the free units as soon as the quantity reaches X |
+| Both, customer picks one | "25% off" or "🎁 5+2 free" buttons in the cart; free goods are charged at the public price |
+
+The **Oxinab products** category shows its prices even while prices are hidden on the rest of the shop (the category's `sp` flag). Its codes are `OX-` plus the Oxinab code, and the Oxinab code is still searchable. Photos live in `public/ox/`. When the order is sent, the saved order keeps the price the customer saw and puts free goods on their own line, marked free; the pro forma prints them as "Free" and needs no price for them. Order again leaves free lines out, because the offer adds them back.
+
 ## My orders (shop customers)
 
 Customers tap **📦 Orders** in the shop (or **📦 My orders** under the WhatsApp button) to see every order they sent: its status (Received, Confirmed, To be delivered with the expected time, Delivered, Cancelled), its **pro forma** and **invoice**, and **Order again**, which puts the same items back in the cart at today's prices.

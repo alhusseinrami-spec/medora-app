@@ -46,7 +46,7 @@ export default async function ShopOrderPage({ params }: PageProps<"/customers/or
 
       <ProformaEditor
         id={o.id}
-        lines={o.lines.map((l) => ({ code: l.code, name: l.name, nameAr: l.nameAr ?? "", qty: l.qty, price: l.price || prices[l.code] || 0, shopPrice: l.price }))}
+        lines={o.lines.map((l) => ({ code: l.code, name: l.name, nameAr: l.nameAr ?? "", qty: l.qty, price: l.free ? 0 : l.price || prices[l.code] || 0, shopPrice: l.free ? 0 : l.price, free: !!l.free }))}
         number={lastPf?.number || suggested}
         validUntil={defaultValidUntil()}
         note={PROFORMA_NOTE}

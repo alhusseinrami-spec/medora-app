@@ -73,3 +73,14 @@ describe("roles", () => {
     expect(mfaRequired("STAFF")).toBe(false);
   });
 });
+
+describe("Sign-in gate", () => {
+  it("lets anyone load the Oxinab product photos the shop shows, and nothing else in that folder", async () => {
+    const { NextRequest } = await import("next/server");
+    const { proxy } = await import("@/proxy");
+    const go = (p: string) => proxy(new NextRequest("https://medora.test" + p));
+    expect(go("/ox/p27.jpg").headers.get("location")).toBeNull();
+    expect(go("/ox/../api/export").status).toBe(401);
+    expect(go("/ox/notes.txt").headers.get("location")).toContain("/login");
+  });
+});

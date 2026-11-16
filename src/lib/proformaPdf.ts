@@ -12,7 +12,7 @@ export type ProformaInput = {
   date: Date;
   validUntil: Date;
   customer: { name: string; phone: string };
-  lines: { code: string; name: string; qty: number; price: number }[];
+  lines: { code: string; name: string; qty: number; price: number; free?: boolean }[];
   note: string;
   orderRef: string;
 };
@@ -120,7 +120,7 @@ export function buildProformaPdf(p: ProformaInput): Promise<Buffer> {
   const dW = col.q - col.d - 10;
   let total = 0;
   p.lines.forEach((l, i) => {
-    const lineTotal = Math.round(l.qty * l.price * 100) / 100;
+    const lineTotal = l.free ? 0 : Math.round(l.qty * l.price * 100) / 100;
     total += lineTotal;
     doc.font("R").fontSize(9.5);
     const desc = l.code ? `${l.code} ${l.name}` : l.name;
@@ -138,7 +138,7 @@ export function buildProformaPdf(p: ProformaInput): Promise<Buffer> {
     }
     doc.font("R").fontSize(9.5).fillColor(INK);
     doc.text(String(l.qty), col.q, y + 6, { width: qW, align: "right" });
-    doc.text(money(l.price), col.u, y + 6, { width: uW, align: "right" });
+    doc.text(l.free ? "Free" : money(l.price), col.u, y + 6, { width: uW, align: "right" });
     doc.text(money(lineTotal), col.t, y + 6, { width: tW, align: "right" });
     y += h;
     doc.moveTo(L, y).lineTo(R, y).lineWidth(0.5).strokeColor(LINE).stroke();
