@@ -95,13 +95,25 @@
       "blood collection:3, lancet:2, container:2, urine:2, swab:2, slide:2, gloves:2, sharps:2, alcohol", 2],
     diet: ["a dietitian / nutritionist", "اختصاصي/ة تغذية", "dietitians", "اختصاصيي التغذية",
       "weight:3, diet:3, protein:3, vitamin:3, mineral:2, detox:2, herbal:2, tea, scale:3, height:2, glucose:2, gluten:2, blood pressure", 1],
+    hospital: ["buying for a hospital / medical center", "أشتري لمستشفى / مركز طبي", "hospitals and medical centers", "المستشفيات والمراكز الطبية",
+      "gloves:4, syringe:4, needle:3, cannula:4, iv set:4, iv:2, extension:3, stopcock:3, scalp vein:2, transfusion:3, infusion:2, " +
+      "gauze:3, dressing:3, plaster:2, tape:3, bandage:2, foley:3, catheter:2, urine bag:3, underpad:3, " +
+      "endotracheal:3, airway:3, oxygen:3, mask:3, nasal cannula:3, nebulizer:2, suction:3, feeding tube:2, stomach tube:2, drain:2, " +
+      "suture:2, blade:2, surgical:2, sterile:2, gown:3, drape:3, head cover:3, shoe cover:3, sharps:4, id bracelet:4, bracelet:2, " +
+      "alcohol:3, disinfectant:3, cleaning:3, mop:2, bucket:2, cart:2, trolley:3, bed:3, examination:2, exam:2, stretcher:3, wheelchair:2, " +
+      "ecg:2, electrode:2, oximeter:2, blood pressure:2, thermometer:2, stethoscope:2, ultrasound gel:2, eco gel:2, blood collection:2, rapid test:2"],
+    beauty: ["buying for a beauty center", "أشتري لمركز تجميل", "beauty centers", "مراكز التجميل",
+      "beauty:4, hair:3, skin:3, face:3, facial:3, compression garment:4, compression:2, cotton:4, gauze:3, swab:3, gloves:4, face mask:3, " +
+      "head cover:3, shoe cover:2, gown:2, underpad:3, examination roll:4, roll paper:4, bed roll:4, examination bed:3, trolley:3, stool:3, " +
+      "folding screen:3, alcohol:4, disinfectant:4, cleaning:2, sharps:3, syringe:3, insulin:3, needle:3, blade:2, ultrasound gel:4, " +
+      "eco gel:4, echo:2, hot/cold:3, eye mask:3, eye:2, eyelid:2, plaster:2, tape:2, film dressing:2, hydrogel:2, burn:2, vitamin:2, collagen:3"],
     home: ["caring for someone at home", "أعتني بمريض في المنزل", "home carers", "من يعتني بمريض في المنزل",
       "wheelchair:4, walker:4, walking stick:4, tripod:3, commode:4, mattress:4, bed:2, underpad:4, diaper:4, " +
       "pill box:4, pill crusher:3, blood pressure monitor:4, thermometer:3, oximeter:3, glucose:2, lancet:2, nebulizer:3, oxygen:2, " +
       "urine bag:3, foley:2, gloves:2, gauze:2, dressing:2, alcohol:2, disinfectant:2, cushion:3, sitting ring:3, back rest:2, heating:2, hot/cold:2, " +
       "compression stocking:2, feeding tube:2, bracelet"],
   };
-  var ORDER = ["pharmacist", "gp", "pediatrician", "neuro", "ortho", "physio", "nurse", "surgeon", "icu", "emergency", "gyn", "uro", "pulmo", "dentist", "lab", "diet", "home"];
+  var ORDER = ["pharmacist", "hospital", "gp", "pediatrician", "neuro", "ortho", "physio", "nurse", "surgeon", "icu", "emergency", "gyn", "uro", "pulmo", "dentist", "lab", "beauty", "diet", "home"];
 
   var T = {
     iam: ["I am", "أنا"],
