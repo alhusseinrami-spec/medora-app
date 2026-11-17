@@ -193,7 +193,7 @@ export async function shopHtml(): Promise<string | null> {
 }
 
 // Adds the official logo, the home-screen app details, the animated logo shown when the shop opens as an app,
-// the "Get offers on your phone" button and My orders to the uploaded page.
+// the "Get offers on your phone" button, My orders and the "I am a …" profession sort to the uploaded page.
 export function injectPush(html: string, publicKey: string, version?: string): string {
   // A page saved from the live shop may already carry the logo; never add it twice.
   html = html.replace(/<style id="medora-splash-css">[\s\S]*?<\/style>|<script id="medora-splash-js">[\s\S]*?<\/script>/g, "");
@@ -202,7 +202,7 @@ export function injectPush(html: string, publicKey: string, version?: string): s
   // A page saved from the live shop carries the version it was opened on; only the current one counts.
   html = html.replace(/<meta name="medora-shop-version"[^>]*>/g, "");
   const head = SPLASH_HEAD + `<link rel="manifest" href="/shop.webmanifest"><link rel="apple-touch-icon" href="/shop-icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Medora Care"><meta name="theme-color" content="#0f5f66">${version ? `<meta name="medora-shop-version" content="${version.replace(/\D/g, "")}">` : ""}<script src="/shop-admin.js"></script>`;
-  const body = `<script id="medora-push">window.MEDORA_PUSH_KEY=${JSON.stringify(publicKey)};</script><script src="/shop-push.js" defer></script><script src="/shop-orders.js" defer></script>`;
+  const body = `<script id="medora-push">window.MEDORA_PUSH_KEY=${JSON.stringify(publicKey)};</script><script src="/shop-push.js" defer></script><script src="/shop-orders.js" defer></script><script src="/shop-profession.js" defer></script>`;
   const h = html.search(/<\/head>/i);
   let out = h >= 0 ? html.slice(0, h) + head + html.slice(h) : head + html;
   const b = out.search(/<\/body>(?![\s\S]*<\/body>)/i);
