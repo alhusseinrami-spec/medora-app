@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { injectPush } from "@/lib/services/push";
+import { NextRequest } from "next/server";
 import { SPLASH_BODY, SPLASH_HEAD } from "@/lib/shop-splash";
+import { proxy } from "@/proxy";
 
 const PAGE = `<!doctype html><html><head><title>Shop</title><script>var t="<body class=x>";</script></head><body class="shop"><p>hi</p></body></html>`;
 
@@ -24,5 +26,12 @@ describe("Animated logo on the shop", () => {
     expect(SPLASH_BODY).toContain("android-app://");
     expect(SPLASH_BODY).toContain('sessionStorage.getItem("medora_splash")');
     expect(SPLASH_BODY).toContain("setTimeout(hide,2650)");
+  });
+
+  it("plays the melody, which is served without signing in, and never breaks the page if sound is blocked", () => {
+    expect(SPLASH_BODY).toContain('new Audio("/shop-splash-melody.mp3")');
+    expect(SPLASH_BODY).toContain("pl.catch(function(){})");
+    const res = proxy(new NextRequest("https://shop.example/shop-splash-melody.mp3"));
+    expect(res.headers.get("location")).toBeNull();
   });
 });
