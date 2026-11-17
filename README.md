@@ -64,7 +64,7 @@ The **Oxinab products** category shows its prices even while prices are hidden o
 
 ## "I am a …" profession sort (shop customers)
 
-Above the product list the shop asks **I am [choose your profession…]**: pharmacist, general practitioner, pediatrician, neurologist, orthopedic doctor, physiotherapist, nurse, surgeon, anesthesiologist / ICU, emergency / ambulance, gynecologist, urologist, pulmonologist, dentist, laboratory technician, dietitian, or someone caring for a patient at home. The products that profession uses most come first under **Most used by …**, then **Other products** in the usual order. Nothing is hidden.
+Above the product list the shop asks **I am [choose your profession…]**: pharmacist, hospital / medical center, general practitioner, pediatrician, neurologist, orthopedic doctor, physiotherapist, nurse, surgeon, anesthesiologist / ICU, emergency / ambulance, gynecologist, urologist, pulmonologist, dentist, laboratory technician, beauty center, dietitian, or someone caring for a patient at home. The products that profession uses most come first under **Most used by …**, then **Other products** in the usual order. Nothing is hidden.
 
 - With no profession chosen the shop looks exactly as before, Oxinab products first.
 - Items that match equally well keep the usual order, so Oxinab products still lead each level and lead Other products.
