@@ -62,6 +62,15 @@ The shop page can carry the same offers as the Oxinab app, set per product in th
 
 The **Oxinab products** category shows its prices even while prices are hidden on the rest of the shop (the category's `sp` flag). Its codes are `OX-` plus the Oxinab code, and the Oxinab code is still searchable. Photos live in `public/ox/`. When the order is sent, the saved order keeps the price the customer saw and puts free goods on their own line, marked free; the pro forma prints them as "Free" and needs no price for them. Order again leaves free lines out, because the offer adds them back.
 
+## "I am a …" profession sort (shop customers)
+
+Above the product list the shop asks **I am [choose your profession…]**: pharmacist, general practitioner, pediatrician, neurologist, orthopedic doctor, physiotherapist, nurse, surgeon, anesthesiologist / ICU, emergency / ambulance, gynecologist, urologist, pulmonologist, dentist, laboratory technician, dietitian, or someone caring for a patient at home. The products that profession uses most come first under **Most used by …**, then **Other products** in the usual order. Nothing is hidden.
+
+- With no profession chosen the shop looks exactly as before, Oxinab products first.
+- Items that match equally well keep the usual order, so Oxinab products still lead each level and lead Other products.
+- It works with search and with each category chip, in English and Arabic, and the phone remembers the choice.
+- Matching uses each product's English name, description and category (keywords in `public/shop-profession.js`), so new products sort themselves. Like My orders, it is added to every shop page the site serves, so it survives uploading a new shop file.
+
 ## My orders (shop customers)
 
 Customers tap **📦 Orders** in the shop (or **📦 My orders** under the WhatsApp button) to see every order they sent: its status (Received, Confirmed, To be delivered with the expected time, Delivered, Cancelled), its **pro forma** and **invoice**, and **Order again**, which puts the same items back in the cart at today's prices.

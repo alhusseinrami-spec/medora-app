@@ -136,7 +136,7 @@ describe("My orders", () => {
 
   it("adds My orders to every shop page the site serves", () => {
     const out = injectPush("<html><head></head><body><p>shop</p></body></html>", "KEY");
-    expect(out).toContain('<script src="/shop-orders.js" defer></script></body>');
+    expect(out).toContain('<script src="/shop-orders.js" defer></script><script src="/shop-profession.js" defer></script></body>');
   });
 });
 
