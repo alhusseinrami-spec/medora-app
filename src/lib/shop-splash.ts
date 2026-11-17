@@ -42,7 +42,7 @@ sessionStorage.setItem("medora_splash","1");
 var s=document.createElement("div");s.id="medora-splash";s.setAttribute("aria-label","Medora Care");s.setAttribute("role","img");
 s.innerHTML='<div class="ms-disc"></div><div class="ms-ring"></div><div class="ms-ring r2"></div><div class="ms-logo"><img alt="" src="${LOGO}"><div class="ms-shine"></div></div><div class="ms-bar"><i></i></div>';
 document.body.insertBefore(s,document.body.firstChild);
-try{var m=new Audio("${MELODY}");m.volume=0.8;var pl=m.play();if(pl&&pl.catch)pl.catch(function(){})}catch(e){}
+try{var m=new Audio("${MELODY}");m.volume=0.5;var pl=m.play();if(pl&&pl.catch)pl.catch(function(){})}catch(e){}
 var done=false;function hide(){if(done)return;done=true;s.className="out";setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s)},400)}
 s.addEventListener("click",hide);setTimeout(hide,${SPLASH_MS - 350});
 }catch(e){}})();`;
